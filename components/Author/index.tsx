@@ -15,7 +15,7 @@ const CountDown = (props: IProps) => {
 
   const changeAvatar = () => {
     store.common.setCommonInfo({ defstyle: !defstyle })
-    let img =document.getElementById('userImg')
+    let img =document.getElementById('userImg') as any
     if (defstyle) {
       imgDeg -= 360
       img.style.transform = 'rotate('+imgDeg+'deg)'
