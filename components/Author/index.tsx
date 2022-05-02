@@ -2,7 +2,6 @@ import styles from './index.module.scss'
 import { IUserInfo } from 'store/userStore'
 import { Avatar } from 'antd'
 import { useStore } from 'store/index';
-
 interface IProps {
   userInfo: IUserInfo
 }
