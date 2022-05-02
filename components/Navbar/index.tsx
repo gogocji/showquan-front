@@ -3,8 +3,8 @@ import { useRouter } from 'next/router';
 import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
-import { Button, Avatar, Dropdown, Menu, message, Row, Col, Icon } from 'antd'
-import { HomeFilled, DownOutlined, UpOutlined } from '@ant-design/icons'
+import { Button, Avatar, Dropdown, Menu, message, Row, Col, Drawer } from 'antd'
+import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { useState } from 'react'
 import Login from 'components/Login/index'
 import { useStore } from 'store/index';
@@ -18,6 +18,7 @@ const Navbar: NextPage = () => {
   const { pathname, push } = useRouter();
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
+  const [ isDrawerOpen, setIsDrawerOpen ] = useState(false)
   const handleGotoEditorPage = () => {
     if (userId) {
       push('editor/new')
@@ -31,7 +32,7 @@ const Navbar: NextPage = () => {
   };
 
   const handleClose = () => {
-    setIsShowLogin(false);
+    setIsDrawerOpen(false);
   }
 
   const handleGotoPersonalPage = () => {
@@ -45,6 +46,11 @@ const Navbar: NextPage = () => {
       }
     })
   }
+
+  const showDrawer = () => {
+    setIsDrawerOpen(true)
+  }
+
   const renderDropDownMenu = () => {
     return (
       <Menu>
@@ -63,6 +69,17 @@ const Navbar: NextPage = () => {
   return (
     <div className={styles.header}>
       <Row align='middle' justify="space-between" typeof='flex'>
+        <Col xs={4} sm={4} md={0} lg={0} xl={0}>
+          <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>
+          <Drawer
+            placement="left"
+            closable={true}
+            onClose={() => setIsDrawerOpen(false)}
+            visible={isDrawerOpen}
+          >
+            陈大杰
+          </Drawer>
+        </Col>
         <Col xs={16} sm={16} md={0} lg={0} xl={0}>
           <span className={styles.logo}>华农秀秀</span>
         </Col>
