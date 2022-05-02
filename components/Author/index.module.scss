@@ -4,12 +4,15 @@
   flex-direction: column;
   padding: 20px;
   text-align: center;
-  .avatar {
+  .avatarContainer {
     display: flex;
     justify-content: center;
     .userlight {
       animation: light 2s linear both infinite;
       transition: all .5s;
+    }
+    .avatar {
+      
     }
     @keyframes light {
       from {

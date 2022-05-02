@@ -1,7 +1,12 @@
+import { NextPage } from 'next';
 import React from 'react';
 
-class ErrorBoundary extends React.Component {
-  constructor(props: any) {
+interface IProps {
+  children: NextPage
+}
+
+class ErrorBoundary extends React.Component<any, any> {
+  constructor(props: IProps) {
     super(props);
     this.state = {
       hasError: false,

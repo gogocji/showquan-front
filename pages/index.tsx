@@ -62,7 +62,7 @@ const Home = (props: IProps) => {
 
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
-    <div style={isShowDrawer ? {paddingLeft:'306px', paddingoverflow:'hidden',transition:'all linear .3s',position:' fixed',width:'170%'} : null}>
+    <div style={isShowDrawer ? {paddingLeft:'306px',transition:'all linear .3s',position:'fixed',width:'170%'} : {}}>
       <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
         <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
           {showAricles?.map((article) => (

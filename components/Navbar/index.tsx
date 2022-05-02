@@ -75,7 +75,7 @@ const Navbar: NextPage = () => {
   }
   
   return (
-    <div className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : null}>
+    <div className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
       <Row align='middle' justify="space-between" typeof='flex'>
         <Col xs={4} sm={4} md={0} lg={0} xl={0}>
           <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>

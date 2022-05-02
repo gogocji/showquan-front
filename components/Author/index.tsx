@@ -15,7 +15,8 @@ const CountDown = (props: IProps) => {
 
   const changeAvatar = () => {
     store.common.setCommonInfo({ defstyle: !defstyle })
-    let img =document.getElementById('userImg') as any
+    let img =document.getElementById('userImg')?.getElementsByClassName('ant-avatar')[0] as any
+    console.log("img", img)
     if (defstyle) {
       imgDeg -= 360
       img.style.transform = 'rotate('+imgDeg+'deg)'
@@ -30,8 +31,10 @@ const CountDown = (props: IProps) => {
   }
   return (
     <div className={styles.container}>
-      <div className={styles.avatar}>
-        <Avatar id="userImg" size={100} src={defstyle ? '/images/avatar.jpg' :userInfo.avatar} className={styles.userlight} onMouseEnter={()=>{changeAvatar()}}/>
+      <div id="userImg" className={styles.avatarContainer} >
+        <div className={styles.avatar} onMouseEnter={()=>{changeAvatar()}}>
+          <Avatar size={100} src={defstyle ? '/images/avatar.jpg' :userInfo.avatar} className={styles.userlight} />
+        </div>
       </div>
       <div className={styles.userName} style={defstyle ?{color:'hotpink'}:{color:'rgba(0, 0, 0, 0.65)'}}>{userInfo.nickname}</div>
       <div className={styles.authorIntroduction} style={{ color: 'rgb(0,216,255)' }}>软件工程</div>
