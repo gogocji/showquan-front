@@ -3,6 +3,7 @@
   justify-content: center;
   flex-direction: column;
   padding: 20px;
+  text-align: center;
   .avatar {
     display: flex;
     justify-content: center;
@@ -29,5 +30,28 @@
               0 0 12px blue;
       }
     }
+  }
+  .userName {
+    margin-top: 10px;
+  }
+  .authorIntroduction{
+    font-size:.8rem;
+    color: #999;
+    margin-top: 5px;
+  }
+  .account{
+      background-color: #999;
+      margin-left: .5rem;
+      margin-right: .5rem;
+  }
+  .myname{
+      font-size: large;
+      font-weight: 600;
+      margin-bottom: .5rem;
+      margin-top: .5rem;
+      /* color: blue; */
+  }
+  .myname1{
+      margin-bottom: .5rem;
   }
 }
