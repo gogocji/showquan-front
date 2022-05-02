@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
 import styles from './index.module.scss'
-import userStore, { IUserInfo } from 'store/userStore'
+import { IUserInfo } from 'store/userStore'
 import { Avatar } from 'antd'
 import { useStore } from 'store/index';
 

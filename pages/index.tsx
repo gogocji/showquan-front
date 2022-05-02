@@ -6,7 +6,6 @@ import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
 import request from 'service/fetch';
 import { useState, useEffect } from 'react';
-import classnames from 'classnames';
 import { useStore } from 'store/index';
 import { observer } from "mobx-react-lite"
 import Author from 'components/Author/index'
@@ -40,16 +39,16 @@ export async function getServerSideProps() {
 }
 
 const Home = (props: IProps) => {
-  const { articles, tags } = props;
-  const [selectTag, setSelectTag] = useState(0);
+  const { articles } = props;
+  const [selectTag] = useState(0);
   const [showAricles, setShowAricles] = useState([...articles]);
   const store = useStore()
   const isShowDrawer = store.common.commonInfo?.isShowDrawer
   console.log('isShowDrawer', isShowDrawer)
-  const handleSelectTag = (event: any) => {
-    const { tagid } = event?.target?.dataset || {};
-    setSelectTag(Number(tagid));
-  };
+  // const handleSelectTag = (event: any) => {
+  //   const { tagid } = event?.target?.dataset || {};
+  //   setSelectTag(Number(tagid));
+  // };
 
   useEffect(() => {
     selectTag &&
