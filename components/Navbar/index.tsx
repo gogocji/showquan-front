@@ -48,7 +48,14 @@ const Navbar: NextPage = () => {
   }
 
   const showDrawer = () => {
+    store.common.setCommonInfo({ isShowDrawer: true})
+    console.log('store.common.commonInfo', store.common.commonInfo)
     setIsDrawerOpen(true)
+  }
+
+  const closeDrawer = () => {
+    store.common.setCommonInfo({ isShowDrawer: false})
+    setIsDrawerOpen(false)
   }
 
   const renderDropDownMenu = () => {
@@ -74,22 +81,22 @@ const Navbar: NextPage = () => {
           <Drawer
             placement="left"
             closable={true}
-            onClose={() => setIsDrawerOpen(false)}
+            onClose={closeDrawer}
             visible={isDrawerOpen}
           >
             陈大杰
           </Drawer>
         </Col>
-        <Col xs={16} sm={16} md={0} lg={0} xl={0}>
+        {/* <Col xs={16} sm={16} md={0} lg={0} xl={0}>
           <span className={styles.logo}>华农秀秀</span>
-        </Col>
-        <Col xs={0} sm={0} md={5} lg={5} xl={5}>
+        </Col> */}
+        <Col xs={16} sm={16} md={5} lg={5} xl={5}>
           <span className={styles.logo}>华农秀秀</span>
           <span className={styles.headerTxt}>热爱生活</span>
         </Col>
         <Col className={styles.memuDiv} xs={4} sm={3} md={4} lg={4} xl={4}>
           <Menu mode='horizontal'
-            style={{backgroundColor: 'rgb(40, 54, 70)'}}
+            style={{backgroundColor: 'rgb(85, 181, 154)'}}
             overflowedIndicator={isMenuOpen ?<UpOutlined style={{color: 'white'}} />:<DownOutlined style={{color: 'white'}} />}
             onOpenChange={()=>setIsMenuOpen(!isMenuOpen)}
             >

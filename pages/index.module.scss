@@ -22,3 +22,16 @@
     color: #fff;
   }
 }
+
+.container {
+  margin-top: .5rem;
+  .containerLeft{
+    background-color: #FFF;
+    padding:.3rem;
+    border-radius: .3rem;
+    border:1px solid #eee;
+  }
+  .containerRight {
+    margin-left: 10px;
+  }
+}
