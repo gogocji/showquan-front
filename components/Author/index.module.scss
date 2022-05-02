@@ -1,0 +1,33 @@
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+  .avatar {
+    display: flex;
+    justify-content: center;
+    .userlight {
+      animation: light 2s linear both infinite;
+      transition: all .5s;
+    }
+    @keyframes light {
+      from {
+          box-shadow: 0 0 1px white,
+              0 0 5px white,
+              0 0 10px white,
+              0 0 20px purple,
+              0 0 5px purple,
+              0 0 11px pink;
+      }
+  
+      to {
+          box-shadow: 0 0 5px white,
+              0 0 10px yellow,
+              0 0 15px yellow,
+              0 0 8px green,
+              0 0 10px green,
+              0 0 12px blue;
+      }
+    }
+  }
+}

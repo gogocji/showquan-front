@@ -1,5 +1,6 @@
 export type ICommonInfo = {
-  isShowDrawer?: boolean
+  isShowDrawer?: boolean,
+  defstyle?: boolean
 };
 
 export interface ICommonStore {

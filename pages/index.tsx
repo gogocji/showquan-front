@@ -9,7 +9,7 @@ import { useState, useEffect } from 'react';
 import classnames from 'classnames';
 import { useStore } from 'store/index';
 import { observer } from "mobx-react-lite"
-
+import Author from 'components/Author/index'
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 interface ITag {
@@ -74,7 +74,7 @@ const Home = (props: IProps) => {
           ))}
         </Col>
         <Col className={styles.containerRight} xs={0} sm={0} md={6} lg={6} xl={6} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
-            1111
+            <Author userInfo={store.user.userInfo} />
         </Col>
       </Row>
     </div>

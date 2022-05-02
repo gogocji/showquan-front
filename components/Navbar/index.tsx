@@ -14,6 +14,7 @@ import { observer } from "mobx-react-lite"
 
 const Navbar: NextPage = () => {
   const store = useStore()
+  const { defstyle } = store.common.commonInfo
   const { userId, avatar } = store.user.userInfo
   const { pathname, push } = useRouter();
   const [ isShowLogin, setIsShowLogin ] = useState(false);
@@ -74,7 +75,7 @@ const Navbar: NextPage = () => {
   }
   
   return (
-    <div className={styles.header}>
+    <div className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : null}>
       <Row align='middle' justify="space-between" typeof='flex'>
         <Col xs={4} sm={4} md={0} lg={0} xl={0}>
           <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>
@@ -96,7 +97,7 @@ const Navbar: NextPage = () => {
         </Col>
         <Col className={styles.memuDiv} xs={4} sm={3} md={4} lg={4} xl={4}>
           <Menu mode='horizontal'
-            style={{backgroundColor: 'rgb(85, 181, 154)'}}
+            style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {backgroundColor: 'rgb(85, 181, 154)'}}
             overflowedIndicator={isMenuOpen ?<UpOutlined style={{color: 'white'}} />:<DownOutlined style={{color: 'white'}} />}
             onOpenChange={()=>setIsMenuOpen(!isMenuOpen)}
             >
