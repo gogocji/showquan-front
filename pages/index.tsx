@@ -1,6 +1,7 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Divider, Row, Col } from 'antd'
+import { Divider, Row, Col, BackTop } from 'antd'
+import { RocketOutlined } from '@ant-design/icons'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
@@ -44,7 +45,7 @@ const Home = (props: IProps) => {
   const [selectTag] = useState(0);
   const [showAricles, setShowAricles] = useState([...articles]);
   const store = useStore()
-  const isShowDrawer = store.common.commonInfo?.isShowDrawer
+  const { isShowDrawer, defStyle} = store.common.commonInfo
   const userId = store.user.userInfo?.userId
   console.log('userid', userId)
   console.log('isShowDrawer', isShowDrawer)
@@ -65,6 +66,9 @@ const Home = (props: IProps) => {
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <div style={isShowDrawer ? {paddingLeft:'306px',transition:'all linear .3s',position:'fixed',width:'170%'} : {}}>
+      <BackTop>
+        <div className={styles.backToTop} ><RocketOutlined  type="rocket"/></div>
+      </BackTop>
       <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
         <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
           {showAricles?.map((article) => (

@@ -63,3 +63,58 @@
     transform: translate3d(0,0,0);
   }
 }
+.backToTop {
+  font-size: 37px;
+  color:rgb(85, 181, 154);
+}
+.backToTop img{ 
+  /* 旋转头像 */
+  transition: all 1s;
+}
+.backToTop:hover img{
+  transform: rotate(360deg);
+  
+}
+.backToTop:hover{
+  /* 置顶特效 */
+  animation: btn-pudding 2s linear;
+}
+@keyframes btn-pudding{
+  12%, 15% {
+    transform: scale(0.93, 1.07);
+}
+
+16%, 17% {
+    transform: scale(0.94, 1.06);
+}
+10%, 18% {
+    transform: scale(0.95, 1.05);
+}
+19% {
+    transform: scale(0.96, 1.04);
+}
+20% {
+    transform: scale(0.98, 1.02);
+}
+21%, 40%, 48% {
+    transform: scale(0.99, 1.01);
+}
+22%, 23%, 37%, 39%, 49% {
+    transform: scale(1, 1);
+}
+7%, 24%, 34%, 36% {
+    transform: scale(1.01, 0.99);
+}
+25%, 27%, 30%, 33% {
+    transform: scale(1.02, 0.98);
+}
+28%, 29% {
+    transform: scale(1.03, 0.97);
+}
+2% {
+    transform: scale(1.16, 0.84);
+}
+0% {
+    transform: scale(1.2, 0.8);
+}
+}
