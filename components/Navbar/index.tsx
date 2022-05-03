@@ -6,7 +6,7 @@ import type { NextPage } from 'next'
 import { Button, Avatar, Dropdown, Menu, message, Row, Col, Drawer } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { useState } from 'react'
-import Login from 'components/Login/index'
+import PopLogin from 'components/PopLogin/index'
 import { useStore } from 'store/index';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons'
 import request from 'service/fetch'
@@ -20,6 +20,7 @@ const Navbar: NextPage = () => {
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
   const [ isDrawerOpen, setIsDrawerOpen ] = useState(false)
+
   const handleGotoEditorPage = () => {
     if (userId) {
       push('editor/new')
@@ -122,22 +123,21 @@ const Navbar: NextPage = () => {
             </section>
           </Menu>
         </Col>
-      <Col xs={0} sm={0} md={10} lg={8} xl={7}>
-        <section className={styles.operationArea}>
-
-            {
-              userId ? (
-                <>
-                    <div className={styles.writeText} onClick={handleGotoEditorPage}>写文章</div>
-                    <Dropdown overlay={renderDropDownMenu()} placement="bottomLeft">
-                      <Avatar src={avatar} size={32} />
-                    </Dropdown>
-                </>
-              ) : <div className={styles.notLoginText}>👇登录一下把~</div>
-            }
-        </section>
-      </Col>
-        <Login isShow={isShowLogin} onClose={handleClose}/>
+        <Col xs={0} sm={0} md={10} lg={8} xl={7}>
+          <section className={styles.operationArea}>
+              {
+                userId ? (
+                  <>
+                      <div className={styles.writeText} onClick={handleGotoEditorPage}>写文章</div>
+                      <Dropdown overlay={renderDropDownMenu()} placement="bottomLeft">
+                        <Avatar src={avatar} size={32} />
+                      </Dropdown>
+                  </>
+                ) : <div className={styles.notLoginText}>👇 登录一下把~</div>
+              }
+          </section>
+        </Col>
+        <PopLogin isShow={isShowLogin} onClose={handleClose}/>
       </Row>
     </div>
   );
