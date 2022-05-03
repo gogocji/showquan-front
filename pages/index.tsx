@@ -10,6 +10,7 @@ import { useState, useEffect } from 'react';
 import { useStore } from 'store/index';
 import { observer } from "mobx-react-lite"
 import Author from 'components/Author/index'
+import UserInfo from 'components/UserInfo/index'
 import LazyLoad from 'react-lazyload';
 import Login from 'components/Login/index'
 const DynamicComponent = dynamic(() => import('components/ListItem'));
@@ -91,11 +92,14 @@ const Home = (props: IProps) => {
             className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
           </LazyLoad>
         </Col>
-        <Col className={styles.containerRight} xs={0} sm={0} md={6} lg={6} xl={6}>
+        <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
             {
               !userId ? <Login /> 
               : (
-                 <Author userInfo={store.user.userInfo} />
+                <div>
+                  <Author userInfo={store.user.userInfo} />
+                  <UserInfo />
+                </div>
                 )
             }
         </Col>

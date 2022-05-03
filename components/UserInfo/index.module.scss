@@ -1,0 +1,21 @@
+.container {
+  background-color: rgba(255,255,255, .6);
+  padding: 10px;
+  .title {
+    color: rgb(32, 157, 123);
+    font-size: 18px;
+    border-radius: 4px;
+    border-bottom: 1px solid rgb(32, 157, 123);
+  }
+  .content {
+    font-size: 14px;
+    font-family: 楷体;
+    margin-top: 10px;
+    white-space:normal;
+    word-break:break-all;
+    word-wrap:break-word; 
+  }
+  .contentText {
+    color: rgb(24, 144, 255)
+  }
+}
