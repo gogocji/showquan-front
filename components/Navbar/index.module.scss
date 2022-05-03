@@ -47,6 +47,23 @@
       margin-right: 10px;
       color: white;
     }
+    .notLoginText {
+      color: white;
+      font-weight: bold;
+    }
+  }
+  .loginBtn {
+    background-color: white;
+    border: none;
+    color: rgb(111, 111, 111);
+    border-radius: 5px;
+    font-size: 12px;
+    width: 50px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    align-items: center;
   }
 }
 

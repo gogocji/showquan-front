@@ -4042,6 +4042,11 @@ pkg-dir@^4.1.0:
   dependencies:
     find-up "^4.0.0"
 
+pm-ribbon@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.npmmirror.com/pm-ribbon/-/pm-ribbon-3.0.0.tgz#534df5bfe100c41a582a68a463cea648f327f570"
+  integrity sha512-sj/fSOhUajY3/VrAcGqxqiRq9o99AIIo486E5GOXAx9pTrKy0fKTx9D49aPtt7oQbccj2Ck1DjrsHu9auulxNg==
+
 postcss-media-query-parser@^0.2.3:
   version "0.2.3"
   resolved "https://registry.npmmirror.com/postcss-media-query-parser/-/postcss-media-query-parser-0.2.3.tgz#27b39c6f4d94f81b1a73b8f76351c609e5cef244"

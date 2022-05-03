@@ -21,7 +21,9 @@ const Login = (props: IProps) => {
   })
 
   const handleClose = () => {
+    console.log('删除')
     onClose && onClose()
+    setIsShowVerifyCode(false)
   }
 
   const handleGetVerifyCode = () => {
@@ -51,9 +53,14 @@ const Login = (props: IProps) => {
     }).then((res: any) => {
       if (res?.code === 0) {
         // 登录成功
-         store.user.setUserInfo(res?.data)
-         console.log("1111", store)
+        store.user.setUserInfo(res?.data)
+        console.log("1111", store)
         onClose && onClose()
+        setForm({
+          phone: '',
+          verify: ''
+        })
+        setIsShowVerifyCode(false)
       } else {
         message.error(res?.msg || '未知错误')
       }
@@ -82,7 +89,8 @@ const Login = (props: IProps) => {
   return (
     isShow ? 
       (
-        <div className={styles.loginArea}>
+        <div className={styles.loginArea} >
+          <div className={styles.mask} onClick={handleClose}></div>
           <div className={styles.loginBox}>
             <div className={styles.loginTitle}>
               <p>手机登录</p>

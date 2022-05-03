@@ -3,7 +3,6 @@ import Layout from 'components/layout'
 import { StoreProvider } from 'store/index'
 import { NextPage } from 'next'
 import ErrorBoundary from 'components/ErrorBoundary';
-
 interface IProps {
   initialValue: Record<any, any>
   Component: NextPage

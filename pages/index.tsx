@@ -66,7 +66,6 @@ const Home = (props: IProps) => {
         <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
           {showAricles?.map((article) => (
             <>
-              {/* <ListItem article={article} /> */}
               <DynamicComponent article={article} />
               <Divider />
             </>
@@ -90,15 +89,6 @@ const Home = (props: IProps) => {
     //       >
     //         {tag?.title}
     //       </div>
-    //     ))}
-    //   </div>
-    //   <div className="content-layout">
-    //     {showAricles?.map((article) => (
-    //       <>
-    //         {/* <ListItem article={article} /> */}
-    //         <DynamicComponent article={article} />
-    //         <Divider />
-    //       </>
     //     ))}
     //   </div>
     // </div>

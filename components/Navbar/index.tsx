@@ -29,11 +29,13 @@ const Navbar: NextPage = () => {
   };
 
   const handleLogin = () => {
+    console.log('111')
     setIsShowLogin(true);
   };
 
   const handleClose = () => {
-    setIsDrawerOpen(false);
+    console.log('22')
+    setIsShowLogin(false);
   }
 
   const handleGotoPersonalPage = () => {
@@ -91,11 +93,16 @@ const Navbar: NextPage = () => {
         {/* <Col xs={16} sm={16} md={0} lg={0} xl={0}>
           <span className={styles.logo}>华农秀秀</span>
         </Col> */}
-        <Col xs={16} sm={16} md={5} lg={5} xl={5}>
+        <Col xs={16} sm={15} md={5} lg={5} xl={5}>
           <span className={styles.logo}>华农秀秀</span>
           <span className={styles.headerTxt}>热爱生活</span>
         </Col>
-        <Col className={styles.memuDiv} xs={4} sm={3} md={4} lg={4} xl={4}>
+        <Col xs={3} sm={3} md={0} lg={0} xl={0}>
+          {
+            userId ? null : <Button type='primary' onClick={handleLogin} className={styles.loginBtn}>登录</Button>
+          }
+        </Col>
+        <Col className={styles.memuDiv} xs={1} sm={2} md={4} lg={4} xl={4}>
           <Menu mode='horizontal'
             style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {backgroundColor: 'rgb(85, 181, 154)'}}
             overflowedIndicator={isMenuOpen ?<UpOutlined style={{color: 'white'}} />:<DownOutlined style={{color: 'white'}} />}
@@ -115,23 +122,22 @@ const Navbar: NextPage = () => {
             </section>
           </Menu>
         </Col>
-      <Col xs={0} sm={8} md={9} lg={8} xl={5}>
+      <Col xs={0} sm={0} md={10} lg={8} xl={7}>
         <section className={styles.operationArea}>
-          <div className={styles.writeText} onClick={handleGotoEditorPage}>写文章</div>
+
             {
               userId ? (
                 <>
+                    <div className={styles.writeText} onClick={handleGotoEditorPage}>写文章</div>
                     <Dropdown overlay={renderDropDownMenu()} placement="bottomLeft">
                       <Avatar src={avatar} size={32} />
                     </Dropdown>
                 </>
-              ) : (
-                <Button type="primary" onClick={handleLogin}>登录</Button>
-              )
+              ) : <div className={styles.notLoginText}>👇登录一下把~</div>
             }
         </section>
-        <Login isShow={isShowLogin} onClose={handleClose}/>
       </Col>
+        <Login isShow={isShowLogin} onClose={handleClose}/>
       </Row>
     </div>
   );

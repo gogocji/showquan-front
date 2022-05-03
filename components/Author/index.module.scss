@@ -5,7 +5,6 @@
   flex-direction: column;
   padding: 20px;
   text-align: center;
-  animation: cssniceright 1.2s both;
   .avatarContainer {
     display: flex;
     justify-content: center;
@@ -58,31 +57,5 @@
   }
   .myname1{
       margin-bottom: .5rem;
-  }
-}
-@keyframes cssniceright{
-  0%{
-    opacity: 0;
-    transform: translate3d(100%,0,0);
-  }
-  50%{
-    opacity: 1;
-    transform: translate3d(-3%,0,0);
-  }
-  65%{
-    opacity: 1;
-    transform: translate3d(2.5%,0,0);
-  }
-  80%{
-    opacity: 1;
-    transform: translate3d(-2%,0,0);
-  }
-  90%{
-    opacity: 1;
-    transform: translate3d(-1%,0,0);
-  }
-  100%{
-    opacity: 1;
-    transform: translate3d(0,0,0);
   }
 }
