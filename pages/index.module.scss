@@ -118,3 +118,25 @@
     transform: scale(1.2, 0.8);
 }
 }
+
+.cssnice3{ 
+  /* 分页动画 */
+  animation: cssnice3 1s both;
+}
+@keyframes cssnice3{
+  20%{
+    transform: rotate3d(0, 0, 1, 25deg);
+  }
+  40%{
+    transform: rotate3d(0, 0, 1, -20deg);
+  }
+  60%{
+    transform: rotate3d(0, 0, 1, 15deg);
+  }
+  80%{
+    transform: rotate3d(0, 0, 1, -10deg);
+  }
+  100%{
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
