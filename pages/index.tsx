@@ -70,7 +70,6 @@ const Home = (props: IProps) => {
           {showAricles?.map((article) => (
             <>
               <DynamicComponent article={article} />
-              <Divider />
             </>
           ))}
         </Col>
