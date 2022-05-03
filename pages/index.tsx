@@ -9,6 +9,7 @@ import { useState, useEffect } from 'react';
 import { useStore } from 'store/index';
 import { observer } from "mobx-react-lite"
 import Author from 'components/Author/index'
+import Login from 'components/Login/index'
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 interface ITag {
@@ -44,6 +45,8 @@ const Home = (props: IProps) => {
   const [showAricles, setShowAricles] = useState([...articles]);
   const store = useStore()
   const isShowDrawer = store.common.commonInfo?.isShowDrawer
+  const userId = store.user.userInfo?.userId
+  console.log('userid', userId)
   console.log('isShowDrawer', isShowDrawer)
   // const handleSelectTag = (event: any) => {
   //   const { tagid } = event?.target?.dataset || {};
@@ -71,8 +74,13 @@ const Home = (props: IProps) => {
             </>
           ))}
         </Col>
-        <Col className={styles.containerRight} xs={0} sm={0} md={6} lg={6} xl={6} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
-            <Author userInfo={store.user.userInfo} />
+        <Col className={styles.containerRight} xs={0} sm={0} md={6} lg={6} xl={6}>
+            {
+              !userId ? <Login /> 
+              : (
+                 <Author userInfo={store.user.userInfo} />
+                )
+            }
         </Col>
       </Row>
     </div>
