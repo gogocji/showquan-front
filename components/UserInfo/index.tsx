@@ -30,7 +30,7 @@ const UserInfo = () => {
   return (
     <div className={styles.container}>
       <div className={styles.title}>
-        <span>相见恨晚</span>
+        <span>相见恨晚&nbsp;</span>
         <HeartTwoTone twoToneColor="#eb2f96" />
       </div>
       <div className={styles.content}>

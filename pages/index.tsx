@@ -53,6 +53,10 @@ const Home = (props: IProps) => {
   const { isShowDrawer, defStyle} = store.common.commonInfo
   const userId = store.user.userInfo?.userId
 
+  useEffect(() => {
+    setIsLoading(false)
+  }, [currentList])
+
   const handlePagination = (e: any) => {
     if (document) {
       document && document.getElementById('root')?.scrollIntoView(true);
@@ -61,7 +65,6 @@ const Home = (props: IProps) => {
     let currentList = data.slice((e-1)*8,e*8)
     setCurrentPage(e)
     setCurrentList(currentList)
-    setIsLoading(false)
   }
 
   const changeTagList = (selectTag: number) => {
@@ -69,16 +72,18 @@ const Home = (props: IProps) => {
       document && document.getElementById('root')?.scrollIntoView(true);
     }
     if (selectTag) {
-      request.get(`/api/article/get?tag_id=${selectTag}`).then((res: any) => {
+      request.get(`/api/article/get?tag_id=${1}`).then((res: any) => {
         if (res?.code === 0) {
-          setCurrentList(res?.data)
+          setShowAricles(res?.data)
           setCurrentPage(1)
         }
-      }).finally(() => {})
+      }).finally(() => {
+      })
     } else {
-      handlePagination(1);
+      handlePagination(1)
     }
   }
+
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <div id='root' style={isShowDrawer ? {paddingLeft:'306px',transition:'all linear .3s',position:'fixed',width:'170%'} : {}}>
@@ -94,7 +99,7 @@ const Home = (props: IProps) => {
               </>
             ))}
             {
-              ( currentList.length > 8 ) ? 
+              ( showAricles.length > 8 ) ? 
                 <LazyLoad height={200} offset={-10}>
                   <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
                   className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
