@@ -36,18 +36,18 @@ const UserInfo = () => {
       <div className={styles.content}>
         <div>
           <span>您的IP：</span>
-          <span className={styles.contentText}>1234.123.12</span>
+          <span className={styles.contentText}>125.88.24.132</span>
         </div>
         <div>
           <span>您的地址：</span>
-          <span className={styles.contentText}>广州市</span>
+          <span className={styles.contentText}>广东省 广州市</span>
         </div>
         <div className={styles.contentText}>
           你好呀~，现在是：   
           {nowYearTime} {nowDayTime}。
         </div>
         <div className={styles.contentText}>
-          祝你早安、午安、晚安。
+          祝你早安 午安 晚安。
         </div>
       </div>
     </div>)
