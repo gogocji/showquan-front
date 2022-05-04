@@ -45,8 +45,9 @@ const Home = (props: IProps) => {
   const { articles } = props;
   const [selectTag] = useState(0);
   const [showAricles, setShowAricles] = useState([...articles]);
-  const [currentPage, setCurrentPage] = useState(0)
-  const [currentList, setCurrentList] = useState<IArticle[]>()
+  const [currentPage, setCurrentPage] = useState(1)
+  const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
+  // 初始化currentList
   const store = useStore()
   const { isShowDrawer, defStyle} = store.common.commonInfo
   const userId = store.user.userInfo?.userId
@@ -73,7 +74,7 @@ const Home = (props: IProps) => {
       document && document.getElementById('root')?.scrollIntoView(true);
     }
   }
-
+  
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <div id='root' style={isShowDrawer ? {paddingLeft:'306px',transition:'all linear .3s',position:'fixed',width:'170%'} : {}}>
