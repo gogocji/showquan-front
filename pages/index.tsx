@@ -13,6 +13,7 @@ import Author from 'components/Author/index'
 import UserInfo from 'components/UserInfo/index'
 import LazyLoad from 'react-lazyload';
 import Login from 'components/Login/index'
+import TagList from 'components/TagList/index'
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 interface ITag {
@@ -100,6 +101,7 @@ const Home = (props: IProps) => {
                 <div>
                   <Author userInfo={store.user.userInfo} />
                   <UserInfo />
+                  <TagList />
                 </div>
                 )
             }
