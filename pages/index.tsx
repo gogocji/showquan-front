@@ -46,6 +46,7 @@ const Home = (props: IProps) => {
   const { articles, tags } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
   const [currentPage, setCurrentPage] = useState(1)
+  const [selectTag, setSelectTag] = useState(0)
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
   // 初始化currentList
@@ -57,30 +58,38 @@ const Home = (props: IProps) => {
     setIsLoading(false)
   }, [currentList])
 
-  const handlePagination = (e: any) => {
+  const handlePagination = (e: any, tagId = selectTag, showList = articles) => {
     if (document) {
       document && document.getElementById('root')?.scrollIntoView(true);
     }
-    let data = showAricles
+    let data
+    if (tagId) {
+      data = showList
+      setShowAricles(showList)
+    } else {
+      data = articles
+      setShowAricles(articles)
+    }
     let currentList = data.slice((e-1)*8,e*8)
     setCurrentPage(e)
     setCurrentList(currentList)
   }
 
   const changeTagList = (selectTag: number) => {
+    setSelectTag(selectTag)
     if (document) {
       document && document.getElementById('root')?.scrollIntoView(true);
     }
     if (selectTag) {
       request.get(`/api/article/get?tag_id=${1}`).then((res: any) => {
         if (res?.code === 0) {
-          setShowAricles(res?.data)
-          setCurrentPage(1)
+          // 解决异步的问题
+          handlePagination(1, selectTag, res?.data)
         }
       }).finally(() => {
       })
     } else {
-      handlePagination(1)
+      handlePagination(1, selectTag)
     }
   }
 
