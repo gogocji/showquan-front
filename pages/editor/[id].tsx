@@ -62,7 +62,8 @@ const ModifyEditor = ({ article }: IProps) => {
       id: articleId,
       title,
       content,
-      tagIds
+      tagIds,
+      description
     }).then((res: any) => {
       if (res?.code === 0) {
         articleId ? push(`/article/${articleId}`) : push('/');
@@ -85,8 +86,8 @@ const ModifyEditor = ({ article }: IProps) => {
     setTagIds(value);
   }
 
-  const handleDescChange = (description: any) => {
-    setDescription(description)
+  const handleDescChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setDescription(event?.target?.value)
   }
 
   return (
@@ -115,13 +116,13 @@ const ModifyEditor = ({ article }: IProps) => {
           发布
         </Button>
       </div>
-      <div className={styles.desc}>
+      {/* <div className={styles.desc}> */}
         <Input
           placeholder="请输入文章描述"
           value={description}
           onChange={handleDescChange}
         />
-      </div>
+      {/* </div> */}
       <div className={styles.upLoadImg}>
         <UpLoadImg />
       </div>

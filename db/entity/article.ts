@@ -12,6 +12,9 @@ export class Article extends BaseEntity {
   title!: string;
 
   @Column()
+  description!: string;
+
+  @Column()
   content!: string;
 
   @Column()

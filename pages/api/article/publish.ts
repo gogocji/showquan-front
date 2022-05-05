@@ -10,7 +10,7 @@ export default withIronSessionApiRoute(publish, ironOptions);
 
 async function publish(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
-  const { title = '', content = '', tagIds = [] } = req.body;
+  const { title = '', content = '', tagIds = [], description = '' } = req.body;
   const db = await prepareConnection();
   const userRepo = db.getRepository(User);
   const articleRepo = db.getRepository(Article);
@@ -31,6 +31,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   article.update_time = new Date();
   article.is_delete = 0;
   article.views = 0;
+  article.description = description;
 
   if (user) {
     article.user = user;

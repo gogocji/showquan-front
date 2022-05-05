@@ -8,7 +8,7 @@ import { EXCEPTION_ARTICLE } from 'pages/api/config/codes';
 export default withIronSessionApiRoute(update, ironOptions);
 
 async function update(req: NextApiRequest, res: NextApiResponse) {
-  const { title = '', content = '', id = 0, tagIds = [] } = req.body;
+  const { title = '', content = '', id = 0, tagIds = [], description = '' } = req.body;
   const db = await prepareConnection();
   const articleRepo = db.getRepository(Article);
   const tagRepo = db.getRepository(Tag);
@@ -34,6 +34,7 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
     article.content = content;
     article.update_time = new Date();
     article.tags = newTags;
+    article.description = description
 
     const resArticle = await articleRepo.save(article);
 

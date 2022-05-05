@@ -8,6 +8,7 @@ import { useRouter } from 'next/router';
 import { useStore } from 'store/index';
 import request from 'service/fetch';
 import styles from './index.module.scss';
+import UpLoadImg from 'components/UpLoadImg'
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
@@ -19,6 +20,7 @@ const NewEditor = () => {
   const [content, setContent] = useState('');
   const [tagIds, setTagIds] = useState([]);
   const [allTags, setAllTags] = useState([]);
+  const [description, setDescription] = useState('');
 
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
@@ -59,6 +61,10 @@ const NewEditor = () => {
     setTagIds(value);
   }
 
+  const handleDescChange = (description: any) => {
+    setDescription(description)
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.operation}>
@@ -84,6 +90,16 @@ const NewEditor = () => {
         >
           发布
         </Button>
+      </div>
+      <div className={styles.desc}>
+        <Input
+          placeholder="请输入文章描述"
+          value={description}
+          onChange={handleDescChange}
+        />
+      </div>
+      <div className={styles.upLoadImg}>
+        <UpLoadImg />
       </div>
       <MDEditor value={content} height={1080} onChange={handleContentChange} />
     </div>

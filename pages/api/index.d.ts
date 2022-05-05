@@ -5,7 +5,7 @@ export type IComment = {
   id: number,
   content: string,
   create_time: Date,
-  update_time: Date,
+  update_time: Date
 };
 
 export type IArticle = {
@@ -17,6 +17,7 @@ export type IArticle = {
   update_time: Date,
   user: IUserInfo,
   comments: IComment[],
+  description: string
 };
 
 export type ISession = IronSession & Record<string, any>
