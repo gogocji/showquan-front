@@ -3,13 +3,14 @@ import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
 import { observer } from 'mobx-react-lite';
 import { ChangeEvent, useState, useEffect } from 'react';
-import { Input, Button, message, Select } from 'antd';
+import { Input, Button, message, Select, Upload } from 'antd';
 import { useRouter } from 'next/router';
 import { prepareConnection } from 'db/index';
 import { Article } from 'db/entity';
 import request from 'service/fetch';
 import styles from './index.module.scss';
 import { IArticle } from 'pages/api';
+import UpLoadImg from 'components/UpLoadImg'
 
 interface IProps {
   article: IArticle
@@ -40,6 +41,7 @@ const ModifyEditor = ({ article }: IProps) => {
   const articleId = Number(query?.id)
   const [title, setTitle] = useState(article?.title || '');
   const [content, setContent] = useState(article?.content || '');
+  const [description, setDescription] = useState(article?.description || '');
   const [tagIds, setTagIds] = useState([]);
   const [allTags, setAllTags] = useState([]);
 
@@ -83,6 +85,10 @@ const ModifyEditor = ({ article }: IProps) => {
     setTagIds(value);
   }
 
+  const handleDescChange = (description: any) => {
+    setDescription(description)
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.operation}>
@@ -108,6 +114,16 @@ const ModifyEditor = ({ article }: IProps) => {
         >
           发布
         </Button>
+      </div>
+      <div className={styles.desc}>
+        <Input
+          placeholder="请输入文章描述"
+          value={description}
+          onChange={handleDescChange}
+        />
+      </div>
+      <div className={styles.upLoadImg}>
+        <UpLoadImg />
       </div>
       <MDEditor value={content} height={1080} onChange={handleContentChange} />
     </div>
