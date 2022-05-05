@@ -37,6 +37,41 @@
     }
   }
 }
+.operationArea {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  .userInfo {
+    display: flex;
+    align-items: center;
+    .info {
+      margin-left: 10px;
+    }
+    button {
+      margin-left: 10px;
+      border-radius: 20px;
+      color: white;
+      background-color: rgb(85, 181, 154);
+    }
+  }
+
+  .operation {
+    display: flex;
+    color: #c8c8cc;
+    .love {
+    }
+    .dislove {
+      margin-left: 40px;
+    }
+    .message {
+      margin-left: 40px;
+    }
+    .operationText {
+      margin-left: 10px;
+    }
+  }
+}
+
 .containerRight {
   margin-left: 10px;
   animation: cssniceright 1.2s both;

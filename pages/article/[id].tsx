@@ -13,7 +13,8 @@ import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
 import { useRouter } from 'next/router';
-import { CalendarOutlined, FireOutlined, MessageOutlined } from '@ant-design/icons'
+import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, DislikeFilled, MessageFilled } from '@ant-design/icons'
+import { url } from "inspector";
 
 interface IProps {
   article: IArticle
@@ -88,7 +89,7 @@ const ArticleDetail = (props: IProps) => {
     <div>
       <MyBackTop />
       <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
-        <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
+        <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255)'}}>
           <div>
             <div className={styles.breadDiv}>
               <Breadcrumb>
@@ -126,6 +127,30 @@ const ArticleDetail = (props: IProps) => {
               <MyMarkDown textContent={article?.content}  />
             </div>
             <Divider />
+              <div className={styles.operationArea}>
+                <div className={styles.userInfo}>
+                  <Avatar src={avatar} size={50} />
+                  <div className={styles.info}>
+                    <div className={styles.name}>{nickname}</div>
+                  </div>
+                  <Button>关注</Button>
+                </div>
+                <div className={styles.operation}>
+                  <div className={styles.love}>
+                    <LikeFilled style={{color: '#c8c8cc', fontSize: 20}}/>
+                    <span className={styles.operationText}>5</span>
+                  </div>
+                  <div className={styles.dislove}>
+                    <DislikeFilled style={{color: '#c8c8cc', fontSize: 20}}/>
+                    <span className={styles.operationText}>0</span>
+                  </div>
+                  <div className={styles.message}>
+                    <MessageFilled style={{color: '#c8c8cc', fontSize: 20}}/>
+                    <span className={styles.operationText}>0</span>
+                  </div>
+                </div>
+              </div>
+            <Divider />
             <div className={styles.comment}>
               <h3>评论</h3>
               {loginUserInfo?.userId && (
@@ -133,6 +158,7 @@ const ArticleDetail = (props: IProps) => {
                   <Avatar src={avatar} size={40} />
                   <div className={styles.content}>
                     <Input.TextArea
+                      style={{background: 'url("https://blog-1303885568.cos.ap-chengdu.myqcloud.com/useImg/comment.png") right bottom no-repeat'}}
                       placeholder="请输入评论"
                       rows={4}
                       value={inputVal}
