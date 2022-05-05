@@ -5,7 +5,7 @@ import { navs } from './config';
 import type { NextPage } from 'next'
 import { Button, Avatar, Dropdown, Menu, message, Row, Col, Drawer } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
 import { useStore } from 'store/index';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons'
@@ -76,9 +76,31 @@ const Navbar: NextPage = () => {
       </Menu>
     )
   }
-  
+  var scrollheight = 0
+  useEffect(() => {
+    window.onscroll= function(){
+      //变量t是滚动条滚动时，距离顶部的距离
+      var t = document.documentElement.scrollTop||document.body.scrollTop;
+      var scrollup = document.getElementById('scrolldisplay');
+      //当滚动到距离顶部200px时，返回顶部的锚点显示
+      
+      if(t>=200){
+        if(t-scrollheight<0){
+          scrollup.style.marginTop = '0'
+          scrollheight = t
+        }
+        else{
+          scrollup.style.marginTop='-3.2rem'
+          scrollheight = t 
+        }
+      }else{          //恢复正常
+        scrollup.style.marginTop='0'
+        scrollheight = t
+      }
+    }
+  }, [])
   return (
-    <div className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
+    <div id='scrolldisplay' className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
       <Row align='middle' justify="space-between" typeof='flex'>
         <Col xs={4} sm={4} md={0} lg={0} xl={0}>
           <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>
