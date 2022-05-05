@@ -5,7 +5,7 @@ import styles from './index.module.scss'
 import { Button, Avatar, Input, Image, Breadcrumb, message, Row, Col, Divider } from 'antd';
 import { format } from 'date-fns';
 import { useStore } from 'store/index';
-import MarkDown from 'markdown-to-jsx';
+import MyMarkDown from 'components/MyMarkDown'
 import Link from 'next/link';
 import { useState } from 'react';
 import { observer } from "mobx-react-lite"
@@ -123,7 +123,7 @@ const ArticleDetail = (props: IProps) => {
               </div>
             </div>
             <div className={styles.articleContent}>
-              <MarkDown className={styles.markdown}>{article?.content}</MarkDown>
+              <MyMarkDown textContent={article?.content}  />
             </div>
             <Divider />
             <div className={styles.comment}>
