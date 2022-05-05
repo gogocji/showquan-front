@@ -1,15 +1,48 @@
 .container {
   margin-top: .5rem;
-  .containerLeft{
-    background-color: #FFF;
-    padding:.3rem;
-    border-radius: .3rem;
-    border:1px solid #eee;
+}
+.containerLeft{
+  background-color: #FFF;
+  padding:.3rem;
+  border-radius: .3rem;
+  border:1px solid #eee;
+  .articleHeader {
+    padding: 0px 10px;
+    text-align: center;
+    width: 100%;
   }
-  .containerRight {
-    margin-left: 10px;
-    animation: cssniceright 1.2s both;
+  .articleTitle {
+    font-size: 28px;
+    font-weight: 600;
+    color: rgb(24, 144, 255);
   }
+  .articleInfo {
+    .userInfo {
+      display: flex;
+      align-items: center;
+      .info {
+        margin-left: 10px;
+      }
+    }
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    .icon {
+      margin-right: 16px;
+    }
+  }
+}
+.containerRight {
+  margin-left: 10px;
+  animation: cssniceright 1.2s both;
+}
+
+.bread-div{
+  padding: .5rem;
+  border-bottom:1px solid #eee;
+  background-color: #e1f0ff;
 }
 
 
