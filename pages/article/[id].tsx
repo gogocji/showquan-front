@@ -2,19 +2,21 @@ import { prepareConnection } from "db/index"
 import { Article } from "db/entity"
 import { IArticle } from "pages/api"
 import styles from './index.module.scss'
-import { Button, Avatar, Input, Image, Breadcrumb, message, Row, Col, Divider } from 'antd';
+import { Button, Avatar, Input, Image, Breadcrumb, message, Row, Col, Divider, Affix } from 'antd';
 import { format } from 'date-fns';
 import { useStore } from 'store/index';
-import MyMarkDown from 'components/MyMarkDown'
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { observer } from "mobx-react-lite"
 import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
 import { useRouter } from 'next/router';
 import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, DislikeFilled, MessageFilled } from '@ant-design/icons'
-import { url } from "inspector";
+import Tocify from 'components/Tocify'
+import marked from 'marked'
+import hljs from "highlight.js";
+import 'highlight.js/styles/monokai-sublime.css';
 
 interface IProps {
   article: IArticle
@@ -52,6 +54,28 @@ const ArticleDetail = (props: IProps) => {
   const [comments, setComments] = useState(article?.comments || []);
   const { pathname } = useRouter()
 
+  // 文章内容md格式转化和文章导航相关
+  const renderer = new marked.Renderer();
+  const tocify = new Tocify()
+  renderer.heading = function(text : any, level : any) {
+      const anchor = tocify.add(text, level);
+      return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`;
+    };
+  marked.setOptions({
+    renderer: renderer,
+    gfm: true,
+    pedantic: false,
+    sanitize: false,
+    tables: true,
+    breaks: false,
+    smartLists: true,
+    smartypants: false,
+    highlight: function (code : any) {
+      return hljs.highlightAuto(code).value;
+    }
+  }); 
+  const html = marked(article?.content) 
+
   const handleComment = () => {
     request
     .post('/api/comment/publish', {
@@ -85,6 +109,7 @@ const ArticleDetail = (props: IProps) => {
   const toMainPage = () => {
 
   }
+
   return (
     <div>
       <MyBackTop />
@@ -123,8 +148,8 @@ const ArticleDetail = (props: IProps) => {
                 <Image preview={false} src="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farticle%2Fd0553d88aff685f8a3cb4d0dd04bef8ae6174694.jpg&refer=http%3A%2F%2Fi0.hdslb.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654140843&t=0cd87c7be196ebb935777d9fac1223f9" alt="" />
               </div>
             </div>
-            <div className={styles.articleContent}>
-              <MyMarkDown textContent={article?.content}  />
+            <div className={styles.articleContent}
+              dangerouslySetInnerHTML = {{__html:html}}>
             </div>
             <Divider />
               <div className={styles.operationArea}>
@@ -195,8 +220,13 @@ const ArticleDetail = (props: IProps) => {
         </Col>
         <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
           <RightBar>
-            文章目录
           </RightBar>
+          <Affix offsetTop={5} className={styles.navContainer}>
+            <div className={styles.navTitle}>文章目录</div>
+            <div className={styles.navTitleList}>
+              {tocify && tocify.render()}
+            </div> 
+          </Affix>
         </Col>
       </Row>
     </div>
