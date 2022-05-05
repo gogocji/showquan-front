@@ -83,6 +83,7 @@ const Navbar: NextPage = () => {
         <Col xs={4} sm={4} md={0} lg={0} xl={0}>
           <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>
           <Drawer
+            width={306}
             placement="left"
             closable={true}
             onClose={closeDrawer}

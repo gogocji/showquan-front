@@ -30,8 +30,8 @@ const ListItem = (props: IProps) => {
 
   return (
     // eslint-disable-next-line @next/next/link-passhref
-    <Link href={`/article/${article.id}`} >
-      <LazyLoad height={200} offset={-200}>
+    <LazyLoad height={200} offset={-200}>
+      <Link href={`/article/${article.id}`} >
         <div className={styles.container}>
           <div className={(styles.article, screenWidth >=770?styles.cssnice1:styles.cssnice)}>
             <div className={styles.header}>
@@ -60,8 +60,8 @@ const ListItem = (props: IProps) => {
             </div>
           </div>
         </div>
-      </LazyLoad>
-    </Link>
+      </Link>
+    </LazyLoad>
   );
 };
 

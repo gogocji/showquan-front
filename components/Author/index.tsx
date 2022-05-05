@@ -2,6 +2,8 @@ import styles from './index.module.scss'
 import { IUserInfo } from 'store/userStore'
 import { Avatar } from 'antd'
 import { useStore } from 'store/index';
+import { observer } from "mobx-react-lite"
+
 interface IProps {
   userInfo: IUserInfo
 }
@@ -40,4 +42,4 @@ const CountDown = (props: IProps) => {
   )
 }
 
-export default CountDown;
+export default observer(CountDown);

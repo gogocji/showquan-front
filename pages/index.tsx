@@ -1,19 +1,15 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Divider, Row, Col, BackTop, Pagination, Spin } from 'antd'
-import { RocketOutlined } from '@ant-design/icons'
+import { Row, Col, Pagination, Spin } from 'antd'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
 import request from 'service/fetch';
-import { useState, useEffect, useRef } from 'react';
-import { useStore } from 'store/index';
+import { useState, useEffect } from 'react';
 import { observer } from "mobx-react-lite"
-import Author from 'components/Author/index'
-import UserInfo from 'components/UserInfo/index'
 import LazyLoad from 'react-lazyload';
-import Login from 'components/Login/index'
 import TagList from 'components/TagList/index'
+import RightBar from "components/RightBar"
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 interface ITag {
@@ -50,9 +46,6 @@ const Home = (props: IProps) => {
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
   // 初始化currentList
-  const store = useStore()
-  const { isShowDrawer, defStyle} = store.common.commonInfo
-  const userId = store.user.userInfo?.userId
 
   useEffect(() => {
     setIsLoading(false)
@@ -95,41 +88,29 @@ const Home = (props: IProps) => {
 
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
-    <div id='root' style={isShowDrawer ? {paddingLeft:'306px',transition:'all linear .3s',position:'fixed',width:'170%'} : {}}>
-      <BackTop>
-        <div className={styles.backToTop} ><RocketOutlined  type="rocket"/></div>
-      </BackTop>
-      <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
-        <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
-          <Spin tip='加载中...' spinning={isLoading}>
-            {currentList?.map((article) => (
-              <>
-                <DynamicComponent article={article} />
-              </>
-            ))}
-            {
-              ( showAricles.length > 8 ) ? 
-                <LazyLoad height={200} offset={-10}>
-                  <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
-                  className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
-                </LazyLoad> : null
-            }
-          </Spin>
-        </Col>
-        <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
-            {
-              !userId ? <Login /> 
-              : (
-                <div>
-                  <Author userInfo={store.user.userInfo} />
-                  <UserInfo />
-                  <TagList tags={tags} setTagArticle={changeTagList} />
-                </div>
-                )
-            }
-        </Col>
-      </Row>
-    </div>
+    <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
+      <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
+        <Spin tip='加载中...' spinning={isLoading}>
+          {currentList?.map((article) => (
+            <>
+              <DynamicComponent article={article} />
+            </>
+          ))}
+          {
+            ( showAricles.length > 8 ) ? 
+              <LazyLoad height={200} offset={-10}>
+                <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
+                className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+              </LazyLoad> : null
+          }
+        </Spin>
+      </Col>
+      <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
+        <RightBar>
+          <TagList tags={tags} setTagArticle={changeTagList} />
+        </RightBar>
+      </Col>
+    </Row>
   )
 }
 
