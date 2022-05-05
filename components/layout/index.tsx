@@ -9,8 +9,18 @@ const Layout = ({ children } : any) => {
   const store = useStore()
   const { isShowDrawer } = store.common.commonInfo
   useEffect(() => {
-    console.log('isShowDrawer', isShowDrawer)
-  }, [isShowDrawer])
+    document.addEventListener('visibilitychange',function(){
+      var isHidden = document.hidden;
+      if(isHidden){
+        document.title = '404!!!页面丢失(￣▽￣)"';
+      } else {
+        document.title = '嘤嘤嘤，你回来了啊(ಥ _ ಥ)';
+          setTimeout(()=>{
+            document.title = '首页 | 华农秀秀'
+          },3000)
+      }
+    });
+  }, [])
   return (
     <div>
       <Navbar />
