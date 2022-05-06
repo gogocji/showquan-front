@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
+import { Router, useRouter } from 'next/router';
 import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
@@ -20,7 +20,6 @@ const Navbar: NextPage = () => {
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
   const [ isDrawerOpen, setIsDrawerOpen ] = useState(false)
-
   const handleGotoEditorPage = () => {
     if (userId) {
       push('editor/new')
@@ -47,6 +46,7 @@ const Navbar: NextPage = () => {
     request.post('/api/user/logout').then((res: any) =>{
       if (res?.code === 0) {
         store.user.setUserInfo({})
+        push('/')
       }
     })
   }

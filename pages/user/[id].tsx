@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
-import { Button, Avatar, Divider, Row, Col } from 'antd';
+import { Button, Avatar, Divider, Row, Col, Spin, Pagination } from 'antd';
 import {
   CodeOutlined,
   FireOutlined,
@@ -13,6 +13,12 @@ import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity';
 import styles from './index.module.scss';
 import RightBar from "components/RightBar"
+import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic';
+import { IArticle } from 'pages/api/index'
+import LazyLoad from 'react-lazyload';
+
+const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 export async function getStaticPaths() {
   // user/[id]
@@ -79,10 +85,30 @@ export async function getStaticProps({ params }: { params: any }) {
 
 const UserDetail = (props: any) => {
   const { userInfo = {}, articles = [] } = props;
+  const [showAricles, setShowAricles] = useState([...articles]);
+  const [currentPage, setCurrentPage] = useState(1)
+  const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
+  const [isLoading, setIsLoading] = useState(true)
+
   const viewsCount = articles?.reduce(
     (prev: any, next: any) => prev + next?.views,
     0
   );
+  useEffect(() => {
+    setIsLoading(false)
+  }, [currentList])
+
+  const handlePagination = (e: any) => {
+    if (document) {
+      document && document.getElementById('root')?.scrollIntoView(true);
+    }
+    let data
+    data = articles
+    setShowAricles(articles)
+    let currentList = data.slice((e-1)*8,e*8)
+    setCurrentPage(e)
+    setCurrentList(currentList)
+  }
 
   return (
     <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
@@ -105,12 +131,20 @@ const UserDetail = (props: any) => {
         </div>
         <Divider />
         <div className={styles.article}>
-          {articles?.map((article: any) => (
-            <div key={article?.id}>
-              <ListItem article={article} />
-              <Divider />
-            </div>
-          ))}
+          <Spin tip='加载中...' spinning={isLoading}>
+            {currentList?.map((article) => (
+              <>
+                <DynamicComponent article={article} />
+              </>
+            ))}
+            {
+              ( showAricles.length > 8 ) ? 
+                <LazyLoad height={200} offset={-10}>
+                  <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
+                  className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                </LazyLoad> : null
+            }
+          </Spin>
         </div>
       </div>
       </Col>
