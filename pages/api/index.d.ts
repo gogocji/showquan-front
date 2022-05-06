@@ -8,10 +8,10 @@ export type IComment = {
   update_time: Date,
   user: IUserInfo,
   article: IArticle,
-  pid: IComment,
+  pid?: IComment,
   is_delete: number,
   like_count: number,
-  children: IComment
+  children?: IComment[]
 };
 
 export type IArticle = {

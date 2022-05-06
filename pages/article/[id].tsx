@@ -1,5 +1,5 @@
 import { prepareConnection } from "db/index"
-import { Article } from "db/entity"
+import { Article, Comment } from "db/entity"
 import { IArticle } from "pages/api"
 import styles from './index.module.scss'
 import { Button, Avatar, Input, Image, Breadcrumb, message, Row, Col, Divider, Affix } from 'antd';
@@ -21,7 +21,8 @@ import MyComment from 'components/Comment'
 import { IComment } from 'pages/api';
 
 interface IProps {
-  article: IArticle
+  article: IArticle,
+  commentList: IComment[]
 }
 
 export async function getServerSideProps({ params }: any) {
@@ -35,22 +36,44 @@ export async function getServerSideProps({ params }: any) {
     relations: ['user', 'comments', 'comments.user']
   })
 
+  const comment = await db.getRepository(Comment).find({
+    where: {
+      article: articleId
+    },
+    relations: ['user', 'toUser', 'pComment']
+  })
+  
   if (article) {
     // 阅读次数 +1
     article[0].views = article[0]?.views + 1;
     await articleRepo.save(article[0]);
   }
-  // TODO：改变评论数据结构
-
+  // 改变评论数据结构
+  const newCommentList = comment.map((item : IComment) => {
+    return {
+      ...item,
+      children : [] as IComment[]
+    }
+  })
+  comment.map((item: any) => {
+    if (item.pComment !== null) {
+      for (let i = 0; i < newCommentList.length; i++) {
+        if (newCommentList[i].id === item.pComment?.id) {
+          newCommentList[i].children.push(item)
+        }
+      }
+    }
+  })
   return {
     props: {
-      article: JSON.parse(JSON.stringify(article))[0]
+      article: JSON.parse(JSON.stringify(article))[0],
+      commentList: JSON.parse(JSON.stringify(newCommentList))
     }
   }
 }
 
 const ArticleDetail = (props: IProps) => {
-  const { article } = props
+  const { article, commentList } = props
   const store = useStore();
   const loginUserInfo = store?.user?.userInfo;
   const { user: { nickname, avatar, id} } = article
@@ -206,14 +229,14 @@ const ArticleDetail = (props: IProps) => {
               )}
               <Divider />
               <div className={styles.display}>
-                {comments?.map((comment: any) => (
-                  <MyComment article={article}  key={comment.id} comment={comment}>
+                {commentList?.map((comment: any) => (
+                  comment.children.length ? <MyComment article={article}  key={comment.id} comment={comment}>
                     {
-                      comment.children ? comment.children.map((item : IComment) => {
-                        <MyComment article={article}  noPingLun={true} key={item.id} comment={item}  />
-                      }) : null
+                      comment.children.length  && comment.children.map((item : IComment) => {
+                        return <MyComment article={article}  noPingLun={true} key={item.id} comment={item}  ></MyComment>
+                      })
                     }
-                  </MyComment>
+                  </MyComment> : null
                 ))}
               </div>
             </div>  
