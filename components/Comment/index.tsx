@@ -5,18 +5,21 @@ import { LikeFilled, LikeOutlined } from '@ant-design/icons'
 import { IArticle, IComment } from 'pages/api';
 import { format } from 'date-fns';
 import request from 'service/fetch';
-
+import { IUserInfo } from 'store/userStore';
+import { observer } from "mobx-react-lite"
 
 interface IProps {
   // 设置是否可回复（默认一级评论可以回复，二级评论不能回复）
   noPingLun?: boolean
   children?: any,
   comment: IComment,
-  article: IArticle
+  article: IArticle,
+  userInfo: IUserInfo,
+  handleAddComment?: (childComment: IComment) => void
 }
 
 const MyComment = (props: IProps) => {
-  const { noPingLun, children, comment, article } = props
+  const { noPingLun, children, comment, article, userInfo, handleAddComment } = props
   // 是否已点赞
   const [isLike, setIsLike] = useState(false)
   // 用户操作
@@ -25,9 +28,8 @@ const MyComment = (props: IProps) => {
   const [showModal, setShowModal] = useState(false)
   // 提交loading
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
-  // 提交loading
+  // 评论内容
   const [inputComment, setInputComment] = useState('')
-  
   // 发布评论
   const handleSubmitComment = () => {
     setIsSubmitLoading(true)
@@ -42,6 +44,19 @@ const MyComment = (props: IProps) => {
       if (res?.code === 0) {
         message.success('发表成功');
         // 在已有评论的后面进行追加评论
+        const newChildComment = {
+          id: Math.random(),
+          pComment: comment,
+          create_time: new Date(),
+          update_time: new Date(),
+          content: inputComment,
+          user: {
+            avatar: userInfo?.avatar,
+            nickname: userInfo?.nickname,
+          },
+        }
+        // 回传给父组件，添加comment展示给用户
+        handleAddComment(newChildComment)
         setIsSubmitLoading(false)
         setInputComment('');
         setShowModal(false)
@@ -118,4 +133,4 @@ const MyComment = (props: IProps) => {
   )
 };
 
-export default MyComment;
+export default observer(MyComment);

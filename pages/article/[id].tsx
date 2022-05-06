@@ -78,7 +78,7 @@ const ArticleDetail = (props: IProps) => {
   const loginUserInfo = store?.user?.userInfo;
   const { user: { nickname, avatar, id} } = article
   const [inputVal, setInputVal] = useState('');
-  const [comments, setComments] = useState(article?.comments || []);
+  const [comments, setComments] = useState(commentList || []);
   const { pathname } = useRouter()
 
   // 文章内容md格式转化和文章导航相关
@@ -108,6 +108,8 @@ const ArticleDetail = (props: IProps) => {
     .post('/api/comment/publish', {
       articleId: article?.id,
       content: inputVal,
+      toUser_id: '',
+      pid: ''
     })
     .then((res: any) => {
       if (res?.code === 0) {
@@ -116,6 +118,7 @@ const ArticleDetail = (props: IProps) => {
         const newComments = [
           {
             id: Math.random(),
+            pComment: null,
             create_time: new Date(),
             update_time: new Date(),
             content: inputVal,
@@ -125,7 +128,7 @@ const ArticleDetail = (props: IProps) => {
             },
           },
         ].concat([...(comments as any)]);
-        setComments(newComments);
+        setComments([...newComments]);
         setInputVal('');
       } else {
         message.error('发表失败');
@@ -134,8 +137,14 @@ const ArticleDetail = (props: IProps) => {
   }
 
   // 对二级评论进行封装
-  const handleChildComment = () => {
-
+  const handleChildComment = (childComment : IComment) => {
+    const tempList = comments
+    tempList.map((item) => {
+      if (item.id == childComment.pComment.id) {
+        item.children.push(childComment)
+      }
+    })
+    setComments([...tempList]);
   }
 
   const toMainPage = () => {
@@ -229,11 +238,11 @@ const ArticleDetail = (props: IProps) => {
               )}
               <Divider />
               <div className={styles.display}>
-                {commentList?.map((comment: any) => (
-                  comment.children.length ? <MyComment article={article}  key={comment.id} comment={comment}>
+                {comments?.map((comment: any) => (
+                  comment.pComment === null ? <MyComment  handleAddComment={handleChildComment}  userInfo={loginUserInfo} article={article}  key={comment.id} comment={comment}>
                     {
-                      comment.children.length  && comment.children.map((item : IComment) => {
-                        return <MyComment article={article}  noPingLun={true} key={item.id} comment={item}  ></MyComment>
+                      comment?.children?.length  && comment.children.map((item : IComment) => {
+                        return <MyComment userInfo={loginUserInfo} article={article}  noPingLun={true} key={item.id} comment={item}  ></MyComment>
                       })
                     }
                   </MyComment> : null
