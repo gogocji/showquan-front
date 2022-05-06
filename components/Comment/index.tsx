@@ -70,6 +70,7 @@ const MyComment = (props: IProps) => {
           user: {
             avatar: userInfo?.avatar,
             nickname: userInfo?.nickname,
+            id: userInfo.userId
           },
         }
         // 回传给父组件，添加comment展示给用户
@@ -121,7 +122,12 @@ const MyComment = (props: IProps) => {
           {
             comment?.toUser?.nickname ? (
               <div className={styles.historyMessageContainer}>
-                <div style={{color: 'rgb(85, 181, 154)'}}>@{comment?.toUser?.nickname}：</div>
+                <div style={{color: 'rgb(85, 181, 154)'}}>
+                  {
+                    comment?.toUser.id == 2 ? <span>@博主：</span>
+                    : <span>@{comment?.toUser?.nickname}：</span>
+                  }
+                </div>
                 <div className={styles.historyMessageText}>{comment.pComment.content}</div>
               </div>
               
