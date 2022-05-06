@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
-import { Button, Avatar, Divider } from 'antd';
+import { Button, Avatar, Divider, Row, Col } from 'antd';
 import {
   CodeOutlined,
   FireOutlined,
@@ -12,6 +12,7 @@ import ListItem from 'components/ListItem';
 import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity';
 import styles from './index.module.scss';
+import RightBar from "components/RightBar"
 
 export async function getStaticPaths() {
   // user/[id]
@@ -84,7 +85,8 @@ const UserDetail = (props: any) => {
   );
 
   return (
-    <div className={styles.userDetail}>
+    <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
+      <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
       <div className={styles.left}>
         <div className={styles.userInfo}>
           <Avatar className={styles.avatar} src={userInfo?.avatar} size={90} />
@@ -111,7 +113,9 @@ const UserDetail = (props: any) => {
           ))}
         </div>
       </div>
-      <div className={styles.right}>
+      </Col>
+      <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
+        <RightBar>
         <div className={styles.achievement}>
           <div className={styles.header}>个人成就</div>
           <div className={styles.number}>
@@ -125,8 +129,9 @@ const UserDetail = (props: any) => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
+        </RightBar>
+      </Col>
+    </Row>
   );
 };
 

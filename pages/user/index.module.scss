@@ -1,11 +1,13 @@
-.userDetail {
-  width: 1080px;
-  margin: 0 auto;
+.containerLeft {
+  background-color: #FFF;
+  padding:.3rem;
+  border-radius: .3rem;
+  border:1px solid #eee;
   display: flex;
   justify-content: space-between;
 
   .left {
-    width: 820px;
+    width: 100%;
     background-color: #fff;
     padding: 20px;
 
@@ -45,39 +47,40 @@
       }
     }
   }
+}
+.containerRight {
+  width: 240px;
+  height: 180px;
+  background-color: #fff;
+  margin-left: 10px;
+  animation: cssniceright 1.2s both;
 
-  .right {
-    width: 240px;
+  .achievement {
     height: 180px;
-    background-color: #fff;
+    background-color: rgba(255,255,255, .6);
 
-    .achievement {
-      height: 180px;
+    .header {
+      height: 50px;
+      border-bottom: 1px solid #f3f3f3;
+      padding: 10px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+    }
 
-      .header {
-        height: 50px;
-        border-bottom: 1px solid #f3f3f3;
-        padding: 20px;
-        font-size: 16px;
-        font-weight: bold;
+    .number {
+      padding: 20px;
+
+      .wrapper {
         display: flex;
         align-items: center;
-      }
+        margin-bottom: 10px;
 
-      .number {
-        padding: 20px;
-
-        .wrapper {
-          display: flex;
-          align-items: center;
-          margin-bottom: 10px;
-
-          svg {
-            width: 20px;
-            height: 20px;
-            margin-right: 10px;
-            fill: #89b7f9;
-          }
+        svg {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          fill: #89b7f9;
         }
       }
     }
@@ -88,5 +91,31 @@
   .form {
     width: 500px;
     margin-top: 40px;
+  }
+}
+@keyframes cssniceright{
+  0%{
+    opacity: 0;
+    transform: translate3d(100%,0,0);
+  }
+  50%{
+    opacity: 1;
+    transform: translate3d(-3%,0,0);
+  }
+  65%{
+    opacity: 1;
+    transform: translate3d(2.5%,0,0);
+  }
+  80%{
+    opacity: 1;
+    transform: translate3d(-2%,0,0);
+  }
+  90%{
+    opacity: 1;
+    transform: translate3d(-1%,0,0);
+  }
+  100%{
+    opacity: 1;
+    transform: translate3d(0,0,0);
   }
 }
