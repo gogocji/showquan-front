@@ -17,6 +17,8 @@ import Tocify from 'components/Tocify'
 import marked from 'marked'
 import hljs from "highlight.js";
 import 'highlight.js/styles/monokai-sublime.css';
+import MyComment from 'components/Comment'
+import { IComment } from 'pages/api';
 
 interface IProps {
   article: IArticle
@@ -198,21 +200,13 @@ const ArticleDetail = (props: IProps) => {
               <Divider />
               <div className={styles.display}>
                 {comments?.map((comment: any) => (
-                  <div className={styles.wrapper} key={comment?.id}>
-                    <Avatar src={comment?.user?.avatar} size={40} />
-                    <div className={styles.info}>
-                      <div className={styles.name}>
-                        <div>{comment?.user?.nickname}</div>
-                        <div className={styles.date}>
-                          {format(
-                            new Date(comment?.update_time),
-                            'yyyy-MM-dd hh:mm:ss'
-                          )}
-                        </div>
-                      </div>
-                      <div className={styles.content}>{comment?.content}</div>
-                    </div>
-                  </div>
+                  <MyComment key={comment.id} comment={comment}>
+                    {
+                      comment.children ? comment.children.map((item : IComment) => {
+                        <MyComment noPingLun={true} key={item.id} comment={item}  />
+                      }) : null
+                    }
+                  </MyComment>
                 ))}
               </div>
             </div>  
