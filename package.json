@@ -40,6 +40,8 @@
     "markdown-to-jsx": "^7.1.7",
     "markdown-to-txt": "^2.0.1",
     "marked": "3.0.4",
+    "mavon-editor": "^2.10.4",
+    "md-editor-rt": "^1.6.12",
     "md5": "^2.3.0",
     "mobx": "^6.5.0",
     "mobx-react-lite": "^3.3.0",

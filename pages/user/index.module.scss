@@ -88,11 +88,20 @@
 }
 
 .userProfile {
+  padding: 20px;
   .form {
     width: 500px;
     margin-top: 40px;
   }
+  .userAvatar {
+    display: flex;
+    .avatarText {
+      width: 100px;
+      margin-right: 20px;
+    }
+  }
 }
+
 @keyframes cssniceright{
   0%{
     opacity: 0;

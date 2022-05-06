@@ -3,7 +3,10 @@ import { observer } from 'mobx-react-lite';
 import { Form, Input, Button, message } from 'antd';
 import request from 'service/fetch';
 import styles from './index.module.scss';
-
+import UpLoadImg from 'components/UpLoadImg'
+import { useState } from 'react';
+import { useStore } from 'store/index'
+import { useRouter } from 'next/router'
 const layout = {
   labelCol: { span: 4 },
   wrapperCol: { span: 16 },
@@ -15,29 +18,45 @@ const tailLayout = {
 
 const UserProfile = () => {
   const [form] = Form.useForm();
-
+  const [userImgUrl, setUserImgUrl] = useState('');
+  const store = useStore()
+  const { push } = useRouter()
   useEffect(() => {
     request.get('/api/user/detail').then((res: any) => {
       if (res?.code === 0) {
+        setUserImgUrl(res?.data?.userInfo?.avatar)
         form.setFieldsValue(res?.data?.userInfo);
       }
     });
   }, [form]);
 
   const handleSubmit = (values: any) => {
-    request.post('/api/user/update', { ...values }).then((res: any) => {
+    request.post('/api/user/update', { ...values, userImgUrl }).then((res: any) => {
       if (res?.code === 0) {
         message.success('修改成功');
+        console.log('更改用户信息', res)
+        res.data.userId = res?.data?.id
+        store.user.setUserInfo(res?.data)
+        push('/')
       } else {
         message.error(res?.msg || '修改失败');
       }
     });
   };
 
+  const handleUploadHeadImg = (imgUrl: string) => {
+    console.log('上传的用户头像', imgUrl)
+    setUserImgUrl(imgUrl)
+  }
+
   return (
     <div className="content-layout">
       <div className={styles.userProfile}>
         <h2>个人资料</h2>
+        <div className={styles.userAvatar}>
+          <span className={styles.avatarText}>用户头像：</span>
+          <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
+        </div>
         <div>
           <Form
             {...layout}

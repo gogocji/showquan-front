@@ -25,7 +25,8 @@ export type IArticle = {
   update_time: Date,
   user: IUserInfo,
   comments: IComment[],
-  description: string
+  description: string,
+  headImg: string
 };
 
 export type ISession = IronSession & Record<string, any>

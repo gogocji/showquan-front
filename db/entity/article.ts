@@ -18,6 +18,9 @@ export class Article extends BaseEntity {
   content!: string;
 
   @Column()
+  headImg!: string;
+
+  @Column()
   views!: number;
 
   @Column()

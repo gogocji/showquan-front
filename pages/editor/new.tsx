@@ -9,6 +9,8 @@ import { useStore } from 'store/index';
 import request from 'service/fetch';
 import styles from './index.module.scss';
 import UpLoadImg from 'components/UpLoadImg'
+import Editor from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
 
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
@@ -21,6 +23,7 @@ const NewEditor = () => {
   const [tagIds, setTagIds] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [description, setDescription] = useState('');
+  const [headImgUrl, setHeadImgUrl] = useState('');
 
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
@@ -38,7 +41,8 @@ const NewEditor = () => {
     request.post('/api/article/publish', {
       title,
       content,
-      tagIds
+      tagIds,
+      headImg: headImgUrl
     }).then((res: any) => {
       if (res?.code === 0) {
         userId ? push(`/user/${userId}`) : push('/');
@@ -61,8 +65,24 @@ const NewEditor = () => {
     setTagIds(value);
   }
 
-  const handleDescChange = (description: any) => {
-    setDescription(description)
+  const handleDescChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setDescription(event?.target?.value)
+  }
+
+  const handleUploadImg = async (files : any, callback) => {
+    request.post('/api/common/upload', files[0], {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    const form = new FormData();
+    form.append('file', files[0]);
+    console.log('form', form)
+    console.log('files[0', files[0])
+  }
+
+  const handleUploadHeadImg = (imgUrl: string) => {
+    setHeadImgUrl(imgUrl)
   }
 
   return (
@@ -99,9 +119,10 @@ const NewEditor = () => {
         />
       </div>
       <div className={styles.upLoadImg}>
-        <UpLoadImg />
+        <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
       </div>
-      <MDEditor value={content} height={1080} onChange={handleContentChange} />
+      <Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+      {/* <MDEditor value={content} height={1080} onChange={handleContentChange} /> */}
     </div>
   );
 };

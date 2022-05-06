@@ -11,7 +11,7 @@ export default withIronSessionApiRoute(update, ironOptions);
 async function update(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
   const { userId } = session;
-  const { nickname = '', job = '', introduce = '' } = req.body;
+  const { nickname = '', job = '', introduce = '', userImgUrl = '' } = req.body;
   const db = await prepareConnection();
   const userRepo = db.getRepository(User);
 
@@ -25,12 +25,13 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
     user.nickname = nickname;
     user.job = job;
     user.introduce = introduce;
+    user.avatar = userImgUrl
 
-    const resUser = userRepo.save(user);
-
+    const resUser = await userRepo.save(user);
+    console.log('resUser', resUser)
     res?.status(200)?.json({
       code: 0,
-      msg: '',
+      msg: '更新用户信息成功',
       data: resUser,
     });
   } else {

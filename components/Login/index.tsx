@@ -43,6 +43,7 @@ const Login = () => {
     }).then((res: any) => {
       if (res?.code === 0) {
         // 登录成功
+        console.log('登录的用户信息', res?.data)
         store.user.setUserInfo(res?.data)
         setForm({
           phone: '',

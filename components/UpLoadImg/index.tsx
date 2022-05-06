@@ -6,7 +6,11 @@ import moment from 'moment';
 import CryptoJS from 'crypto-js';
 import Base64 from 'base-64';
 
-const UploadImg = () => {
+interface IProps {
+  uploadHeadImg?: (imgUrl: string) => void 
+}
+const UploadImg = (props: IProps) => {
+  const { uploadHeadImg } = props
   const [loading, setLoading] = useState(false)
   const [imageUrl, setImageUrl] = useState('')
   const todayKey = moment().format('YYYYMMDD');
@@ -29,13 +33,14 @@ const UploadImg = () => {
     reader.readAsDataURL(img);
   }
   const handleChange = (info : any) => {
-    console.log('info', info)
     if (info.file.status === 'uploading') {
       setLoading(true)
       return
     }
     console.log('info.fileList[0].originFileObj', info.fileList[0])
     if (info.file.status === 'done') {
+    console.log('info', info.file?.response?.data?.url)
+
       // getBase64(info.file.originFileObj, (imageUrl : any) =>
       //   {
       //     console.log('imageUrl', imageUrl)
@@ -43,9 +48,11 @@ const UploadImg = () => {
       //     setLoading(false)
       //   }
       // );
-      const ossUrl = info.fileList[0]?.response?.data?.url
+      const ossUrl = info.file?.response?.data?.url
+      console.log('ossUrl', ossUrl)
       setImageUrl(ossUrl)
       setLoading(false)
+      uploadHeadImg(ossUrl)
     }
   }
   const uploadButton = () => {
