@@ -22,7 +22,7 @@ const Navbar: NextPage = () => {
   const [ isDrawerOpen, setIsDrawerOpen ] = useState(false)
   const handleGotoEditorPage = () => {
     if (userId) {
-      push('editor/new')
+      push('/editor/new')
     } else {
       message.warning('请先登录')
     }

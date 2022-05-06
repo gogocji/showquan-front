@@ -128,7 +128,7 @@ const MyComment = (props: IProps) => {
                     : <span>@{comment?.toUser?.nickname}：</span>
                   }
                 </div>
-                <div className={styles.historyMessageText}>{comment.pComment.content}</div>
+                <div className={styles.historyMessageText}>{comment.pComment?.content}</div>
               </div>
               
             ) : null

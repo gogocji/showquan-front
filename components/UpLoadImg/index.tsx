@@ -29,19 +29,23 @@ const UploadImg = () => {
     reader.readAsDataURL(img);
   }
   const handleChange = (info : any) => {
+    console.log('info', info)
     if (info.file.status === 'uploading') {
       setLoading(true)
       return
     }
     console.log('info.fileList[0].originFileObj', info.fileList[0])
     if (info.file.status === 'done') {
-      getBase64(info.file.originFileObj, (imageUrl : any) =>
-        {
-          console.log('imageUrl', imageUrl)
-          setImageUrl(imageUrl)
-          setLoading(false)
-        }
-      );
+      // getBase64(info.file.originFileObj, (imageUrl : any) =>
+      //   {
+      //     console.log('imageUrl', imageUrl)
+      //     setImageUrl(imageUrl)
+      //     setLoading(false)
+      //   }
+      // );
+      const ossUrl = info.fileList[0]?.response?.data?.url
+      setImageUrl(ossUrl)
+      setLoading(false)
     }
   }
   const uploadButton = () => {
@@ -65,20 +69,14 @@ const UploadImg = () => {
   }
   return (
     <Upload
-      name="avatar"
+      action="/api/common/upload" 
+      name="image"
+      accept='image/*'
       listType="picture-card"
       className="avatar-uploader"
       showUploadList={false}
-      action={host}
       beforeUpload={beforeUpload}
       onChange={handleChange}
-      data={{
-        signature,
-        key: todayKey + "/123",
-        policy: policyBase64,
-        OSSAccessKeyId: accessKeyId,
-        success_action_status: 200
-      }}
     >
       {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton()}
     </Upload>

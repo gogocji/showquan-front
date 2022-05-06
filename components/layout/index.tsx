@@ -4,7 +4,6 @@ import { useStore } from 'store/index';
 import MyBackTop from "components/BackTop"
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite"
-import PmRibbon from 'pm-ribbon'
 const Layout = ({ children } : any) => {
   var myDocument;
   const store = useStore()
@@ -31,9 +30,6 @@ const Layout = ({ children } : any) => {
           <main>{children}</main>
         </div>
       <Footer />
-      {
-        myDocument ? <PmRibbon clickChangeDom={myDocument} /> : null
-      }
     </div>
   )
 }
