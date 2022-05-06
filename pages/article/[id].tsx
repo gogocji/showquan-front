@@ -220,13 +220,13 @@ const ArticleDetail = (props: IProps) => {
         </Col>
         <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
           <RightBar>
-            <Affix offsetTop={5} className={styles.navContainer}>
-              <div className={styles.navTitle}>文章目录</div>
-              <div className={styles.navTitleList}>
-                {tocify && tocify.render()}
-              </div> 
-            </Affix>
           </RightBar>
+          <Affix offsetTop={50} className={styles.navContainer}>
+            <div className={styles.navTitle}>文章目录</div>
+            <div className={styles.navTitleList}>
+              {tocify && tocify.render()}
+            </div> 
+          </Affix>
         </Col>
       </Row>
     </div>
