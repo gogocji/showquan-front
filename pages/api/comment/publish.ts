@@ -10,7 +10,7 @@ export default withIronSessionApiRoute(publish, ironOptions);
 
 async function publish(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
-  const { articleId = 0, content = '' } = req.body;
+  const { articleId = 0, content = '', toUser_id = 0, pid = 0 } = req.body;
   const db = await prepareConnection();
   const commentRepo = db.getRepository(Comment);
 
@@ -23,6 +23,14 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     id: session?.userId,
   });
 
+  const toUser = await db.getRepository(User).findOne({
+    id: toUser_id,
+  });
+
+  const pComment = await db.getRepository(Comment).findOne({
+    id: pid,
+  });
+
   const article = await db.getRepository(Article).findOne({
     id: articleId,
   });
@@ -30,9 +38,16 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   if (user) {
     comment.user = user;
   }
+  if (toUser) {
+    comment.toUser = toUser;
+  }
+  if (pComment) {
+    comment.pComment = pComment;
+  }
   if (article) {
     comment.article = article;
   }
+  comment.like_count = 0
 
   const resComment = await commentRepo.save(comment);
 

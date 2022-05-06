@@ -25,12 +25,12 @@ export class Comment extends BaseEntity {
   article!: Article;
 
   @ManyToOne(() => User)
-  @JoinColumn({name: 'to_user'})
-  to_user!: User;
+  @JoinColumn({name: 'toUser_id'})
+  toUser!: User;
 
   @ManyToOne(() => Comment)
   @JoinColumn({name: 'pid'})
-  pid!: Comment;
+  pComment!: Comment;
 
   @Column()
   is_delete!: number;

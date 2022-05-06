@@ -40,6 +40,8 @@ export async function getServerSideProps({ params }: any) {
     article[0].views = article[0]?.views + 1;
     await articleRepo.save(article[0]);
   }
+  // TODO：改变评论数据结构
+
   return {
     props: {
       article: JSON.parse(JSON.stringify(article))[0]
@@ -106,6 +108,11 @@ const ArticleDetail = (props: IProps) => {
         message.error('发表失败');
       }
     });
+  }
+
+  // 对二级评论进行封装
+  const handleChildComment = () => {
+
   }
 
   const toMainPage = () => {
@@ -200,10 +207,10 @@ const ArticleDetail = (props: IProps) => {
               <Divider />
               <div className={styles.display}>
                 {comments?.map((comment: any) => (
-                  <MyComment key={comment.id} comment={comment}>
+                  <MyComment article={article}  key={comment.id} comment={comment}>
                     {
                       comment.children ? comment.children.map((item : IComment) => {
-                        <MyComment noPingLun={true} key={item.id} comment={item}  />
+                        <MyComment article={article}  noPingLun={true} key={item.id} comment={item}  />
                       }) : null
                     }
                   </MyComment>
