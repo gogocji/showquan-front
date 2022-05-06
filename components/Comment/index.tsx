@@ -30,26 +30,43 @@ const MyComment = (props: IProps) => {
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
   // 评论内容
   const [inputComment, setInputComment] = useState('')
+
+  // 找到最终的父评论 
+  const findCommentRoot = (comment : any) => {
+    if(comment?.rComment !== null) {
+      comment = comment?.rComment
+    }
+    return comment.id
+  }
   // 发布评论
   const handleSubmitComment = () => {
+    if (inputComment === '') {
+      message.error('评论不能为空')
+      return
+    }
     setIsSubmitLoading(true)
+    // 找到最终的父评论
+    const pid = findCommentRoot(comment)
     request
     .post('/api/comment/publish', {
       articleId: article?.id,
       content: inputComment,
       toUser_id: comment?.user?.id,
-      pid: comment?.id
+      pid: pid
     })
     .then((res: any) => {
       if (res?.code === 0) {
         message.success('发表成功');
         // 在已有评论的后面进行追加评论
+        const tempComment = comment.rComment ? comment.rComment : comment
         const newChildComment = {
-          id: Math.random(),
+          id: res.data?.id,
+          rComment: tempComment,
           pComment: comment,
           create_time: new Date(),
           update_time: new Date(),
           content: inputComment,
+          toUser: comment?.user,
           user: {
             avatar: userInfo?.avatar,
             nickname: userInfo?.nickname,
@@ -91,7 +108,7 @@ const MyComment = (props: IProps) => {
   return (
     <Comment
       actions={commentActions}
-      author={ <a style={comment.user.id === 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id === 2 ?'博主' : comment.user.nickname }</a>}
+      author={ <a style={comment.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
       avatar={
         <Avatar
             src={comment?.user?.avatar}
@@ -101,7 +118,16 @@ const MyComment = (props: IProps) => {
       }
       content={
         <p>
-            { comment.content }
+          {
+            comment?.toUser?.nickname ? (
+              <div className={styles.historyMessageContainer}>
+                <div style={{color: 'rgb(85, 181, 154)'}}>@{comment?.toUser?.nickname}：</div>
+                <div className={styles.historyMessageText}>{comment.pComment.content}</div>
+              </div>
+              
+            ) : null
+          }
+          <div>{comment.content }</div>
         </p>
       }
       datetime={

@@ -40,9 +40,8 @@ export async function getServerSideProps({ params }: any) {
     where: {
       article: articleId
     },
-    relations: ['user', 'toUser', 'pComment']
+    relations: ['user', 'toUser', 'pComment', 'rComment']
   })
-  
   if (article) {
     // 阅读次数 +1
     article[0].views = article[0]?.views + 1;
@@ -56,9 +55,9 @@ export async function getServerSideProps({ params }: any) {
     }
   })
   comment.map((item: any) => {
-    if (item.pComment !== null) {
+    if (item.rComment !== null) {
       for (let i = 0; i < newCommentList.length; i++) {
-        if (newCommentList[i].id === item.pComment?.id) {
+        if (newCommentList[i].id === item.rComment?.id) {
           newCommentList[i].children.push(item)
         }
       }
@@ -80,7 +79,6 @@ const ArticleDetail = (props: IProps) => {
   const [inputVal, setInputVal] = useState('');
   const [comments, setComments] = useState(commentList || []);
   const { pathname } = useRouter()
-
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
   const tocify = new Tocify()
@@ -104,6 +102,10 @@ const ArticleDetail = (props: IProps) => {
   const html = marked(article?.content) 
 
   const handleComment = () => {
+    if (inputVal === '') {
+      message.error('评论不能为空')
+      return
+    }
     request
     .post('/api/comment/publish', {
       articleId: article?.id,
@@ -117,14 +119,17 @@ const ArticleDetail = (props: IProps) => {
         // 在已有评论的后面进行追加评论
         const newComments = [
           {
-            id: Math.random(),
+            id: res.data?.id,
             pComment: null,
+            rComment: null,
             create_time: new Date(),
             update_time: new Date(),
             content: inputVal,
+            toUser: null,
             user: {
               avatar: loginUserInfo?.avatar,
               nickname: loginUserInfo?.nickname,
+              id: loginUserInfo?.userId
             },
           },
         ].concat([...(comments as any)]);
@@ -140,8 +145,11 @@ const ArticleDetail = (props: IProps) => {
   const handleChildComment = (childComment : IComment) => {
     const tempList = comments
     tempList.map((item) => {
-      if (item.id == childComment.pComment.id) {
-        item.children.push(childComment)
+      if (!item.children) {
+        item.children = []
+      }
+      if (item.id == childComment?.rComment?.id) {
+        item.children?.push(childComment)
       }
     })
     setComments([...tempList]);
@@ -239,11 +247,11 @@ const ArticleDetail = (props: IProps) => {
               <Divider />
               <div className={styles.display}>
                 {comments?.map((comment: any) => (
-                  comment.pComment === null ? <MyComment  handleAddComment={handleChildComment}  userInfo={loginUserInfo} article={article}  key={comment.id} comment={comment}>
+                  comment.rComment === null ? <MyComment handleAddComment={handleChildComment} userInfo={loginUserInfo} article={article}  key={comment.id} comment={comment}>
                     {
-                      comment?.children?.length  && comment.children.map((item : IComment) => {
-                        return <MyComment userInfo={loginUserInfo} article={article}  noPingLun={true} key={item.id} comment={item}  ></MyComment>
-                      })
+                      comment?.children?.length  ? comment.children.map((item : IComment) => {
+                        return <MyComment handleAddComment={handleChildComment} userInfo={loginUserInfo} article={article} key={item.id} comment={item}  ></MyComment>
+                      }) : null
                     }
                   </MyComment> : null
                 ))}

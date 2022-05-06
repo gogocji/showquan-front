@@ -32,6 +32,10 @@ export class Comment extends BaseEntity {
   @JoinColumn({name: 'pid'})
   pComment!: Comment;
 
+  @ManyToOne(() => Comment)
+  @JoinColumn({name: 'rid'})
+  rComment!: Comment;
+
   @Column()
   is_delete!: number;
 

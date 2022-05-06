@@ -2,3 +2,12 @@
   font-size: 30px;
   color: red;
 }
+.historyMessageContainer{
+  display: flex;
+  .historyMessageText {
+    background-color: rgb(234, 233, 233);
+    border-radius: 5px;
+    padding: 0 5px;
+    color: rgb(144, 144, 144);
+  }
+}
