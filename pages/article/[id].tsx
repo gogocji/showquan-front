@@ -73,6 +73,7 @@ export async function getServerSideProps({ params }: any) {
 
 const ArticleDetail = (props: IProps) => {
   const { article, commentList } = props
+  console.log('commentList', commentList)
   const store = useStore();
   const loginUserInfo = store?.user?.userInfo;
   const { user: { nickname, avatar, id} } = article
@@ -113,7 +114,8 @@ const ArticleDetail = (props: IProps) => {
       articleId: article?.id,
       content: inputVal,
       toUser_id: '',
-      pid: ''
+      pid: '',
+      rid: ''
     })
     .then((res: any) => {
       if (res?.code === 0) {

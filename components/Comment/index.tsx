@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import { Tooltip, Comment, Avatar, Modal, Button, Input, message } from 'antd'
 import { LikeFilled, LikeOutlined } from '@ant-design/icons'
@@ -23,13 +23,14 @@ const MyComment = (props: IProps) => {
   // 是否已点赞
   const [isLike, setIsLike] = useState(false)
   // 用户操作
-  const [userAction, setUserAction] = useState(null)
+  const [userAction, setUserAction] = useState('')
   // 是否展示评论输入框
   const [showModal, setShowModal] = useState(false)
   // 提交loading
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
   // 评论内容
   const [inputComment, setInputComment] = useState('')
+  const [commentLikeNum, setCommentLikeNum] = useState(0)
 
   // 找到最终的父评论 
   const findCommentRoot = (comment : any) => {
@@ -52,7 +53,8 @@ const MyComment = (props: IProps) => {
       articleId: article?.id,
       content: inputComment,
       toUser_id: comment?.user?.id,
-      pid: pid
+      pid: comment.id,
+      rid: pid
     })
     .then((res: any) => {
       if (res?.code === 0) {
@@ -88,20 +90,47 @@ const MyComment = (props: IProps) => {
     setShowModal(false)
   }
   const handleLike = () => {
-
+    console.log('222')
+    request
+    .post('/api/comment/thumb', {
+      comment_id: comment.id,
+      user_id: userInfo.userId
+    })
+    .then((res: any) => {
+      if (res?.code === 0) {
+        message.success('点赞成功')
+        setUserAction('liked')
+        setCommentLikeNum(commentLikeNum ? commentLikeNum : 0 + 1)
+      }
+    })
   }
   const handleInputComment = (value: string) => {
     setInputComment(value)
   }
+  
+  useEffect(() => {
+    // 获取文章点赞情况
+    request
+      .post('/api/comment/getThumb', {
+        comment_id: comment.id,
+        user_id: userInfo.userId
+      }).then((res) => {
+        if (res?.code === 0) {
+          const { ifLike, commentLikeData } = res.data
+          setUserAction( ifLike ? 'liked' : '')
+          setCommentLikeNum(commentLikeData?.like_count)
+        }
+      })
+  }, [])
   // 评论的操作区
   const commentActions = [
     <span key="comment-basic-like">
       <Tooltip title="赞同">
         {
-          userAction === 'liked' ? <LikeFilled onClick={handleLike} /> : <LikeOutlined />
+          userAction === 'liked' ? <LikeFilled /> : <LikeOutlined onClick={handleLike} />
         }
       </Tooltip>
-      <span style={{ paddingLeft: 8, cursor: 'auto' }}>10</span>
+      <span style={{ paddingLeft: 8, cursor: 'auto' }}>{commentLikeNum ? commentLikeNum : 0}</span>
     </span>,
     noPingLun ? null :
         <span key="comment-basic-reply-to" onClick={() => setShowModal(true)}>回复</span>,
