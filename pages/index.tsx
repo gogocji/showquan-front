@@ -10,6 +10,8 @@ import { observer } from "mobx-react-lite"
 import LazyLoad from 'react-lazyload';
 import TagList from 'components/TagList/index'
 import RightBar from "components/RightBar"
+import redis from 'lib/redis'
+
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
 interface ITag {
@@ -30,23 +32,32 @@ export async function getServerSideProps() {
   const tags = await db.getRepository(Tag).find({
     relations: ['users'],
   });
-
+  // 获取点赞排行榜
+  const thumbResult = await redis.zrevrange('z_article_like', 0, 10, 'WITHSCORES')
+  // 改变数据结构
+  let thumbTopList = [];
+  for (let i = 0; i < thumbResult.length; i++) {
+    if (i === 0 || i % 2 === 0) {
+      thumbTopList.push(thumbResult[i])
+    }
+  }
   return {
     props: {
       articles: JSON.parse(JSON.stringify(articles)) || [],
       tags: JSON.parse(JSON.stringify(tags)) || [],
+      thumbTopList: JSON.parse(JSON.stringify(thumbTopList)) || [],
     }
   }
 }
 const Home = (props: IProps) => {
-  const { articles, tags } = props;
+  const { articles, tags, thumbTopList } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
   const [currentPage, setCurrentPage] = useState(1)
   const [selectTag, setSelectTag] = useState(0)
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
+  console.log('thumbTopList', thumbTopList)
   // 初始化currentList
-
   useEffect(() => {
     setIsLoading(false)
   }, [currentList])

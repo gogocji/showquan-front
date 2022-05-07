@@ -164,7 +164,7 @@ const ArticleDetail = (props: IProps) => {
   const handleLikeArticle = () => {
     request
     .post('/api/article/thumb/thumb', {
-      article_id: article.id,
+      article: article,
       user_id: loginUserInfo.userId
     })
     .then((res: any) => {
