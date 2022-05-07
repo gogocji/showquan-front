@@ -40,7 +40,6 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
 
       setCookie(cookies, { id, nickname, avatar })
     }
-    console.log('resUser', resUser)
     res?.status(200)?.json({
       code: 0,
       msg: '更新用户信息成功',

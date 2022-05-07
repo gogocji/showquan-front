@@ -31,6 +31,8 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   article.update_time = new Date();
   article.is_delete = 0;
   article.views = 0;
+  article.comment_count = 0;
+  article.like_count = 0;
   article.description = description;
   article.headImg = headImg;
 

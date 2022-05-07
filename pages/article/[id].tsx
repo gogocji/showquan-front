@@ -12,7 +12,7 @@ import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
 import { useRouter } from 'next/router';
-import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, DislikeFilled, MessageFilled } from '@ant-design/icons'
+import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, DislikeFilled, MessageFilled, LikeOutlined } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
 import marked from 'marked'
 import hljs from "highlight.js";
@@ -78,6 +78,8 @@ const ArticleDetail = (props: IProps) => {
   const { user: { nickname, avatar, id} } = article
   const [inputVal, setInputVal] = useState('');
   const [comments, setComments] = useState(commentList || []);
+  const [ifThumb, setIfThumb] = useState(false)
+  const [articleLikeNum, setArticleLikeNum] = useState(0)
   const { pathname } = useRouter()
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
@@ -159,6 +161,35 @@ const ArticleDetail = (props: IProps) => {
 
   }
 
+  const handleLikeArticle = () => {
+    request
+    .post('/api/article/thumb', {
+      article_id: article.id,
+      user_id: loginUserInfo.userId
+    })
+    .then((res: any) => {
+      if (res?.code === 0) {
+        message.success('点赞成功')
+        setIfThumb(true)
+        setArticleLikeNum(articleLikeNum + 1)
+      }
+    })
+  }
+
+  useEffect(() => {
+    // 获取文章点赞情况
+    request
+      .post('/api/article/getThumb', {
+        article_id: article.id,
+        user_id: loginUserInfo.userId
+      }).then((res) => {
+        if (res?.code === 0) {
+          const { ifLike, articleLikeData } = res.data
+          setIfThumb(ifLike)
+          setArticleLikeNum(articleLikeData?.like_count)
+        }
+      })
+  }, [])
   return (
     <div>
       <MyBackTop />
@@ -211,13 +242,16 @@ const ArticleDetail = (props: IProps) => {
                 </div>
                 <div className={styles.operation}>
                   <div className={styles.love}>
-                    <LikeFilled style={{color: '#c8c8cc', fontSize: 20}}/>
-                    <span className={styles.operationText}>5</span>
+                    {
+                      ifThumb ? <LikeFilled  style={{color: '#c8c8cc', fontSize: 20}} /> : <LikeOutlined onClick={handleLikeArticle} style={{color: '#c8c8cc', fontSize: 20}}/>
+                    }
+                    <span className={styles.operationText}>{articleLikeNum}</span>
                   </div>
-                  <div className={styles.dislove}>
+                  {/* 不打算搞 👎 的功能 */}
+                  {/* <div className={styles.dislove}>
                     <DislikeFilled style={{color: '#c8c8cc', fontSize: 20}}/>
                     <span className={styles.operationText}>0</span>
-                  </div>
+                  </div> */}
                   <div className={styles.message}>
                     <MessageFilled style={{color: '#c8c8cc', fontSize: 20}}/>
                     <span className={styles.operationText}>0</span>

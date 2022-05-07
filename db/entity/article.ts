@@ -24,6 +24,12 @@ export class Article extends BaseEntity {
   views!: number;
 
   @Column()
+  like_count!: number;
+
+  @Column()
+  comment_count!: number;
+
+  @Column()
   create_time!: Date;
 
   @Column()
