@@ -1,6 +1,6 @@
 import styles from './index.module.scss';
 import Icon, { FireOutlined } from '@ant-design/icons'
-
+import Link from 'next/link'
 interface IProps {
   thumbTopList: []
 }
@@ -62,11 +62,13 @@ const HotArticle = (props: IProps) => {
         {
           thumbTopList?.map((item: any) => 
             (
-              <div key={item?.article_id} className={styles.listItem}>
-                <span className={styles.text}>{item.article_title}</span>
-                <FireOutlined type='fire' style={{color:'red'}}/>
-                <span className={styles.likeNum}>{item.like_count}</span>
-              </div>
+              <Link key={item?.article_id} href={`/article/${item?.article_id}`} >
+                <div  className={styles.listItem}>
+                  <span className={styles.text}>{item.article_title}</span>
+                  <FireOutlined type='fire' style={{color:'red'}}/>
+                  <span className={styles.likeNum}>{item.like_count}</span>
+                </div>
+              </Link>
            )
           )
         }
