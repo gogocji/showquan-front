@@ -5,6 +5,8 @@ import { ISession } from 'pages/api/index';
 import { prepareConnection } from 'db/index';
 import { User } from 'db/entity/index';
 import { EXCEPTION_USER } from 'pages/api/config/codes';
+import { setCookie } from "utils/index"
+import { Cookie } from 'next-cookie'
 
 export default withIronSessionApiRoute(update, ironOptions);
 
@@ -14,6 +16,7 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
   const { nickname = '', job = '', introduce = '', userImgUrl = '' } = req.body;
   const db = await prepareConnection();
   const userRepo = db.getRepository(User);
+  const cookies = Cookie.fromApiRoute(req, res)
 
   const user = await userRepo.findOne({
     where: {
@@ -28,6 +31,15 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
     user.avatar = userImgUrl
 
     const resUser = await userRepo.save(user);
+    if (resUser) {
+      const { id, nickname, avatar } = resUser
+      session.userId = id
+      session.nickname = nickname
+      session.avatar = avatar
+      await session.save()
+
+      setCookie(cookies, { id, nickname, avatar })
+    }
     console.log('resUser', resUser)
     res?.status(200)?.json({
       code: 0,
