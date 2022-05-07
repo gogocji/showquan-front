@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
-import { Button, Avatar, Divider, Row, Col, Spin, Pagination } from 'antd';
+import { Button, Avatar, Divider, Row, Col, Spin, Pagination, Tabs,  } from 'antd';
 import {
   CodeOutlined,
   FireOutlined,
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
   const db = await prepareConnection();
   const users = await db.getRepository(User).find();
   const userIds = users?.map((user) => ({ params: { id: String(user?.id) } }));
-
+  
   // [{params: 1}, {params: 2}, {params: 3}]
   return {
     paths: userIds,
@@ -88,6 +88,7 @@ const UserDetail = (props: any) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
+  const { TabPane } = Tabs;
 
   const viewsCount = articles?.reduce(
     (prev: any, next: any) => prev + next?.views,
@@ -107,6 +108,10 @@ const UserDetail = (props: any) => {
     let currentList = data.slice((e-1)*8,e*8)
     setCurrentPage(e)
     setCurrentList(currentList)
+  }
+
+  const handleTabChange = (key) => {
+    console.log(key);
   }
 
   return (
@@ -130,20 +135,30 @@ const UserDetail = (props: any) => {
         </div>
         <Divider />
         <div className={styles.article}>
-          <Spin tip='加载中...' spinning={isLoading}>
-            {currentList?.map((article) => (
-              <>
-                <DynamicComponent article={article} />
-              </>
-            ))}
-            {
-              ( showAricles.length > 8 ) ? 
-                <LazyLoad height={200} offset={-10}>
-                  <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
-                  className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
-                </LazyLoad> : null
-            }
-          </Spin>
+          <Tabs defaultActiveKey="1" onChange={handleTabChange}>
+            <TabPane tab="文章" key="1">
+              <Spin tip='加载中...' spinning={isLoading}>
+                {currentList?.map((article) => (
+                  <>
+                    <DynamicComponent article={article} />
+                  </>
+                ))}
+                {
+                  ( showAricles.length > 8 ) ? 
+                    <LazyLoad height={200} offset={-10}>
+                      <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
+                      className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                    </LazyLoad> : null
+                }
+              </Spin>
+            </TabPane>
+            <TabPane tab="关注" key="2">
+              Content of Tab Pane 2
+            </TabPane>
+            <TabPane tab="收藏" key="3">
+              Content of Tab Pane 3
+            </TabPane>
+          </Tabs> 
         </div>
       </div>
       </Col>
