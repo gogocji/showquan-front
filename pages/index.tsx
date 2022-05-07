@@ -1,6 +1,6 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Row, Col, Pagination, Spin } from 'antd'
+import { Row, Col, Pagination, Spin, Divider } from 'antd'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
@@ -127,6 +127,7 @@ const Home = (props: IProps) => {
       <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
         <RightBar>
           <TagList tags={tags} setTagArticle={changeTagList} />
+          <Divider style={{margin: '10px 0'}} dashed></Divider>
           <HotArticle thumbTopList={thumbTopList}/>
         </RightBar>
       </Col>
