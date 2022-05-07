@@ -42,11 +42,6 @@ export async function getServerSideProps({ params }: any) {
     },
     relations: ['user', 'toUser', 'pComment', 'rComment']
   })
-  if (article) {
-    // 阅读次数 +1
-    article[0].views = article[0]?.views + 1;
-    await articleRepo.save(article[0]);
-  }
   // 改变评论数据结构
   const newCommentList = comment.map((item : IComment) => {
     return {
@@ -165,7 +160,7 @@ const ArticleDetail = (props: IProps) => {
 
   const handleLikeArticle = () => {
     request
-    .post('/api/article/thumb', {
+    .post('/api/article/thumb/thumb', {
       article_id: article.id,
       user_id: loginUserInfo.userId
     })
@@ -179,9 +174,14 @@ const ArticleDetail = (props: IProps) => {
   }
 
   useEffect(() => {
+    // 文章阅读次数 +1
+    request.post('/api/article/viewCount/view', {
+      article_id: article.id,
+      user_id: loginUserInfo.userId
+    })
     // 获取文章点赞情况
     request
-      .post('/api/article/getThumb', {
+      .post('/api/article/thumb/getThumb', {
         article_id: article.id,
         user_id: loginUserInfo.userId
       }).then((res) => {

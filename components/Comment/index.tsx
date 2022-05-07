@@ -92,7 +92,7 @@ const MyComment = (props: IProps) => {
   const handleLike = () => {
     console.log('222')
     request
-    .post('/api/comment/thumb', {
+    .post('/api/comment/thumb/thumb', {
       comment_id: comment.id,
       user_id: userInfo.userId
     })
@@ -111,7 +111,7 @@ const MyComment = (props: IProps) => {
   useEffect(() => {
     // 获取文章点赞情况
     request
-      .post('/api/comment/getThumb', {
+      .post('/api/comment/thumb/getThumb', {
         comment_id: comment.id,
         user_id: userInfo.userId
       }).then((res) => {
