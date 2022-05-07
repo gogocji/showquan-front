@@ -8,7 +8,6 @@ import {
   FireOutlined,
   FundViewOutlined,
 } from '@ant-design/icons';
-import ListItem from 'components/ListItem';
 import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity';
 import styles from './index.module.scss';

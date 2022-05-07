@@ -11,6 +11,7 @@ import LazyLoad from 'react-lazyload';
 import TagList from 'components/TagList/index'
 import RightBar from "components/RightBar"
 import redis from 'lib/redis'
+import HotArticle from "components/HotArticle";
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
@@ -22,6 +23,7 @@ interface ITag {
 interface IProps {
   articles: IArticle[],
   tags: ITag[];
+  thumbTopList: []
 }
 
 export async function getServerSideProps() {
@@ -36,9 +38,15 @@ export async function getServerSideProps() {
   const thumbResult = await redis.zrevrange('z_article_like', 0, 10, 'WITHSCORES')
   // 改变数据结构
   let thumbTopList = [];
-  for (let i = 0; i < thumbResult.length; i++) {
+  let obj = {}
+  console.log('后端thumbResult', thumbResult, thumbTopList.length)
+  for (let i = 0; i < thumbResult.length;i++) {
     if (i === 0 || i % 2 === 0) {
-      thumbTopList.push(thumbResult[i])
+      let thumbObj = JSON.parse(thumbResult[i])
+      obj = {...thumbObj}
+    } else {
+      obj.like_count = thumbResult[i]
+      thumbTopList.push(obj)
     }
   }
   return {
@@ -119,6 +127,7 @@ const Home = (props: IProps) => {
       <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
         <RightBar>
           <TagList tags={tags} setTagArticle={changeTagList} />
+          <HotArticle thumbTopList={thumbTopList}/>
         </RightBar>
       </Col>
     </Row>

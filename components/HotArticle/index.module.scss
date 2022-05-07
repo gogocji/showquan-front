@@ -1,0 +1,31 @@
+.container {
+  background-color: rgba(255,255,255, .6);
+  padding: 10px;
+  padding-left: 5px;
+  .title {
+    color: rgb(32, 157, 123);
+    font-size: 18px;
+  }
+
+  .list {
+    padding: 10px;
+    padding-left: 5px;
+    .listItem {
+      margin-top: 5px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      .text {
+        word-break: break-all;
+        margin-right: 10px;
+        color: #555666;
+      }
+
+      .likeNum {
+        margin-left: 5px;
+        color: rgb(253, 43, 43);
+        font-size: 12px;
+      }
+    }
+  }  
+}
