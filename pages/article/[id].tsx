@@ -76,6 +76,7 @@ const ArticleDetail = (props: IProps) => {
   const [comments, setComments] = useState(commentList || []);
   const [ifThumb, setIfThumb] = useState(false)
   const [articleLikeNum, setArticleLikeNum] = useState(0)
+  const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   const { pathname } = useRouter()
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
@@ -134,6 +135,7 @@ const ArticleDetail = (props: IProps) => {
         ].concat([...(comments as any)]);
         setComments([...newComments]);
         setInputVal('');
+        setArticleCommentNum(articleCommentNum + 1)
       } else {
         message.error('发表失败');
       }
@@ -151,6 +153,7 @@ const ArticleDetail = (props: IProps) => {
         item.children?.push(childComment)
       }
     })
+    setArticleCommentNum(articleCommentNum + 1)
     setComments([...tempList]);
   }
 
@@ -188,7 +191,7 @@ const ArticleDetail = (props: IProps) => {
         if (res?.code === 0) {
           const { ifLike, articleLikeData } = res.data
           setIfThumb(ifLike)
-          setArticleLikeNum(articleLikeData?.like_count)
+          setArticleLikeNum(articleLikeData?.like_count ? articleLikeData?.like_count : 0)
         }
       })
   }, [])
@@ -256,7 +259,7 @@ const ArticleDetail = (props: IProps) => {
                   </div> */}
                   <div className={styles.message}>
                     <MessageFilled style={{color: '#c8c8cc', fontSize: 20}}/>
-                    <span className={styles.operationText}>0</span>
+                    <span className={styles.operationText}>{articleCommentNum}</span>
                   </div>
                 </div>
               </div>

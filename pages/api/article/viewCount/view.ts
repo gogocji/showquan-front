@@ -9,7 +9,7 @@ import redis from 'lib/redis'
 
 export default withIronSessionApiRoute(thumb, ironOptions);
 
-// 文章点赞模块
+// 文章查看模块
 async function thumb(req: NextApiRequest, res: NextApiResponse) {
   const { article_id, user_id } = req.body
   const result = await redis.sadd('s_article_view:' + article_id, user_id)
