@@ -92,6 +92,7 @@ const UserDetail = (props: any) => {
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
   const [followList, setFollowList] = useState([])
+  const [collectList, setCollectList] = useState([])
   const { TabPane } = Tabs;
 
   const viewsCount = articles?.reduce(
@@ -116,25 +117,49 @@ const UserDetail = (props: any) => {
     })
   }
 
+  const getCollectList = () => {
+    console.log('222')
+    request.post('/api/collect/getList', {
+      user_id: userInfo.id
+    }).then((res) => {
+      if (res?.code === 0) {
+        const resultList =  res.data
+        let collectList = []
+        for (let i = 0; i < resultList.length; i++) {
+          let userItem = JSON.parse(resultList[i])
+          collectList.push(userItem)
+        }
+        setCollectList(collectList)
+        setCurrentList(collectList)
+        handlePagination(1, collectList)
+      }
+    })
+  }
+
   useEffect(() => {
     setIsLoading(false)
   }, [currentList])
 
-  const handlePagination = (e: any) => {
+  const handlePagination = (e: any, itemList: any) => {
     if (document) {
       document && document.getElementById('root')?.scrollIntoView(true);
     }
     let data
-    data = articles
-    setShowAricles(articles)
+    data = itemList
+    setShowAricles(itemList)
     let currentList = data.slice((e-1)*8,e*8)
     setCurrentPage(e)
     setCurrentList(currentList)
   }
 
   const handleTabChange = (key) => {
-    if (key == 2) {
+    setIsLoading(true)
+    if (key == 1) {
+      handlePagination(1, articles)
+    } else if (key == 2) {
       getFollowList()
+    } else if (key == 3) {
+      getCollectList()
     }
   }
 
@@ -170,7 +195,7 @@ const UserDetail = (props: any) => {
                 {
                   ( showAricles.length > 8 ) ? 
                     <LazyLoad height={200} offset={-10}>
-                      <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
+                      <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, articles)}} 
                       className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
                     </LazyLoad> : null
                 }
@@ -184,7 +209,19 @@ const UserDetail = (props: any) => {
               }
             </TabPane>
             <TabPane tab="收藏" key="3">
-              Content of Tab Pane 3
+              {
+                currentList?.map((article) => (
+                    <>
+                      <DynamicComponent article={article} />
+                    </>
+                  ))}
+                  {
+                    ( showAricles.length > 8 ) ? 
+                      <LazyLoad height={200} offset={-10}>
+                        <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, collectList)}} 
+                        className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                      </LazyLoad> : null
+              }
             </TabPane>
           </Tabs> 
         </div>

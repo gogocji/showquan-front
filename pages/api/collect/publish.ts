@@ -6,14 +6,14 @@ import { User, Follow } from 'db/entity/index';
 import { EXCEPTION_FOLLOW } from 'pages/api/config/codes';
 import redis from 'lib/redis'
 
-export default withIronSessionApiRoute(del, ironOptions);
+export default withIronSessionApiRoute(publish, ironOptions);
 
-async function del(req: NextApiRequest, res: NextApiResponse) {
-  const { user_id, byUser_id } = req.body
-  const result = await redis.hdel(`h_user_follow:${byUser_id}`, user_id)
-  console.log('取消关注成功', result)
+async function publish(req: NextApiRequest, res: NextApiResponse) {
+  const { article, user_id } = req.body
+  const result = await redis.hset(`h_user_collect:${user_id}`, article?.id, JSON.stringify(article))
+  console.log('收藏成功', result)
   res?.status(200).json({
     code: 0,
-    msg: '取消关注成功'
+    msg: '收藏成功'
   });
 }

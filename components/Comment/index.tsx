@@ -107,7 +107,11 @@ const MyComment = (props: IProps) => {
   const handleInputComment = (value: string) => {
     setInputComment(value)
   }
-  
+
+  // 点击【已点赞按钮】
+  const handleHasLikeArticle = () => {
+    message.error('无法重复点赞')
+  }
   useEffect(() => {
     // 获取文章点赞情况
     request
@@ -127,7 +131,7 @@ const MyComment = (props: IProps) => {
     <span key="comment-basic-like">
       <Tooltip title="赞同">
         {
-          userAction === 'liked' ? <LikeFilled /> : <LikeOutlined onClick={handleLike} />
+          userAction === 'liked' ? <LikeFilled onClick={handleHasLikeArticle} /> : <LikeOutlined onClick={handleLike} />
         }
       </Tooltip>
       <span style={{ paddingLeft: 8, cursor: 'auto' }}>{commentLikeNum ? commentLikeNum : 0}</span>

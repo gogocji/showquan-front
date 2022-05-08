@@ -4,6 +4,7 @@ import { IUserInfo } from 'store/userStore';
 import { useStore } from 'store';
 import request from 'service/fetch';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface IProps {
   userInfo: IUserInfo
@@ -42,21 +43,23 @@ const FollowItem = (props: IProps) => {
   }
  
   return (
-    <div className={styles.item}>
-      <div className={styles.itemLeft}>
-        <Avatar className={styles.avatar} src={userInfo?.avatar} size={48} />
-        <div className={styles.userInfo}>
-          <div className={styles.nickname}>{userInfo.nickname}</div>
-          <div className={styles.introduce}>{userInfo.introduce}</div>
+    <Link key={userInfo.id} href={`/user/${userInfo.id}`}>
+      <div className={styles.item}>
+        <div className={styles.itemLeft}>
+          <Avatar className={styles.avatar} src={userInfo?.avatar} size={48} />
+          <div className={styles.userInfo}>
+            <div className={styles.nickname}>{userInfo.nickname}</div>
+            <div className={styles.introduce}>{userInfo.introduce}</div>
+          </div>
+        </div>
+        <div className={styles.itemRight}>
+          {
+            hasFollow ? <Button onClick={handleDelFollow} className={styles.button}>已关注</Button>
+            : <Button onClick={handleFollow} className={styles.button}>关注</Button>
+          }
         </div>
       </div>
-      <div className={styles.itemRight}>
-        {
-          hasFollow ? <Button onClick={handleDelFollow} className={styles.button}>已关注</Button>
-          : <Button onClick={handleFollow} className={styles.button}>关注</Button>
-        }
-      </div>
-    </div>
+    </Link>
   );
 };
 

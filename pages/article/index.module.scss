@@ -35,6 +35,12 @@
     .icon {
       margin-right: 16px;
     }
+
+    .likeContainer {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
   }
 }
 .operationArea {

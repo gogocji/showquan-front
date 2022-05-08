@@ -6,9 +6,9 @@ import { User, Follow } from 'db/entity/index';
 import { EXCEPTION_FOLLOW } from 'pages/api/config/codes';
 import redis from 'lib/redis'
 
-export default withIronSessionApiRoute(getList, ironOptions);
+export default withIronSessionApiRoute(getById, ironOptions);
 
-async function getList(req: NextApiRequest, res: NextApiResponse) {
+async function getById(req: NextApiRequest, res: NextApiResponse) {
   const { byUser_id, user_id } = req.body
   const result = await redis.hexists(`h_user_follow:${byUser_id}`, user_id)
   console.log('是否已关注', result)

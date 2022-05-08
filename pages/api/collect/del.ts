@@ -9,11 +9,11 @@ import redis from 'lib/redis'
 export default withIronSessionApiRoute(del, ironOptions);
 
 async function del(req: NextApiRequest, res: NextApiResponse) {
-  const { user_id, byUser_id } = req.body
-  const result = await redis.hdel(`h_user_follow:${byUser_id}`, user_id)
-  console.log('取消关注成功', result)
+  const { user_id, article_id } = req.body
+  const result = await redis.hdel(`h_user_collect:${user_id}`, article_id)
+  console.log('取消收藏成功', result)
   res?.status(200).json({
     code: 0,
-    msg: '取消关注成功'
+    msg: '取消收藏成功'
   });
 }

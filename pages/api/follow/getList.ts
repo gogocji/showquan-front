@@ -6,9 +6,9 @@ import { User, Follow } from 'db/entity/index';
 import { EXCEPTION_FOLLOW } from 'pages/api/config/codes';
 import redis from 'lib/redis'
 
-export default withIronSessionApiRoute(publish, ironOptions);
+export default withIronSessionApiRoute(getList, ironOptions);
 
-async function publish(req: NextApiRequest, res: NextApiResponse) {
+async function getList(req: NextApiRequest, res: NextApiResponse) {
   const { byUser_id } = req.body
   const result = await redis.hvals(`h_user_follow:${byUser_id}`)
   res?.status(200).json({

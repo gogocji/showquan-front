@@ -12,7 +12,7 @@ import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
 import { useRouter } from 'next/router';
-import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, DislikeFilled, MessageFilled, LikeOutlined } from '@ant-design/icons'
+import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
 import marked from 'marked'
 import hljs from "highlight.js";
@@ -76,6 +76,7 @@ const ArticleDetail = (props: IProps) => {
   const [comments, setComments] = useState(commentList || []);
   const [ifThumb, setIfThumb] = useState(false)
   const [hasFollow, setHasFollow] = useState(false)
+  const [hasCollect, setHasCollect] = useState(false)
   const [articleLikeNum, setArticleLikeNum] = useState(0)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   const { pathname } = useRouter()
@@ -187,6 +188,15 @@ const ArticleDetail = (props: IProps) => {
         res.data === 1 ? setHasFollow(true) : ''
       }
     })
+    // 判断文章是否被收藏
+    request.post('/api/collect/getById', {
+      article_id: article?.id,
+      user_id: loginUserInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        res.data === 1 ? setHasCollect(true) : ''
+      }
+    })
     // 文章阅读次数 +1
     request.post('/api/article/viewCount/view', {
       article_id: article.id,
@@ -233,6 +243,37 @@ const ArticleDetail = (props: IProps) => {
       }
     })
   }
+
+  // 点击【已点赞按钮】
+  const handleHasLikeArticle = () => {
+    message.error('无法重复点赞')
+  } 
+  
+  // 收藏文章
+  const handleCollect = () => {
+    request.post('/api/collect/publish', {
+      article: article,
+      user_id: loginUserInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        message.success('收藏成功')
+        setHasCollect(true)
+      }
+    })
+  }
+
+  // 取消收藏
+  const handleDelCollect = () => {
+    request.post('/api/collect/del', {
+      article_id: article?.id,
+      user_id: loginUserInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        message.success('取消收藏成功')
+        setHasCollect(false)
+      }
+    })
+  }
   return (
     <div>
       <MyBackTop />
@@ -264,8 +305,24 @@ const ArticleDetail = (props: IProps) => {
                 <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> 231</span>  
                 </div>
                 {
-                  Number(loginUserInfo?.userId) === Number(id) && (
+                  Number(loginUserInfo?.userId) === 1 ? (
                     <Link href={`/editor/${article?.id}`}>编辑</Link>
+                  ) : (
+                    hasCollect
+                      ? 
+                        (
+                          <div className={styles.likeContainer}>
+                            <HeartFilled style={{color: 'rgb(252, 85, 49)', marginRight: '5px'}} />
+                            <div style={{color: 'rgb(252, 85, 49)'}} onClick={handleDelCollect}>已收藏</div>
+                          </div>
+                        )
+                      : 
+                        (
+                          <div className={styles.likeContainer}>
+                            <HeartOutlined  style={{color: 'rgb(252, 85, 49)', marginRight: '5px'}}/>
+                            <div onClick={handleCollect}>收藏</div>
+                          </div>
+                        )
                   )
                 }
               </div>
@@ -291,7 +348,7 @@ const ArticleDetail = (props: IProps) => {
                 <div className={styles.operation}>
                   <div className={styles.love}>
                     {
-                      ifThumb ? <LikeFilled  style={{color: '#c8c8cc', fontSize: 20}} /> : <LikeOutlined onClick={handleLikeArticle} style={{color: '#c8c8cc', fontSize: 20}}/>
+                      ifThumb ? <LikeFilled onClick={handleHasLikeArticle}  style={{color: '#c8c8cc', fontSize: 20}} /> : <LikeOutlined onClick={handleLikeArticle} style={{color: '#c8c8cc', fontSize: 20}}/>
                     }
                     <span className={styles.operationText}>{articleLikeNum}</span>
                   </div>
