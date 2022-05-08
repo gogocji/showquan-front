@@ -12,6 +12,8 @@ import TagList from 'components/TagList/index'
 import RightBar from "components/RightBar"
 import redis from 'lib/redis'
 import HotArticle from "components/HotArticle";
+import HotUser from "components/HotUser";
+
 import { User } from 'db/entity/index';
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
@@ -24,7 +26,8 @@ interface ITag {
 interface IProps {
   articles: IArticle[],
   tags: ITag[];
-  thumbTopList: []
+  thumbTopList: [],
+  userTopList: []
 }
 
 export async function getServerSideProps() {
@@ -96,7 +99,7 @@ export async function getServerSideProps() {
   }
 }
 const Home = (props: IProps) => {
-  const { articles, tags, thumbTopList } = props;
+  const { articles, tags, thumbTopList, userTopList } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
   const [currentPage, setCurrentPage] = useState(1)
   const [selectTag, setSelectTag] = useState(0)
@@ -167,6 +170,8 @@ const Home = (props: IProps) => {
           <TagList tags={tags} setTagArticle={changeTagList} />
           <Divider style={{margin: '10px 0'}} dashed></Divider>
           <HotArticle thumbTopList={thumbTopList}/>
+          <Divider style={{margin: '10px 0'}} dashed></Divider>
+          <HotUser userTopList={userTopList}/>
         </RightBar>
       </Col>
     </Row>

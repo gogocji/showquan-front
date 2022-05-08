@@ -1,6 +1,7 @@
 import styles from './index.module.scss';
 import Icon, { FireOutlined } from '@ant-design/icons'
 import Link from 'next/link'
+import { Divider } from 'antd'
 interface IProps {
   thumbTopList: []
 }
@@ -56,8 +57,9 @@ const HotArticle = (props: IProps) => {
     <div className={styles.container}>
       <div className={styles.title}>
         <span>热门动态&nbsp;</span>
-        <PandaIcon style={{ fontSize: '27px' }} />
+        <PandaIcon style={{ fontSize: '20px' }} />
       </div>
+      <Divider style={{margin: '5px 0'}} dashed></Divider>
       <div className={styles.list}>
         {
           thumbTopList?.map((item: any) => 
