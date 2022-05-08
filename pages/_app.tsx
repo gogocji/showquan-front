@@ -33,9 +33,10 @@ export function reportWebVitals(mertic: any) {
     default:
       break;
   }
-
+  const userInfo =  JSON.parse(localStorage.getItem('userInfo') as string)
+  mertic.userInfo = userInfo
   const body = JSON.stringify(mertic);
-  const url = 'https://xxxx.com';
+  const url = '/api/common/maidian';
 
   if (navigator.sendBeacon) {
     navigator.sendBeacon(url, body);

@@ -45,6 +45,7 @@ const Login = () => {
         // 登录成功
         console.log('登录的用户信息', res?.data)
         store.user.setUserInfo(res?.data)
+        localStorage.setItem('userInfo', (JSON.stringify(res?.data)))
         setForm({
           phone: '',
           verify: ''

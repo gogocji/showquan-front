@@ -46,6 +46,7 @@ const Navbar: NextPage = () => {
     request.post('/api/user/logout').then((res: any) =>{
       if (res?.code === 0) {
         store.user.setUserInfo({})
+        localStorage.removeItem('userInfo')
         push('/')
       }
     })
