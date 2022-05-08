@@ -129,7 +129,6 @@ const UserDetail = (props: any) => {
           let userItem = JSON.parse(resultList[i])
           collectList.push(userItem)
         }
-        setCollectList(collectList)
         setCurrentList(collectList)
         handlePagination(1, collectList)
       }

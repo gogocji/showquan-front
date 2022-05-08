@@ -1,6 +1,6 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Row, Col, Pagination, Spin, Divider } from 'antd'
+import { Row, Col, Pagination, Spin, Divider, Input, message } from 'antd'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
@@ -13,10 +13,11 @@ import RightBar from "components/RightBar"
 import redis from 'lib/redis'
 import HotArticle from "components/HotArticle";
 import HotUser from "components/HotUser";
-
+import { ChangeEvent } from 'react'
 import { User } from 'db/entity/index';
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
+const { Search } = Input
 
 interface ITag {
   id: number;
@@ -105,6 +106,7 @@ const Home = (props: IProps) => {
   const [selectTag, setSelectTag] = useState(0)
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
+  const [searchValue, setSearchValue] = useState('')
   console.log('thumbTopList', thumbTopList)
   // 初始化currentList
   useEffect(() => {
@@ -118,12 +120,14 @@ const Home = (props: IProps) => {
     let data
     if (tagId) {
       data = showList
+      console.log('showList', showList)
       setShowAricles(showList)
     } else {
       data = articles
       setShowAricles(articles)
     }
     let currentList = data.slice((e-1)*8,e*8)
+    console.log('currentList', currentList)
     setCurrentPage(e)
     setCurrentList(currentList)
   }
@@ -146,10 +150,50 @@ const Home = (props: IProps) => {
     }
   }
 
+  // 处理用户搜索内容
+  const handleSearchInput = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchValue(e.target.value)
+    let searchValue = e.target.value.toLocaleUpperCase() // 转换成小写
+    if (searchValue.length > 0) {
+      let blogList = articles
+      let regexpList = [] as IArticle[] // 存储匹配到的数据
+      blogList.map((item: IArticle) => {
+        // 拼接这个博客的所有信息
+        let itemAllInfo = item.content + item.description + item.title + item.user?.nickname
+        // 防止正则匹配失败
+        var re;
+        try {
+          re = new RegExp(searchValue, 'i') // i表示忽略大小写
+        } catch (error) {
+          message.warning('搜索词出错,请重新输入!')
+          searchValue ='\\w'
+          re = new RegExp( searchValue , 'i')
+          setSearchValue('')
+        }
+
+        if (re.test(itemAllInfo.toLowerCase())) {
+          regexpList.push(item)
+        }
+      })
+      console.log('regexpList', regexpList)
+      // setShowAricles(regexpList)
+      handlePagination(1, 1, regexpList)
+    } else {
+      setShowAricles(articles)
+    }
+
+  }
+ 
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
       <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
+        <Row className={styles.searchContainer}>
+          <Col xs={12} sm={14} md={15} lg={17} xl={17}><div style={{ fontWeight: 'bold', paddingLeft: 20 ,lineHeight: '32px'}}>博客日志 <span style={{color: 'red'}}>{showAricles.length}</span> 篇</div></Col>
+          <Col xs={11} sm={9} md={8} lg={6} xl={6}><Search value={searchValue} placeholder="搜索首页内容" onChange={(e)=>{handleSearchInput(e)}} /></Col>
+          <Col xs={1} sm={1} md={1} lg={1} xl={1}></Col>
+        </Row>
+        <Divider style={{margin: '0px 0'}} dashed></Divider>
         <Spin tip='加载中...' spinning={isLoading}>
           {currentList?.map((article) => (
             <>

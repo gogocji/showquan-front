@@ -37,7 +37,7 @@ const ListItem = (props: IProps) => {
             <div className={styles.header}>
               <h4 className={styles.title}>{article?.title}</h4>
               <div className={styles.userInfo}>
-                <Avatar src={user?.avatar} size={48} />
+                <Avatar src={user?.avatar} size={30} />
                 <span className={styles.name}>{user?.nickname}</span>
               </div>
             </div>
