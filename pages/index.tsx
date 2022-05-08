@@ -1,6 +1,6 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Row, Col, Pagination, Spin, Divider, Input, message } from 'antd'
+import { Row, Col, Pagination, Spin, Divider, Input, message, Empty } from 'antd'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
@@ -194,20 +194,30 @@ const Home = (props: IProps) => {
           <Col xs={1} sm={1} md={1} lg={1} xl={1}></Col>
         </Row>
         <Divider style={{margin: '0px 0'}} dashed></Divider>
-        <Spin tip='加载中...' spinning={isLoading}>
-          {currentList?.map((article) => (
-            <>
-              <DynamicComponent article={article} />
-            </>
-          ))}
           {
-            ( showAricles.length > 8 ) ? 
-              <LazyLoad height={200} offset={-10}>
-                <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
-                className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
-              </LazyLoad> : null
+            currentList.length ? (
+              <Spin tip='加载中...' spinning={isLoading}>
+                {
+                  currentList?.map((article) => (
+                    <>
+                      <DynamicComponent article={article} />
+                    </>
+                  ))}
+                {
+                    ( showAricles.length > 8 ) ? 
+                    <LazyLoad height={200} offset={-10}>
+                      <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
+                      className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                    </LazyLoad> : null
+                }
+              </Spin>
+            )
+            : (
+                <div className={styles.emptyContainer}>
+                  <Empty />
+                </div>
+              )
           }
-        </Spin>
       </Col>
       <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
         <RightBar>
