@@ -16,6 +16,7 @@ import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic';
 import { IArticle } from 'pages/api/index'
 import LazyLoad from 'react-lazyload';
+import request from 'service/fetch';
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
@@ -94,6 +95,24 @@ const UserDetail = (props: any) => {
     (prev: any, next: any) => prev + next?.views,
     0
   );
+
+  const getFollowList = () => {
+    console.log('222')
+    request.post('/api/follow/get', {
+      byUser_id: userInfo.id
+    }).then((res) => {
+      if (res?.code === 0) {
+        const resultList =  res.data
+        let followList = []
+        for (let i = 0; i < resultList.length; i++) {
+          let userItem = JSON.parse(resultList[i])
+          followList.push(userItem)
+        }
+        console.log(followList)
+      }
+    })
+  }
+
   useEffect(() => {
     setIsLoading(false)
   }, [currentList])
@@ -111,7 +130,9 @@ const UserDetail = (props: any) => {
   }
 
   const handleTabChange = (key) => {
-    console.log(key);
+    if (key == 2) {
+      getFollowList()
+    }
   }
 
   return (

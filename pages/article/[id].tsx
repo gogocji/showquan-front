@@ -195,6 +195,18 @@ const ArticleDetail = (props: IProps) => {
         }
       })
   }, [])
+
+  // 关注用户
+  const handleFollow = () => {
+    request.post('/api/follow/publish', {
+      user: article.user,
+      byUser_id: loginUserInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        message.success('关注成功')
+      }
+    })
+  }
   return (
     <div>
       <MyBackTop />
@@ -225,9 +237,11 @@ const ArticleDetail = (props: IProps) => {
                 <span className={styles.icon}><FireOutlined type='fire' style={{color:'red'}}/> {article?.views}</span>
                 <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> 231</span>  
                 </div>
-                {Number(loginUserInfo?.userId) === Number(id) && (
-                  <Link href={`/editor/${article?.id}`}>编辑</Link>
-                )}
+                {
+                  Number(loginUserInfo?.userId) === Number(id) && (
+                    <Link href={`/editor/${article?.id}`}>编辑</Link>
+                  )
+                }
               </div>
               <div className={styles.articleImg}>
                 <Image preview={false} src={ article.headImg ? article.headImg : 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi0.hdslb.com%2Fbfs%2Farticle%2Fd0553d88aff685f8a3cb4d0dd04bef8ae6174694.jpg&refer=http%3A%2F%2Fi0.hdslb.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1654140843&t=0cd87c7be196ebb935777d9fac1223f9'} alt="" />
@@ -243,7 +257,7 @@ const ArticleDetail = (props: IProps) => {
                   <div className={styles.info}>
                     <div className={styles.name}>{nickname}</div>
                   </div>
-                  <Button>关注</Button>
+                  <Button onClick={handleFollow}>关注</Button>
                 </div>
                 <div className={styles.operation}>
                   <div className={styles.love}>

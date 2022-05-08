@@ -41,3 +41,10 @@ export const EXCEPTION_COMMENT = {
     msg: '发表失败',
   },
 };
+
+export const EXCEPTION_FOLLOW = {
+  PUBLISH_FAILED: {
+    code: 5001,
+    msg: '关注失败',
+  },
+};
