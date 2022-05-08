@@ -101,7 +101,7 @@ const UserDetail = (props: any) => {
 
   const getFollowList = () => {
     console.log('222')
-    request.post('/api/follow/get', {
+    request.post('/api/follow/getList', {
       byUser_id: userInfo.id
     }).then((res) => {
       if (res?.code === 0) {

@@ -75,6 +75,7 @@ const ArticleDetail = (props: IProps) => {
   const [inputVal, setInputVal] = useState('');
   const [comments, setComments] = useState(commentList || []);
   const [ifThumb, setIfThumb] = useState(false)
+  const [hasFollow, setHasFollow] = useState(false)
   const [articleLikeNum, setArticleLikeNum] = useState(0)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   const { pathname } = useRouter()
@@ -177,6 +178,15 @@ const ArticleDetail = (props: IProps) => {
   }
 
   useEffect(() => {
+    // 判断是否已关注
+    request.post('/api/follow/getById', {
+      user_id: article.user?.id,
+      byUser_id: loginUserInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        res.data === 1 ? setHasFollow(true) : ''
+      }
+    })
     // 文章阅读次数 +1
     request.post('/api/article/viewCount/view', {
       article_id: article.id,
@@ -204,6 +214,22 @@ const ArticleDetail = (props: IProps) => {
     }).then((res) => {
       if (res?.code === 0) {
         message.success('关注成功')
+        setHasFollow(true)
+      }
+    })
+  }
+  // 取消关注用户
+  const handleDelFollow = () => {
+    const byUser_id = loginUserInfo.userId
+    const user_id = article.user?.id
+    console.log(byUser_id, user_id)
+    request.post('/api/follow/del', {
+      user_id,
+      byUser_id
+    }).then((res) => {
+      if (res?.code === 0) {
+        message.success('取消关注成功')
+        setHasFollow(false)
       }
     })
   }
@@ -257,7 +283,10 @@ const ArticleDetail = (props: IProps) => {
                   <div className={styles.info}>
                     <div className={styles.name}>{nickname}</div>
                   </div>
-                  <Button onClick={handleFollow}>关注</Button>
+                  {
+                    hasFollow ? <Button onClick={handleDelFollow}>已关注</Button>
+                    : <Button onClick={handleFollow}>关注</Button>
+                  }
                 </div>
                 <div className={styles.operation}>
                   <div className={styles.love}>
