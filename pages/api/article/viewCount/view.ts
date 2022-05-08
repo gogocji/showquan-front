@@ -15,6 +15,10 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
   const result = await redis.sadd('s_article_view:' + article_id, user_id)
   // 如果result为0说明redis里面的set存在了，说明用户已经点赞过了
   if (result === 0) {
+    res?.status(200).json({
+      code: 0,
+      msg: '用户已阅览',
+    });
     return
   } else {
     const historyData = JSON.parse((await redis.hget('h_article_view', article_id)) || 'null')
@@ -23,7 +27,9 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       ...historyData,
       view_count: addNum + 1,
     }
+    console.log('addNum', addNum)
     await redis.hset('h_article_view', article_id, JSON.stringify(updateData))
+    await redis.zincrby('z_user_hot', 1, user_id)
     res?.status(200).json({
       code: 0,
       msg: '点赞成功',

@@ -197,6 +197,7 @@ const ArticleDetail = (props: IProps) => {
         res.data === 1 ? setHasCollect(true) : ''
       }
     })
+    console.log('22')
     // 文章阅读次数 +1
     request.post('/api/article/viewCount/view', {
       article_id: article.id,
