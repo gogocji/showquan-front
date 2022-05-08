@@ -2,7 +2,8 @@ export type IUserInfo = {
   userId?: number | null;
   nickname?: string;
   avatar?: string;
-  id?: number
+  id?: number;
+  introduce?: string;
 };
 
 export interface IUserStore {

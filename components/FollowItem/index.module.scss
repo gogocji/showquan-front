@@ -1,0 +1,28 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #f0f0f2;
+  padding-bottom: 20px;
+  .itemLeft {
+    display: flex;
+    .userInfo {
+      margin-left: 10px;
+      cursor: pointer;
+      .nickname {
+        color: #222226;
+      }
+  
+      .introduce {
+        font-size: 14px;
+        color: #555666;
+      }
+    }
+  }
+
+  .itemRight {
+    .button {
+      border-radius: 20px;
+    }
+  }
+}

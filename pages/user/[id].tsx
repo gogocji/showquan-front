@@ -17,6 +17,8 @@ import dynamic from 'next/dynamic';
 import { IArticle } from 'pages/api/index'
 import LazyLoad from 'react-lazyload';
 import request from 'service/fetch';
+import FollowItem from "components/FollowItem"
+
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
@@ -89,6 +91,7 @@ const UserDetail = (props: any) => {
   const [currentPage, setCurrentPage] = useState(1)
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
+  const [followList, setFollowList] = useState([])
   const { TabPane } = Tabs;
 
   const viewsCount = articles?.reduce(
@@ -108,7 +111,7 @@ const UserDetail = (props: any) => {
           let userItem = JSON.parse(resultList[i])
           followList.push(userItem)
         }
-        console.log(followList)
+        setFollowList(followList)
       }
     })
   }
@@ -174,7 +177,11 @@ const UserDetail = (props: any) => {
               </Spin>
             </TabPane>
             <TabPane tab="关注" key="2">
-              Content of Tab Pane 2
+              {
+                followList?.map((item) => (
+                  <FollowItem userInfo={item} />
+                ))
+              }
             </TabPane>
             <TabPane tab="收藏" key="3">
               Content of Tab Pane 3
