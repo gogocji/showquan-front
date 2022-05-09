@@ -31,12 +31,29 @@ interface IProps {
   userTopList: []
 }
 
+// 文章根据日期排序
+const compare = function (obj1, obj2) {
+  var val1 = new Date(obj1.create_time);
+  var val2 = new Date(obj2.create_time);
+  if (val1 < val2) {
+      return -1;
+  } 
+  else if (val1 > val2) {
+      return 1;
+  } 
+  else {
+      return 0;
+  }            
+}
+
 export async function getServerSideProps() {
   const db = await prepareConnection()
   const userRepo = db.getRepository(User);
   const articles = await db.getRepository(Article).find({
     relations: ['user', 'tags']
   })
+  // 文章顺序
+  articles.sort(compare).reverse()
   const tags = await db.getRepository(Tag).find({
     relations: ['users'],
   });
