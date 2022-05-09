@@ -2,7 +2,7 @@ import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
 import { observer } from 'mobx-react-lite';
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState, useRef } from 'react';
 import { Input, Button, message, Select } from 'antd';
 import { useRouter } from 'next/router';
 import { useStore } from 'store/index';
@@ -24,6 +24,7 @@ const NewEditor = () => {
   const [allTags, setAllTags] = useState([]);
   const [description, setDescription] = useState('');
   const [headImgUrl, setHeadImgUrl] = useState('');
+  const myMdEditor = useRef(null);
 
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
@@ -61,6 +62,12 @@ const NewEditor = () => {
     setContent(content);
   };
 
+  const updateMdContent = (imgContent) => {
+    const historyInnerHTMLd = document.getElementById('md-editor-rt-textarea')?.innerHTML
+    let mdContent = historyInnerHTMLd
+    mdContent += imgContent
+    setContent(mdContent)
+  }
   const handleSelectTag = (value: []) => {
     setTagIds(value);
   }
@@ -69,16 +76,49 @@ const NewEditor = () => {
     setDescription(event?.target?.value)
   }
 
-  const handleUploadImg = async (files : any, callback) => {
-    request.post('/api/common/upload', files[0], {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
+  const handleUploadImg = async (files : File[]) => {
+    let imgContent = ''
+    // const res = await Promise.all(
+    //   Array.from(files).map((file : File) => {
+    //     return new Promise((rev, rej) => {
+    //       const form = new FormData();
+    //       form.append('file', file)
+    //       const reader = new FileReader();
+    //       if (file) {
+    //         reader.readAsDataURL(file);
+    //       }
+    //       reader.onload = (readerEvent) => {
+    //         form.append("image", readerEvent.target.result);
+    //         request.post('/api/common/upload', form)
+    //         .then((res) => {
+    //           if (res?.code === 0 ) {
+    //             const { url } = res.data
+    //             imgContent += `![](${url})`
+    //           }
+    //         })
+    //       };
+    //     });
+    //   })
+    // );
     const form = new FormData();
-    form.append('file', files[0]);
-    console.log('form', form)
-    console.log('files[0', files[0])
+    let file = files[0]
+    var historyContent = content
+    form.append('file', file)
+    const reader = new FileReader();
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+    reader.onload = (readerEvent) => {
+      form.append("image", readerEvent.target.result);
+      request.post('/api/common/upload', form)
+      .then((res) => {
+        if (res?.code === 0 ) {
+          const { url } = res.data
+          imgContent += `![](${url})`
+          updateMdContent(imgContent)
+        }
+      })
+    };
   }
 
   const handleUploadHeadImg = (imgUrl: string) => {
@@ -121,7 +161,7 @@ const NewEditor = () => {
       <div className={styles.upLoadImg}>
         <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
       </div>
-      <Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+      <Editor ref={myMdEditor} onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
       {/* <MDEditor value={content} height={1080} onChange={handleContentChange} /> */}
     </div>
   );

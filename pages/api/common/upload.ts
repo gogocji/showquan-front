@@ -34,8 +34,7 @@ async function upload(req: NextApiRequest, res: NextApiResponse) {
       resolve({ fields, files })
     })
   })
-  console.log('data', data)
-  const resultUrl = await put(data.files.image.originalFilename, data?.files?.image?.filepath)
+  const resultUrl = await put(data.files.file.originalFilename, data?.files?.file?.filepath)
   res?.status(200)?.json({
     code: 0,
     msg: '',

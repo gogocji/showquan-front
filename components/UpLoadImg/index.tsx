@@ -37,10 +37,7 @@ const UploadImg = (props: IProps) => {
       setLoading(true)
       return
     }
-    console.log('info.fileList[0].originFileObj', info.fileList[0])
     if (info.file.status === 'done') {
-    console.log('info', info.file?.response?.data?.url)
-
       // getBase64(info.file.originFileObj, (imageUrl : any) =>
       //   {
       //     console.log('imageUrl', imageUrl)
@@ -49,7 +46,6 @@ const UploadImg = (props: IProps) => {
       //   }
       // );
       const ossUrl = info.file?.response?.data?.url
-      console.log('ossUrl', ossUrl)
       setImageUrl(ossUrl)
       setLoading(false)
       uploadHeadImg(ossUrl)
@@ -77,7 +73,7 @@ const UploadImg = (props: IProps) => {
   return (
     <Upload
       action="/api/common/upload" 
-      name="image"
+      name="file"
       accept='image/*'
       listType="picture-card"
       className="avatar-uploader"

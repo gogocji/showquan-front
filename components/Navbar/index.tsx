@@ -29,12 +29,10 @@ const Navbar: NextPage = () => {
   };
 
   const handleLogin = () => {
-    console.log('111')
     setIsShowLogin(true);
   };
 
   const handleClose = () => {
-    console.log('22')
     setIsShowLogin(false);
   }
 
@@ -54,7 +52,6 @@ const Navbar: NextPage = () => {
 
   const showDrawer = () => {
     store.common.setCommonInfo({ isShowDrawer: true})
-    console.log('store.common.commonInfo', store.common.commonInfo)
     setIsDrawerOpen(true)
   }
 
