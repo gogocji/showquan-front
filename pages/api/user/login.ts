@@ -58,10 +58,11 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       // 新用户，自动注册
       const user = new User()
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`
-      user.avatar = '/images/avatar.webp'
+      user.skill = ''
       user.job = ''
       user.introduce = ''
-      user.skill = '/images/avatar.webp'
+      let randFrom0To6=Math.floor(Math.random()*Math.floor(6));
+      user.avatar = `/images/avatar${randFrom0To6}.webp`
       user.introduce = '博主在忙，啥也没写'
       user.job = ''
 

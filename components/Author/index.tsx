@@ -39,9 +39,15 @@ const CountDown = (props: IProps) => {
         </div>
       </div>
       <div className={styles.userName} style={defstyle ?{color:'hotpink'}:{color:'rgba(0, 0, 0, 0.65)'}}>{userInfo.nickname}</div>
-      <div className={styles.authorIntroduction} style={{ color: 'rgb(17, 158, 130)' }}>@{userInfo.job}</div>
-      <div className={styles.authorIntroduction} style={{ color: 'rgb(17, 158, 130)' }}>-{userInfo.introduce}-</div>
-      <div className={styles.skill} style={{ color: 'rgb(127, 127, 127)' }}>-{userInfo.skill}-</div>
+      {
+        userInfo.job && <div className={styles.authorJob} style={{ color: 'rgb(17, 158, 130)' }}>@{userInfo.job}</div>
+      }
+      {
+        userInfo.introduce && <div className={styles.authorIntroduction} style={{ color: 'rgb(17, 158, 130)' }}>-{userInfo.introduce}-</div>
+      }
+      {
+        userInfo.skill && <div className={styles.skill} style={{ color: 'rgb(127, 127, 127)' }}>技术栈：{userInfo.skill}</div>
+      }
     </div>
   )
 }
