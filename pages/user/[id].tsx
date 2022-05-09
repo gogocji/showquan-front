@@ -2,7 +2,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { observer } from 'mobx-react-lite';
-import { Button, Avatar, Divider, Row, Col, Spin, Pagination, Tabs,  } from 'antd';
+import { Button, Avatar, Divider, Row, Col, Spin, Pagination, Tabs, Empty } from 'antd';
 import {
   CodeOutlined,
   FireOutlined,
@@ -220,24 +220,43 @@ const UserDetail = (props: any) => {
             </TabPane>
             <TabPane tab="关注" key="2">
               {
-                followList?.map((item) => (
-                  <FollowItem userInfo={item} />
-                ))
+                followList.length ? (
+                  followList?.map((item) => (
+                    <FollowItem key={item} userInfo={item} />
+                  ))
+                )
+                : (
+                  <div className={styles.emptyContainer}>
+                    <Empty />
+                  </div>
+                )
               }
             </TabPane>
             <TabPane tab="收藏" key="3">
               {
-                currentList?.map((article) => (
-                    <>
-                      <DynamicComponent article={article} />
-                    </>
-                  ))}
-                  {
-                    ( showAricles.length > 8 ) ? 
-                      <LazyLoad height={200} offset={-10}>
-                        <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, collectList)}} 
-                        className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
-                      </LazyLoad> : null
+                currentList.length ? (
+                  <div>
+                    {
+                      currentList?.map((article) => (
+                        <>
+                         <DynamicComponent key={article} article={article} />
+                        </>
+                      ))
+                    }
+                    {
+                      ( showAricles.length > 8 ) &&
+                        <LazyLoad height={200} offset={-10}>
+                          <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, collectList)}} 
+                          className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                        </LazyLoad>
+                    }
+                  </div>
+                ) :
+                (
+                  <div className={styles.emptyContainer}>
+                    <Empty />
+                  </div>
+                )
               }
             </TabPane>
           </Tabs> 
