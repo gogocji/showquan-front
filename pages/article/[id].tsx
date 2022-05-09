@@ -315,16 +315,16 @@ const ArticleDetail = (props: IProps) => {
                     hasCollect
                       ? 
                         (
-                          <div className={styles.likeContainer}>
+                          <div  onClick={handleDelCollect} className={styles.likeContainer}>
                             <HeartFilled style={{color: 'rgb(252, 85, 49)', marginRight: '5px'}} />
-                            <div style={{color: 'rgb(252, 85, 49)'}} onClick={handleDelCollect}>已收藏</div>
+                            <div style={{color: 'rgb(252, 85, 49)'}}>已收藏</div>
                           </div>
                         )
                       : 
                         (
-                          <div className={styles.likeContainer}>
+                          <div onClick={handleCollect} className={styles.likeContainer}>
                             <HeartOutlined  style={{color: 'rgb(252, 85, 49)', marginRight: '5px'}}/>
-                            <div onClick={handleCollect}>收藏</div>
+                            <div>收藏</div>
                           </div>
                         )
                   )

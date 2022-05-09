@@ -12,13 +12,30 @@ import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity';
 import styles from './index.module.scss';
 import RightBar from "components/RightBar"
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic';
 import { IArticle } from 'pages/api/index'
 import LazyLoad from 'react-lazyload';
 import request from 'service/fetch';
 import FollowItem from "components/FollowItem"
+import ListItem from "components/ListItem"
 
+function useCallbackState<T>(od: T) {
+  const cbRef = useRef();
+  const [data, setData] = useState(od);
+
+  useEffect(() => {
+    cbRef.current && cbRef.current(data);
+  }, [data]);
+
+  return [
+    data,
+    function (d, callback) {
+      cbRef.current = callback;
+      setData(d);
+    }
+  ];
+}
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 
@@ -107,7 +124,7 @@ const UserDetail = (props: any) => {
   const { userInfo = {}, articles = [] } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
+  const [currentList, setCurrentList] = useCallbackState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
   const [followList, setFollowList] = useState([])
   const [collectList, setCollectList] = useState([])
@@ -119,7 +136,6 @@ const UserDetail = (props: any) => {
   );
 
   const getFollowList = () => {
-    console.log('222')
     request.post('/api/follow/getList', {
       byUser_id: userInfo.id
     }).then((res) => {
@@ -136,7 +152,6 @@ const UserDetail = (props: any) => {
   }
 
   const getCollectList = () => {
-    console.log('222')
     request.post('/api/collect/getList', {
       user_id: userInfo.id
     }).then((res) => {
@@ -154,8 +169,9 @@ const UserDetail = (props: any) => {
   }
 
   useEffect(() => {
-    setIsLoading(false)
-  }, [currentList])
+    setIsLoading(true)
+    handlePagination(1, articles)
+  }, [])
 
   const handlePagination = (e: any, itemList: any) => {
     if (document) {
@@ -166,18 +182,22 @@ const UserDetail = (props: any) => {
     setShowAricles(itemList)
     let currentList = data.slice((e-1)*8,e*8)
     setCurrentPage(e)
-    setCurrentList(currentList)
+    setCurrentList(currentList, () => {
+      setIsLoading(false)
+    })
   }
 
   const handleTabChange = (key) => {
-    setIsLoading(true)
-    if (key == 1) {
-      handlePagination(1, articles)
-    } else if (key == 2) {
-      getFollowList()
-    } else if (key == 3) {
-      getCollectList()
-    }
+    setCurrentList([], () => {
+      setIsLoading(true)
+      if (key == 1) {
+        handlePagination(1, articles)
+      } else if (key == 2) {
+        getFollowList()
+      } else if (key == 3) {
+        getCollectList()
+      }
+    })
   }
 
   return (
@@ -188,9 +208,14 @@ const UserDetail = (props: any) => {
           <Avatar className={styles.avatar} src={userInfo?.avatar} size={90} />
           <div>
             <div className={styles.nickname}>{userInfo?.nickname}</div>
-            <div className={styles.desc}>
-              <CodeOutlined /> {userInfo?.job}
-            </div>
+              {
+                userInfo?.job &&
+                  (
+                    <div className={styles.desc}>
+                      <CodeOutlined /> {userInfo?.job}
+                    </div>
+                  )
+              }
             <div className={styles.desc}>
               <FireOutlined /> {userInfo?.introduce}
             </div>
@@ -203,20 +228,30 @@ const UserDetail = (props: any) => {
         <div className={styles.article}>
           <Tabs defaultActiveKey="1" onChange={handleTabChange}>
             <TabPane tab="文章" key="1">
-              <Spin tip='加载中...' spinning={isLoading}>
-                {currentList?.map((article) => (
-                  <>
-                    <DynamicComponent article={article} />
-                  </>
-                ))}
-                {
-                  ( showAricles.length > 8 ) ? 
-                    <LazyLoad height={200} offset={-10}>
-                      <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, articles)}} 
-                      className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
-                    </LazyLoad> : null
-                }
-              </Spin>
+              {
+                currentList.length ? (
+                  <Spin tip='加载中...' spinning={isLoading}>
+                    {currentList?.map((article) => (
+                      <>
+                        <DynamicComponent article={article} />
+                        {/* <ListItem article={article} /> */}
+                      </>
+                    ))}
+                    {
+                      ( showAricles.length > 8 ) ? 
+                        <LazyLoad height={200} offset={-10}>
+                          <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e, articles)}} 
+                          className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>
+                        </LazyLoad> : null
+                    }
+                  </Spin>
+                ) : (
+                  <div className={styles.emptyContainer}>
+                    <Empty />
+                  </div>
+                )
+              }
+              
             </TabPane>
             <TabPane tab="关注" key="2">
               {

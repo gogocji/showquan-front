@@ -239,15 +239,16 @@ const Home = (props: IProps) => {
         <Divider style={{margin: '0px 0'}} dashed></Divider>
           {
             currentList.length ? (
-              <Spin tip='加载中...' spinning={isLoading}>
+               <Spin tip='加载中...' spinning={isLoading}>
                 {
                   currentList?.map((article) => (
                     <>
                       <DynamicComponent article={article} />
                     </>
-                  ))}
+                  ))
+                }
                 {
-                    ( showAricles.length > 8 ) ? 
+                  ( showAricles.length > 8 ) ? 
                     <LazyLoad height={200} offset={-10}>
                       <Pagination showQuickJumper defaultCurrent={1} total={articles.length} onChange={(e)=>{handlePagination(e)}} 
                       className='cssnice3' current={currentPage} style={{textAlign: 'center',padding:'.5rem 0 .5rem'}}/>

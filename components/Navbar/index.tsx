@@ -89,7 +89,9 @@ const Navbar: NextPage = () => {
           scrollheight = t 
         }
       }else{          //恢复正常
-        scrollup.style.marginTop='0'
+        if (scrollup?.style) {
+          scrollup.style.marginTop='0'
+        }
         scrollheight = t
       }
     }
