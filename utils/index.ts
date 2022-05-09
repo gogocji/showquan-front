@@ -2,12 +2,15 @@ interface ICookieInfo {
   id: number
   nickname: string
   avatar: string
+  skill: string
+  introduce: string
+  job: string
 }
 
 
 export const setCookie = (
   cookies: any, 
-  { id, nickname, avatar }: ICookieInfo
+  { id, nickname, avatar, skill, introduce, job }: ICookieInfo
 ) => {
   // 登录时效，24h
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000)
@@ -22,6 +25,18 @@ export const setCookie = (
     expires
   })
   cookies.set('avatar', avatar, {
+    path,
+    expires
+  })
+  cookies.set('skill', skill, {
+    path,
+    expires
+  })
+  cookies.set('introduce ', introduce, {
+    path,
+    expires
+  })
+  cookies.set('job', job, {
     path,
     expires
   })
@@ -43,6 +58,18 @@ export const clearCookie = (
     expires
   })
   cookies.set('avatar', '', {
+    path,
+    expires
+  })
+  cookies.set('skill', '', {
+    path,
+    expires
+  })
+  cookies.set('introduce ', '', {
+    path,
+    expires
+  })
+  cookies.set('job', '', {
     path,
     expires
   })

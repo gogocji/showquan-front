@@ -17,6 +17,7 @@
       align-items: center;
       cursor: pointer;
       .userInfo {
+        width: 78%;
         margin-left: 10px;
         .nickname {
           color: rgb(249, 162, 11);
@@ -31,4 +32,9 @@
       }
     }
   }  
+}
+
+.emptyContainer {
+  background-color: white;
+  padding: 50px;
 }

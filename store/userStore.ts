@@ -4,6 +4,8 @@ export type IUserInfo = {
   avatar?: string;
   id?: number;
   introduce?: string;
+  job: string;
+  skill: string;
 };
 
 export interface IUserStore {

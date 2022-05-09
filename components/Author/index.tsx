@@ -5,15 +5,19 @@ import { useStore } from 'store/index';
 import { observer } from "mobx-react-lite"
 
 interface IProps {
-  userInfo: IUserInfo
+  userInfo: IUserInfo,
+  ifCanChangeAvatar: boolean
 }
 var imgDeg = 0
 const CountDown = (props: IProps) => {
-  const { userInfo } = props;
+  const { userInfo, ifCanChangeAvatar } = props;
   const store = useStore()
   const defstyle = store.common.commonInfo?.defstyle
 
   const changeAvatar = () => {
+    if (!ifCanChangeAvatar) {
+      return
+    }
     store.common.setCommonInfo({ defstyle: !defstyle })
     let img =document.getElementById('userImg')?.getElementsByClassName('ant-avatar')[0] as any
     if (defstyle) {
@@ -35,9 +39,9 @@ const CountDown = (props: IProps) => {
         </div>
       </div>
       <div className={styles.userName} style={defstyle ?{color:'hotpink'}:{color:'rgba(0, 0, 0, 0.65)'}}>{userInfo.nickname}</div>
-      <div className={styles.authorIntroduction} style={{ color: 'rgb(0,216,255)' }}>软件工程</div>
-      <div className={styles.authorIntroduction} style={{ color: 'rgb(0,216,255)' }}>2019-2023级学生</div>
-      <div className={styles.authorIntroduction}></div>
+      <div className={styles.authorIntroduction} style={{ color: 'rgb(17, 158, 130)' }}>@{userInfo.job}</div>
+      <div className={styles.authorIntroduction} style={{ color: 'rgb(17, 158, 130)' }}>-{userInfo.introduce}-</div>
+      <div className={styles.skill} style={{ color: 'rgb(127, 127, 127)' }}>-{userInfo.skill}-</div>
     </div>
   )
 }

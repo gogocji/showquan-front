@@ -19,7 +19,6 @@ const Navbar: NextPage = () => {
   const { pathname, push } = useRouter();
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
-  const [ isDrawerOpen, setIsDrawerOpen ] = useState(false)
   const handleGotoEditorPage = () => {
     if (userId) {
       push('/editor/new')
@@ -27,6 +26,10 @@ const Navbar: NextPage = () => {
       message.warning('请先登录')
     }
   };
+
+  const handleGotoHome = () => {
+      push('/')
+  }
 
   const handleLogin = () => {
     setIsShowLogin(true);
@@ -52,12 +55,6 @@ const Navbar: NextPage = () => {
 
   const showDrawer = () => {
     store.common.setCommonInfo({ isShowDrawer: true})
-    setIsDrawerOpen(true)
-  }
-
-  const closeDrawer = () => {
-    store.common.setCommonInfo({ isShowDrawer: false})
-    setIsDrawerOpen(false)
   }
 
   const renderDropDownMenu = () => {
@@ -102,20 +99,11 @@ const Navbar: NextPage = () => {
       <Row align='middle' justify="space-between" typeof='flex'>
         <Col xs={4} sm={4} md={0} lg={0} xl={0}>
           <MenuUnfoldOutlined style={{color: 'white'}} className={styles.smallMenu} type="menu-unfold" onClick={showDrawer}/>
-          <Drawer
-            width={306}
-            placement="left"
-            closable={true}
-            onClose={closeDrawer}
-            visible={isDrawerOpen}
-          >
-            陈大杰
-          </Drawer>
         </Col>
         {/* <Col xs={16} sm={16} md={0} lg={0} xl={0}>
           <span className={styles.logo}>华农秀秀</span>
         </Col> */}
-        <Col xs={16} sm={15} md={5} lg={5} xl={5}>
+        <Col onClick={handleGotoHome} xs={16} sm={15} md={5} lg={5} xl={5}>
           <span className={styles.logo}>华农秀秀</span>
           <span className={styles.headerTxt}>热爱生活</span>
         </Col>

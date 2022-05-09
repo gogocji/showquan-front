@@ -30,14 +30,17 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
     if (userAuth) {
       // 已存在用户
       const user = userAuth.user
-      const { id, nickname, avatar } = user
+      const { id, nickname, avatar, skill, introduce, job } = user
       session.userId = id
       session.nickname = nickname
       session.avatar = avatar
+      session.skill = skill
+      session.introduce = introduce
+      session.job = job
 
       await session.save()
 
-      setCookie(cookies, { id, nickname, avatar })
+      setCookie(cookies, { id, nickname, avatar, skill, introduce, job })
 
       res?.status(200).json({
         msg: '登录成功',
@@ -45,7 +48,10 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
         data: {
           userId: id,
           nickname,
-          avatar
+          avatar,
+          skill,
+          introduce,
+          job
         }
       })
     } else {
@@ -53,8 +59,11 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       const user = new User()
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`
       user.avatar = '/images/avatar.webp'
-      user.job = '暂无'
-      user.introduce = '暂无'
+      user.job = ''
+      user.introduce = ''
+      user.skill = '/images/avatar.webp'
+      user.introduce = '博主在忙，啥也没写'
+      user.job = ''
 
       const userAuth = new UserAuth()
       userAuth.identifier = phone
@@ -64,13 +73,16 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
 
       const resUserAuth = await userAuthRepo.save(userAuth)
 
-      const { user: { id, nickname, avatar }} = resUserAuth
+      const { user: { id, nickname, avatar, skill, introduce, job }} = resUserAuth
       session.userId = id
       session.nickname = nickname
       session.avatar = avatar
+      session.skill = skill
+      session.introduce = introduce
+      session.job = job
       await session.save()
 
-      setCookie(cookies, { id, nickname, avatar })
+      setCookie(cookies, { id, nickname, avatar, skill, introduce, job })
 
       res?.status(200).json({
         msg: '登录成功',

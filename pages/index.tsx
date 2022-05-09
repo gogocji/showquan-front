@@ -1,6 +1,6 @@
 import { prepareConnection } from "db/index"
 import { Article, Tag } from "db/entity"
-import { Row, Col, Pagination, Spin, Divider, Input, message, Empty } from 'antd'
+import { Row, Col, Pagination, Spin, Divider, Input, message, Empty, Drawer } from 'antd'
 import { IArticle } from 'pages/api/index'
 import styles from './index.module.scss';
 import dynamic from 'next/dynamic';
@@ -15,6 +15,7 @@ import HotArticle from "components/HotArticle";
 import HotUser from "components/HotUser";
 import { ChangeEvent } from 'react'
 import { User } from 'db/entity/index';
+import { useStore } from 'store/index';
 
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 const { Search } = Input
@@ -127,7 +128,8 @@ const Home = (props: IProps) => {
   const [currentList, setCurrentList] = useState<IArticle[]>(articles.slice(1, 9))
   const [isLoading, setIsLoading] = useState(true)
   const [searchValue, setSearchValue] = useState('')
-  console.log('thumbTopList', thumbTopList)
+  const store = useStore()
+  var isDrawerOpen = store.common.commonInfo.isShowDrawer
   // 初始化currentList
   useEffect(() => {
     setIsLoading(false)
@@ -203,11 +205,32 @@ const Home = (props: IProps) => {
     }
 
   }
+
+  const closeDrawer = () => {
+    store.common.setCommonInfo({ isShowDrawer: false})
+  }
  
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
       <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
+        <Drawer
+
+            width={306}
+            placement="left"
+            closable={true}
+            onClose={closeDrawer}
+            visible={isDrawerOpen}
+            // drawerStyle={{backgroundColor: 'rgb(245 249 253)'}}
+          >
+            <RightBar ifCanChangeAvatar={false}>
+              <TagList tags={tags} setTagArticle={changeTagList} />
+              <Divider style={{margin: '10px 0'}} dashed></Divider>
+              <HotArticle thumbTopList={thumbTopList}/>
+              <Divider style={{margin: '10px 0'}} dashed></Divider>
+              <HotUser userTopList={userTopList}/>
+            </RightBar>
+          </Drawer>
         <Row className={styles.searchContainer}>
           <Col xs={12} sm={14} md={15} lg={17} xl={17}><div style={{ fontWeight: 'bold', paddingLeft: 20 ,lineHeight: '32px'}}>博客日志 <span style={{color: 'red'}}>{showAricles.length}</span> 篇</div></Col>
           <Col xs={11} sm={9} md={8} lg={6} xl={6}><Search value={searchValue} placeholder="搜索首页内容" onChange={(e)=>{handleSearchInput(e)}} /></Col>

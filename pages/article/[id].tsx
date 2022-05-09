@@ -78,12 +78,15 @@ const ArticleDetail = (props: IProps) => {
   const [hasFollow, setHasFollow] = useState(false)
   const [hasCollect, setHasCollect] = useState(false)
   const [articleLikeNum, setArticleLikeNum] = useState(0)
+  // const [hasTocify, setHasTocify] = useState(false)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   const { pathname } = useRouter()
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
   const tocify = new Tocify()
+  var hasTocify = false
   renderer.heading = function(text : any, level : any) {
+      hasTocify = true
       const anchor = tocify.add(text, level);
       return `<a id="${anchor}" href="#${anchor}" class="anchor-fix"><h${level}>${text}</h${level}></a>\n`;
     };
@@ -402,12 +405,16 @@ const ArticleDetail = (props: IProps) => {
         <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
           <RightBar>
           </RightBar>
-          <Affix offsetTop={50} className={styles.navContainer}>
-            <div className={styles.navTitle}>文章目录</div>
-            <div className={styles.navTitleList}>
-              {tocify && tocify.render()}
-            </div> 
-          </Affix>
+          {
+            hasTocify && (
+              <Affix offsetTop={50} className={styles.navContainer}>
+                <div className={styles.navTitle}>文章目录</div>
+                <div className={styles.navTitleList}>
+                  { tocify &&tocify.render() }
+                </div> 
+              </Affix>
+            )
+          }
         </Col>
       </Row>
     </div>

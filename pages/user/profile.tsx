@@ -71,7 +71,10 @@ const UserProfile = () => {
               <Input placeholder="请输入职位" />
             </Form.Item>
             <Form.Item label="个人介绍" name="introduce">
-              <Input placeholder="请输入个人介绍" />
+              <Input.TextArea placeholder="请输入个人介绍" />
+            </Form.Item>
+            <Form.Item label="个人介绍" name="skill">
+              <Input.TextArea placeholder="请输入个人技术栈" />
             </Form.Item>
             <Form.Item {...tailLayout}>
               <Button type="primary" htmlType="submit">

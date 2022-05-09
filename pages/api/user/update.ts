@@ -13,7 +13,7 @@ export default withIronSessionApiRoute(update, ironOptions);
 async function update(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
   const { userId } = session;
-  const { nickname = '', job = '', introduce = '', userImgUrl = '' } = req.body;
+  const { nickname = '', job = '', introduce = '', userImgUrl = '', skill = '' } = req.body;
   const db = await prepareConnection();
   const userRepo = db.getRepository(User);
   const cookies = Cookie.fromApiRoute(req, res)
@@ -29,16 +29,19 @@ async function update(req: NextApiRequest, res: NextApiResponse) {
     user.job = job;
     user.introduce = introduce;
     user.avatar = userImgUrl
+    user.skill = skill
 
     const resUser = await userRepo.save(user);
     if (resUser) {
-      const { id, nickname, avatar } = resUser
+      const { id, nickname, avatar, skill, introduce, job } = resUser
       session.userId = id
       session.nickname = nickname
       session.avatar = avatar
+      session.skill = skill
+      session.introduce = introduce
+      session.job = job
       await session.save()
-
-      setCookie(cookies, { id, nickname, avatar })
+      setCookie(cookies, { id, nickname, avatar, skill, introduce, job })
     }
     res?.status(200)?.json({
       code: 0,
