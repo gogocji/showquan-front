@@ -78,47 +78,33 @@ const NewEditor = () => {
 
   const handleUploadImg = async (files : File[]) => {
     let imgContent = ''
-    // const res = await Promise.all(
-    //   Array.from(files).map((file : File) => {
-    //     return new Promise((rev, rej) => {
-    //       const form = new FormData();
-    //       form.append('file', file)
-    //       const reader = new FileReader();
-    //       if (file) {
-    //         reader.readAsDataURL(file);
-    //       }
-    //       reader.onload = (readerEvent) => {
-    //         form.append("image", readerEvent.target.result);
-    //         request.post('/api/common/upload', form)
-    //         .then((res) => {
-    //           if (res?.code === 0 ) {
-    //             const { url } = res.data
-    //             imgContent += `![](${url})`
-    //           }
-    //         })
-    //       };
-    //     });
-    //   })
-    // );
-    const form = new FormData();
-    let file = files[0]
-    var historyContent = content
-    form.append('file', file)
-    const reader = new FileReader();
-    if (file) {
-      reader.readAsDataURL(file);
-    }
-    reader.onload = (readerEvent) => {
-      form.append("image", readerEvent.target.result);
-      request.post('/api/common/upload', form)
-      .then((res) => {
-        if (res?.code === 0 ) {
-          const { url } = res.data
-          imgContent += `![](${url})`
-          updateMdContent(imgContent)
-        }
+    const res = await Promise.all(
+      Array.from(files).map((file : File) => {
+        return new Promise((rev, rej) => {
+          const form = new FormData();
+          form.append('file', file)
+          const reader = new FileReader();
+          if (file) {
+            reader.readAsDataURL(file);
+          }
+          reader.onload = (readerEvent) => {
+            form.append("image", readerEvent.target.result);
+            request.post('/api/common/upload', form)
+            .then((res) => {
+              if (res?.code === 0 ) {
+                const { url } = res.data
+                rev(`![](${url})`)
+              }
+            })
+            .catch((error) => rej(error));
+          };
+        });
       })
-    };
+    );
+    res.map((url) => {
+      imgContent += url
+    })
+    updateMdContent(imgContent)
   }
 
   const handleUploadHeadImg = (imgUrl: string) => {
