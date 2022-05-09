@@ -73,11 +73,14 @@ export async function getServerSideProps() {
     }
   }
   // TODO
-  const userTopList = await userRepo.createQueryBuilder("user")
-  .where(
-    "user.id IN (" + userTopIdList + ")"
-  )
-  .getMany()
+  let userTopList = []
+  if (userTopIdList.length) {
+    userTopList = await userRepo.createQueryBuilder("user")
+    .where(
+      "user.id IN (" + userTopIdList + ")"
+    )
+    .getMany()
+  }
   console.log('users', userTopList)
   // userTopTemplList.map(async (userItem) => {
   //   const user_id = userItem.user_id
