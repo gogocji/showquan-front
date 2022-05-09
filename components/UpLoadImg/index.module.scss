@@ -1,4 +1,12 @@
-.hello {
-  font-size: 30px;
-  color: red;
+.imgContainer {
+  margin-top: 20px;
+  position: relative;
+  .del {
+    position: absolute;
+    top:0px;
+    right: 0px;
+    color: red;
+    border: 2px solid white;
+    border-radius: 50%;
+  }
 }

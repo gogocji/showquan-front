@@ -1,7 +1,7 @@
 import styles from './index.module.scss';
 import { Upload, message } from 'antd';
-import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
-import { useState } from 'react'
+import { LoadingOutlined, PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { useState, ChangeEvent } from 'react'
 import moment from 'moment';
 import CryptoJS from 'crypto-js';
 import Base64 from 'base-64';
@@ -70,6 +70,12 @@ const UploadImg = (props: IProps) => {
     }
     return isJpgOrPng && isLt2M;
   }
+
+  const handleImgDel = (e: ChangeEvent<HTMLInputElement>) => {
+    setImageUrl('')
+    uploadHeadImg('')
+    e.stopPropagation()
+  }
   return (
     <Upload
       action="/api/common/upload" 
@@ -81,7 +87,16 @@ const UploadImg = (props: IProps) => {
       beforeUpload={beforeUpload}
       onChange={handleChange}
     >
-      {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton()}
+      {
+        imageUrl ?
+          (
+            <div className={styles.imgContainer}>
+              <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+              <CloseCircleFilled onClick={handleImgDel} className={styles.del} />
+            </div>
+          )
+          
+        : uploadButton()}
     </Upload>
   );
 };

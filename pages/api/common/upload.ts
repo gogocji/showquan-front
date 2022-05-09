@@ -34,7 +34,13 @@ async function upload(req: NextApiRequest, res: NextApiResponse) {
       resolve({ fields, files })
     })
   })
-  const resultUrl = await put(data.files.file.originalFilename, data?.files?.file?.filepath)
+  const nowDate = new Date()
+  const year = nowDate.getFullYear()
+  const month = nowDate.getMonth()
+  const day = nowDate.getDay()
+  const nameFront = year + '/' + month + '/' + day + '/'
+  const nameBack =  new Date().getTime() + '_';
+  const resultUrl = await put(nameFront + nameBack + data.files.file.originalFilename, data?.files?.file?.filepath)
   res?.status(200)?.json({
     code: 0,
     msg: '',
