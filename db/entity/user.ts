@@ -1,5 +1,4 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';  
-import { Follow } from './follow'
 
 @Entity({ name: 'users' })  
 export class User extends BaseEntity {  
@@ -20,4 +19,7 @@ export class User extends BaseEntity {
 
  @Column()  
  skill!: string;  
+
+ @Column()  
+ state!: number;  
 }

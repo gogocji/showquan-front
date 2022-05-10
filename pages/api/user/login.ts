@@ -65,6 +65,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       user.avatar = `/images/avatar${randFrom0To6}.webp`
       user.introduce = '博主在忙，啥也没写'
       user.job = ''
+      user.state = 0
 
       const userAuth = new UserAuth()
       userAuth.identifier = phone

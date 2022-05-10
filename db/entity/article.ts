@@ -36,7 +36,7 @@ export class Article extends BaseEntity {
   update_time!: Date;
 
   @Column()
-  is_delete!: number;
+  state!: number;
 
   @ManyToOne(() => User)
   @JoinColumn({name: 'user_id'})

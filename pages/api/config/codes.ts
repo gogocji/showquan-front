@@ -26,6 +26,10 @@ export const EXCEPTION_ARTICLE = {
     code: 2004,
     msg: '已点赞',
   },
+  SEATCH_FAILED: {
+    code: 2005,
+    msg: '搜索错误',
+  },
 };
 
 export const EXCEPTION_TAG = {

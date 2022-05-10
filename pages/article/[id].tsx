@@ -352,7 +352,7 @@ const ArticleDetail = (props: IProps) => {
                 <div className={styles.operation}>
                   <div className={styles.love}>
                     {
-                      ifThumb ? <LikeFilled onClick={handleHasLikeArticle}  style={{color: '#c8c8cc', fontSize: 20}} /> : <LikeOutlined onClick={handleLikeArticle} style={{color: '#c8c8cc', fontSize: 20}}/>
+                      ifThumb ? <LikeFilled onClick={handleHasLikeArticle}  style={{color: 'rgb(24, 144, 255)', fontSize: 20}} /> : <LikeOutlined onClick={handleLikeArticle} style={{color: '#c8c8cc', fontSize: 20}}/>
                     }
                     <span className={styles.operationText}>{articleLikeNum}</span>
                   </div>

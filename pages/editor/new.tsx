@@ -43,6 +43,7 @@ const NewEditor = () => {
       title,
       content,
       tagIds,
+      description,
       headImg: headImgUrl
     }).then((res: any) => {
       if (res?.code === 0) {

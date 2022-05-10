@@ -5,6 +5,7 @@ import { ISession } from 'pages/api/index';
 import { prepareConnection } from 'db/index';
 import { User, Article, Tag } from 'db/entity/index';
 import { EXCEPTION_ARTICLE } from 'pages/api/config/codes';
+import redis from 'lib/redis'
 
 export default withIronSessionApiRoute(publish, ironOptions);
 
@@ -29,7 +30,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   article.content = content;
   article.create_time = new Date();
   article.update_time = new Date();
-  article.is_delete = 0;
+  article.state = 0;
   article.views = 0;
   article.comment_count = 0;
   article.like_count = 0;
@@ -40,16 +41,22 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     article.user = user;
   }
 
+  // 为了假如redis进行搜索
+  var tagListString = ''
   if (tags) {
     const newTags = tags?.map((tag) => {
+      tagListString += tag
       tag.article_count = tag?.article_count + 1;
       return tag;
     });
     article.tags = newTags;
   }
-
+  
   const resArticle = await articleRepo.save(article);
 
+  // 把全部需要匹配的内容全部都拼接并存在redis里面
+  const itemAllInfo = title + content + description + user?.nickname + tagListString
+  await redis.hset('h_article_search', resArticle?.id, JSON.stringify(itemAllInfo))
   if (resArticle) {
     res.status(200).json({ data: resArticle, code: 0, msg: '发布成功' });
   } else {
