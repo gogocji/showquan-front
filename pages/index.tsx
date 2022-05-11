@@ -16,7 +16,7 @@ import HotUser from "components/HotUser";
 import { ChangeEvent } from 'react'
 import { User } from 'db/entity/index';
 import { useStore } from 'store/index';
-
+import { getCanExpireLocal, setCanExpireLocal, getMsToNewDay } from 'utils/localStorage'
 const DynamicComponent = dynamic(() => import('components/ListItem'));
 const { Search } = Input
 
@@ -81,6 +81,7 @@ export async function getServerSideProps() {
   let userTopTemplList = [];
   let userTopIdList = []
   let userObj = {}
+  console.log('userHotList', userHotList)
   for (let i = 0; i < userHotList.length;i++) {
     if (i === 0 || i % 2 === 0) {
       userObj.user_id = userHotList[i]
@@ -92,6 +93,7 @@ export async function getServerSideProps() {
   }
   // TODO
   let userTopList = []
+  console.log('userTopList', userTopIdList)
   if (userTopIdList.length) {
     userTopList = await userRepo.createQueryBuilder("user")
     .where(
@@ -120,6 +122,21 @@ export async function getServerSideProps() {
     }
   }
 }
+
+const incrementView = (user_id: number) => {
+  const result = getCanExpireLocal('todayHasView')
+  if (result === '值已失效' || result === null) {
+    // 请求并重新设置本地缓存
+    request.post('/api/common/user/addView', {
+      user_id
+    }).then((res) => {
+      const expireTime = getMsToNewDay()
+      setCanExpireLocal('todayHasView', true, expireTime)
+    })
+  } else {
+    return
+  }
+}
 const Home = (props: IProps) => {
   const { articles, tags, thumbTopList, userTopList } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
@@ -130,8 +147,12 @@ const Home = (props: IProps) => {
   const [searchValue, setSearchValue] = useState('')
   const store = useStore()
   var isDrawerOpen = store.common.commonInfo.isShowDrawer
+  const user = store.user.userInfo
   // 初始化currentList
   useEffect(() => {
+    console.log('111')
+    // 增加访问量
+    incrementView(user?.id)
     setIsLoading(false)
   }, [currentList])
 

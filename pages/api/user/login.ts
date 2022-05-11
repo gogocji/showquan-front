@@ -6,7 +6,8 @@ import { prepareConnection } from "db/index"
 import { User, UserAuth} from 'db/entity/index'
 import { Cookie } from 'next-cookie'
 import { setCookie } from "utils/index"
-
+import redis from 'lib/redis'
+import { getTimeYYYYMMDD } from 'utils'
 export default withIronSessionApiRoute(login, ironOptions)
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
@@ -75,6 +76,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
 
       const resUserAuth = await userAuthRepo.save(userAuth)
 
+      // 存入session
       const { user: { id, nickname, avatar, skill, introduce, job }} = resUserAuth
       session.userId = id
       session.nickname = nickname
@@ -85,6 +87,12 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       await session.save()
 
       setCookie(cookies, { id, nickname, avatar, skill, introduce, job })
+
+      // redis添加新用户
+      const timestamp = getTimeYYYYMMDD()
+      await redis.sadd('s_user_all:id', id + ':' + timestamp)
+      await redis.sadd('s_user_day:id:' + timestamp, id)
+
 
       res?.status(200).json({
         msg: '登录成功',

@@ -52,3 +52,10 @@ export const EXCEPTION_FOLLOW = {
     msg: '关注失败',
   },
 };
+
+export const EXCEPTION_COMMON = {
+  ADDVIEW_FAILED: {
+    code: 6001,
+    msg: '增加访问量失败',
+  },
+};

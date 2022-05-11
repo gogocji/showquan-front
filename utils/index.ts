@@ -74,3 +74,18 @@ export const clearCookie = (
     expires
   })
 }
+
+export const getTimeYYYYMMDD = () => {
+  let nowDate = new Date()
+  let year = nowDate.getFullYear()
+  let month = nowDate.getMonth() + 1
+  let day = nowDate.getDate()
+  if (month >= 1 && month <= 9) {
+    month = "0" + month;
+  }
+  if (day >= 0 && day <= 9) {
+    day = "0" + day;
+  }
+  console.log(year + '' + month + '' + day)
+  return year + '' + month + '' + day
+}

@@ -6,6 +6,7 @@ import { prepareConnection } from 'db/index';
 import { User, Article, Tag } from 'db/entity/index';
 import { EXCEPTION_ARTICLE } from 'pages/api/config/codes';
 import redis from 'lib/redis'
+import { getTimeYYYYMMDD } from 'utils'
 
 export default withIronSessionApiRoute(publish, ironOptions);
 
@@ -56,7 +57,11 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
 
   // 把全部需要匹配的内容全部都拼接并存在redis里面
   const itemAllInfo = title + content + description + user?.nickname + tagListString
-  await redis.hset('h_article_search', resArticle?.id, JSON.stringify(itemAllInfo))
+  
+  // redis添加新用户
+  const timestamp = getTimeYYYYMMDD()
+  await redis.sadd('s_article_all:id', resArticle.id + ':' + timestamp)
+  await redis.sadd('s_article_day:id:' + timestamp, resArticle.id)
   if (resArticle) {
     res.status(200).json({ data: resArticle, code: 0, msg: '发布成功' });
   } else {
