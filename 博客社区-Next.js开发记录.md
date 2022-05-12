@@ -192,7 +192,9 @@ export default function createStore(initialValue: any): () => IStore {
 
 > 前言：因为我们点赞了之后，对数据库进行操作，但是当我们要实现各个文章内容的点赞排行榜，或者是掘金这种作者排行榜，我们不可能对数据库全表进行搜索然后再进行排序，所以我们可以直接使用redis
 
-### 0、next.js使用redis
+
+
+**next.js使用redis**
 
 之前在网上查了挺久都没有看到next.js使用redis的一些教程，然后看到了next.js源码里面有一个example示例代码，就开始对使用redis一发不可收拾了。。。
 
@@ -527,6 +529,75 @@ const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
 
 
 ## 四、next.js使用web-vital及其原理和源码分析
+
+### 4.1、web-vitals的介绍
+
+
+
+### 4.2、web-vital CLS应用&原理&源码分析
+
+#### 应用与统计
+
+调用的方式
+
+- 使用web 提供的API
+- 使用web-vitals这个第三方js库
+
+
+
+返回结果&返回结果时机
+
+
+
+#### 原理
+
+web提供的一些检测API
+
+
+
+计分原理
+
+
+
+一些Demo
+
+
+
+
+
+#### 源码分析
+
+**1、LayoutShift与session**
+
+分区原理、计分原理
+
+
+
+**Layout Instability API**
+
+**2、PerformanceObserver与Performance API**
+
+**3、onHidden**
+
+监听应用关闭/切到后台 并执行回调
+
+
+
+**4、onBFCacheRestore**
+
+BFC的特点
+
+
+
+BFC的缺点
+
+
+
+#### 减低CLS得分的方法
+
+
+
+
 
 
 
