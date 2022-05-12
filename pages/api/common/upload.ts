@@ -2,7 +2,6 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { ironOptions } from 'config/index';
 import { IncomingForm } from 'formidable'
-import { promises as fs } from 'fs'
 import OSS from 'ali-oss'
 import path from 'path'
 

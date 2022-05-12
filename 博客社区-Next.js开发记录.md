@@ -538,11 +538,222 @@ const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
 
 
 
-## 六、next.js使用antd upload组件以及md编辑器的图片上传功能
+## 六、next.js使用antd upload组件并实现后端接口
+
+老规矩，我们先看看要开发什么，我们的需求是什么：
+
+![image-20220512192327041](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192327041.png)
+
+我们要实现添加 文章的头图，也就是下面这个图片的文章头图
+
+![image-20220512192721559](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192721559.png)
 
 
 
-## 七、next.js使用md编辑器发布文章以及文章目录的实现
+这个是头图，还有就是Md编辑器的点击上传图片，点击上传本地图片之后就添加到阿里云的oss里面并返回一个线上的可访问图片了
+
+![image-20220512192957466](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192957466.png)
+
+
+
+首先实现一下通过ant-design的upload组件来实现图片的上传
+
+我封装了一个uploadImg组件
+
+```TSX
+import styles from './index.module.scss';
+import { Upload, message } from 'antd';
+import { LoadingOutlined, PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
+import { useState, ChangeEvent } from 'react'
+
+interface IProps {
+  uploadHeadImg?: (imgUrl: string) => void 
+}
+
+const UploadImg = (props: IProps) => {
+  const { uploadHeadImg } = props
+  const [loading, setLoading] = useState(false)
+  const [imageUrl, setImageUrl] = useState('')
+
+  const handleChange = (info : any) => {
+    if (info.file.status === 'uploading') {
+      setLoading(true)
+      return
+    }
+    if (info.file.status === 'done') {
+      const ossUrl = info.file?.response?.data?.url
+      setImageUrl(ossUrl)
+      setLoading(false)
+      uploadHeadImg(ossUrl)
+    }
+  }
+  const uploadButton = () => {
+    return (
+      <div>
+        {loading ? <LoadingOutlined /> : <PlusOutlined />}
+        <div style={{ marginTop: 8 }}>上传图片</div>
+      </div>
+    )
+  }
+  const beforeUpload = (file : any) => {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  }
+
+  const handleImgDel = (e: ChangeEvent<HTMLInputElement>) => {
+    setImageUrl('')
+    uploadHeadImg('')
+    e.stopPropagation()
+  }
+  return (
+    <Upload
+      action="/api/common/upload" 
+      name="file"
+      accept='image/*'
+      listType="picture-card"
+      className="avatar-uploader"
+      showUploadList={false}
+      beforeUpload={beforeUpload}
+      onChange={handleChange}
+    >
+      {
+        imageUrl ?
+          (
+            <div className={styles.imgContainer}>
+              <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
+              <CloseCircleFilled onClick={handleImgDel} className={styles.del} />
+            </div>
+          )
+          
+        : uploadButton()}
+    </Upload>
+  );
+};
+
+export default UploadImg;
+```
+
+使用这个组件：
+
+```JSX
+<UpLoadImg uploadHeadImg={handleUploadHeadImg} />
+```
+
+传递一个函数作为回调函数，接收阿里云oss返回的url
+
+
+
+下面就是我们next.js的后端代码： pages/api/common/upload
+
+在阿里云注册OSS服务就不写啦，百度一大堆教程，**下面的代码里面有几个要大家自己填的，分别是注册oss服务之后 1、所在地域 2、accessKeyId 3、accessKeySecret 4、bucket名**
+
+```TS
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { ironOptions } from 'config/index';
+import { IncomingForm } from 'formidable'
+import OSS from 'ali-oss'
+import path from 'path'
+
+const client = new OSS({
+  // yourregion填写Bucket所在地域。以华东1（杭州）为例，Region填写为oss-cn-hangzhou。
+  region: '【阿里云oss服务的所在地域】',
+  accessKeyId: '【你的accessKeyId】',
+  accessKeySecret: '【你的accessKeySecret】',
+  bucket: '【你的bucket】',
+});
+
+export const config = {
+  api: {
+    bodyParser: false,
+  }
+};
+
+export default withIronSessionApiRoute(upload, ironOptions);
+
+async function upload(req: NextApiRequest, res: NextApiResponse) {
+  // parse form with a Promise wrapper
+  const data = await new Promise((resolve, reject) => {
+    const form = new IncomingForm()
+    
+    form.parse(req, (err, fields, files) => {
+      if (err) return reject(err)
+      resolve({ fields, files })
+    })
+  })
+  
+  // 为了更好的目录结构，通过/的方式来给阿里云oss存储有一个比较好的目录结构
+  const nowDate = new Date()
+  const year = nowDate.getFullYear()
+  const month = nowDate.getMonth()
+  const day = nowDate.getDay()
+  const nameFront = year + '/' + month + '/' + day + '/'
+  const nameBack =  new Date().getTime() + '_';
+    
+  const resultUrl = await put(nameFront + nameBack + data.files.file.originalFilename, data?.files?.file?.filepath)
+  res?.status(200)?.json({
+    code: 0,
+    msg: '',
+    data: {
+      url: resultUrl
+    }
+  });
+}
+
+async function put (fileName, filePath) {
+  try {
+    // 填写OSS文件完整路径和本地文件的完整路径。OSS文件完整路径中不能包含Bucket名称。
+    // 如果本地文件的完整路径中未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。
+    const result = await client.put(fileName, path.normalize(filePath));
+    if (result?.res?.status == 200) {
+      return result.url
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+```
+
+坑：
+
+1、上面代码的config一定要写。不然读取不到antd upload组件上传的图片文件的
+
+```JS
+export const config = {
+  api: {
+    bodyParser: false,
+  }
+};
+```
+
+2、![image-20220512194616974](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512194616974.png)
+
+```TS
+ // 为了更好的目录结构
+  const nowDate = new Date()
+  const year = nowDate.getFullYear()
+  const month = nowDate.getMonth()
+  const day = nowDate.getDay()
+  const nameFront = year + '/' + month + '/' + day + '/'
+  const nameBack =  new Date().getTime() + '_';
+```
+
+就是通过拼接年月日的方式来把我们的图片有一个更好的管理
+
+
+
+
+
+## 七、next.js使用md编辑器发布文章以及文章目录的实现以及md编辑器的图片上传到阿里云oss
+
+
 
 
 
