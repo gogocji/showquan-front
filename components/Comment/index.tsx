@@ -46,14 +46,14 @@ const MyComment = (props: IProps) => {
     }
     setIsSubmitLoading(true)
     // 找到最终的父评论
-    const pid = findCommentRoot(comment)
+    const rid = findCommentRoot(comment)
     request
     .post('/api/comment/publish', {
       articleId: article?.id,
       content: inputComment,
       toUser_id: comment?.user?.id,
       pid: comment.id,
-      rid: pid
+      rid: rid
     })
     .then((res: any) => {
       if (res?.code === 0) {

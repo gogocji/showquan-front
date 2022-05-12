@@ -944,6 +944,124 @@ const handleUploadImg = async (files : File[]) => {
 
 ## 八、next.js实现多级评论以及数据库设计
 
+![image-20220512204923938](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512204923938.png)
+
+
+
+老规矩子，上需求，下面是我做的博客以及实现的评论功能：
+
+![image-20220512204257219](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512204257219.png)
+
+
+
+![image-20220512204935008](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512204935008.png)
+
+可以发布评论。也可以在其他人评论下进行评论，**并且可以显示对谁的哪条评论进行评论**
+
+先上数据库设计：
+
+```TS
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Article } from './article'
+import { User } from './user'
+
+@Entity({name: 'comments'})
+export class Comment extends BaseEntity {
+  @PrimaryGeneratedColumn()
+  readonly id!: number;
+
+  @Column()
+  content!: string;
+
+  @Column()
+  create_time!: Date;
+
+  @Column()
+  update_time!: Date;
+
+  @ManyToOne(() => User)
+  @JoinColumn({name: 'user_id'})
+  user!: User;
+
+  @ManyToOne(() => Article)
+  @JoinColumn({name: 'article_id'})
+  article!: Article;
+
+  @ManyToOne(() => User)
+  @JoinColumn({name: 'toUser_id'})
+  toUser!: User;
+
+  @ManyToOne(() => Comment)
+  @JoinColumn({name: 'pid'})
+  pComment!: Comment;
+
+  @ManyToOne(() => Comment)
+  @JoinColumn({name: 'rid'})
+  rComment!: Comment;
+
+  @Column()
+  is_delete!: number;
+
+  @Column()
+  like_count!: number;
+}
+```
+
+可以看到，我定义了一个pComment和一个rComment
+
+- pComment表示的是这个子评论是对哪个评论进行评论的
+- rComment表示的是最终的根评论是哪个
+
+
+
+**所有是有两个点击发送评论的按钮**
+
+![image-20220512205017228](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512205017228.png)
+
+首先，我们处理一下第一个点击发表评论
+
+```TS
+ request
+    .post('/api/comment/publish', {
+      articleId: article?.id,
+      content: inputVal,
+      toUser_id: '',
+      pid: '',
+      rid: ''
+    })
+```
+
+因为是发布的是一个根评论，所以就不需要toUser_id（表示这个子评论是回复哪个评论的），pid和rid
+
+之后我们对第二个提交按钮进行处理：
+
+```ts
+ const findCommentRoot = (comment : any) => {
+    if(comment?.rComment !== null) {
+      comment = comment?.rComment
+    }
+    return comment.id
+  }	
+const handleSubmitComment = () => {
+	// 找到最终的父评论
+	const rid = findCommentRoot(comment)
+    request
+    .post('/api/comment/publish', {
+      articleId: article?.id,
+      content: inputComment,
+      toUser_id: comment?.user?.id,
+      pid: comment.id,
+      rid: rid
+    })
+}
+```
+
+不需要递归的招rComment，只需要判断一次就可以拿到rComment了
+
+
+
+组件：直接使用antd提供的Comment组件，是默认支持二级评论样式的（但是似乎就不支持三级或更多级的评论了）
+
 
 
 ## 九、next.js实现github第三方登录

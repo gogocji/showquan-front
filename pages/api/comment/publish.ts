@@ -55,6 +55,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     comment.article = article;
   }
   comment.like_count = 0
+  comment.is_delete = 0
 
   const resComment = await commentRepo.save(comment);
 
