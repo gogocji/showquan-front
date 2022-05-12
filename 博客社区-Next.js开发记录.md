@@ -548,14 +548,6 @@ const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
 
 ![image-20220512192721559](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192721559.png)
 
-
-
-这个是头图，还有就是Md编辑器的点击上传图片，点击上传本地图片之后就添加到阿里云的oss里面并返回一个线上的可访问图片了
-
-![image-20220512192957466](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192957466.png)
-
-
-
 首先实现一下通过ant-design的upload组件来实现图片的上传
 
 我封装了一个uploadImg组件
@@ -751,7 +743,200 @@ export const config = {
 
 
 
-## 七、next.js使用md编辑器发布文章以及文章目录的实现以及md编辑器的图片上传到阿里云oss
+## 七、next.js使用md编辑器发布文章以及md编辑器的图片上传到阿里云oss
+
+老规矩，继续上需求：
+
+要使用md编辑器来发布文章，并且还要实现md编辑器上上传图片 ，以及md格式文章的一个目录展示
+
+Md编辑器的点击上传图片，点击上传本地图片之后就添加到阿里云的oss里面并返回一个线上的可访问图片了
+
+![image-20220512195851469](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512195851469.png)
+
+
+
+![image-20220512192957466](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512192957466.png)
+
+
+
+![image-20220512195931982](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512195931982.png)
+
+以及文章目录
+
+![image-20220512200147565](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512200147565.png)
+
+其实就是解析md格式里面的## 符号，就是标题了，那么现在开干！
+
+
+
+- 首先先引入md编辑器
+
+安装依赖
+
+```js
+yarn add md-editor-rt
+```
+
+```js
+import Editor from 'md-editor-rt';
+import 'md-editor-rt/lib/style.css';
+```
+
+
+
+- 使用
+
+```TSX
+const NewEditor = () => {
+	const [content, setContent] = useState('');
+
+    const handleContentChange = (content: any) => {
+      setContent(content);
+    };
+    
+	return (
+    	<Editor modelValue={content} onChange={handleContentChange} />
+    )
+}
+```
+
+上面就是一个基本的使用方法
+
+现在我们要实现，点击md编辑器的上传图片到oss里面，然后在输入的地方就自动的添加这个图片上传之后得到的url
+
+
+
+Editor组件给我们暴露了一个onUploadImg参数
+
+```TSX
+<Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+```
+
+因为是支持多图片上传的，所以最终代码如下
+
+```TSX
+const NewEditor = () => {
+	const [content, setContent] = useState('');
+
+    const handleContentChange = (content: any) => {
+      	setContent(content);
+    };
+    const updateMdContent = (imgContent) => {
+        const historyInnerHTMLd = document.getElementById('md-editor-rt-textarea')?.innerHTML
+        let mdContent = historyInnerHTMLd
+        mdContent += imgContent
+        setContent(mdContent)
+    }
+    
+    const handleUploadImg = async (files : File[]) => {
+        let imgContent = ''
+        const res = await Promise.all(
+          Array.from(files).map((file : File) => {
+            return new Promise((rev, rej) => {
+              const form = new FormData();
+              form.append('file', file)
+              const reader = new FileReader();
+              if (file) {
+                reader.readAsDataURL(file);
+              }
+              reader.onload = (readerEvent) => {
+                form.append("image", readerEvent.target.result);
+                request.post('/api/common/upload', form)
+                .then((res) => {
+                  if (res?.code === 0 ) {
+                    const { url } = res.data
+                    rev(`![](${url})`)
+                  }
+                })
+                .catch((error) => rej(error));
+              };
+            });
+          })
+        );
+        res.map((url) => {
+          imgContent += url
+        })
+        updateMdContent(imgContent)
+    }
+    
+	return (
+    	<Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+    )
+}
+```
+
+代码解释：
+
+```TS
+const handleUploadImg = async (files : File[]) => {
+        let imgContent = ''
+        const res = await Promise.all(
+          Array.from(files).map((file : File) => {
+            return new Promise((rev, rej) => {
+              const form = new FormData();
+              form.append('file', file)
+              const reader = new FileReader();
+              if (file) {
+                reader.readAsDataURL(file);
+              }
+              reader.onload = (readerEvent) => {
+                form.append("image", readerEvent.target.result);
+                request.post('/api/common/upload', form)
+                .then((res) => {
+                  if (res?.code === 0 ) {
+                    const { url } = res.data
+                    rev(`![](${url})`)
+                  }
+                })
+                .catch((error) => rej(error));
+              };
+            });
+          })
+        );
+        res.map((url) => {
+          imgContent += url
+        })
+        updateMdContent(imgContent)
+    }
+```
+
+这个函数：因为md编辑器是支持多文件上传的，但是我们传图片的话只能是一张一张的上传，所以就定义了一个new Promise的方式来异步的进行图片上传
+
+拿到的url，还要拼接![](${url})，因为这样md才可以把这个url识别为一个要展示的图片
+
+之后我们拿到了这些上传图片的链接之后，我们要拼接到md编辑器里面的时候
+
+
+
+获取到md以及输入的内容，然后进行拼接就行（其实这里有一个问题就是只能拼接，不能插入，这个我还在解决）
+
+```TSX
+ const updateMdContent = (imgContent) => {
+        const historyInnerHTMLd = document.getElementById('md-editor-rt-textarea')?.innerHTML
+        let mdContent = historyInnerHTMLd
+        mdContent += imgContent
+        setContent(mdContent)
+    }
+```
+
+我通过document.getElementById('md-editor-rt-textarea')?.innerHTML 这种方式拿到用户在md输入的内容（我发现直接通过content是拿不到的，因为存在一个异步的问题）所以我就直接通过id的方式拿到了
+
+![image-20220512201428270](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512201428270.png)
+
+
+
+效果：这样我们就实现了多张图片的上传了
+
+![image-20220512201516222](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512201516222.png)
+
+
+
+**展望：**
+
+- 可以实现图片的中间插入，而不是直接后面拼接
+- 实现监测到本地url链接的时候就自动的上传（因为大部分用户都是直接赋值typora等本地md编辑器来发布，会发现又要一张一张图片进行上传，就比较麻烦）
+
+
 
 
 
@@ -774,6 +959,10 @@ export const config = {
 
 
 ## 十一、next.js-实现一个乞丐版的SSR框架
+
+
+
+## 十二、md格式的文章页面展示（代码高亮等）以及文章目录展示
 
 
 

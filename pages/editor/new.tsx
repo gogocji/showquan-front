@@ -24,7 +24,6 @@ const NewEditor = () => {
   const [allTags, setAllTags] = useState([]);
   const [description, setDescription] = useState('');
   const [headImgUrl, setHeadImgUrl] = useState('');
-  const myMdEditor = useRef(null);
 
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
@@ -148,7 +147,7 @@ const NewEditor = () => {
       <div className={styles.upLoadImg}>
         <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
       </div>
-      <Editor ref={myMdEditor} onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+      <Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
       {/* <MDEditor value={content} height={1080} onChange={handleContentChange} /> */}
     </div>
   );
