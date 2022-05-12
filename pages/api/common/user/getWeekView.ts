@@ -21,10 +21,12 @@ async function getIp(req: NextApiRequest, res: NextApiResponse) {
       })
     })
   )
-  console.log('res', result.reverse())
   res?.status(200).json({
     code: 0,
     msg: '获取七日全站阅览量',
-    data: result.reverse()
+    data: {
+      result: result.reverse(),
+      weekDate: weekTimeList
+    }
   });
 }

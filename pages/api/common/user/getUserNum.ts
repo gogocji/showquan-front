@@ -5,22 +5,25 @@ import { prepareConnection } from 'db/index';
 import { Article } from 'db/entity/index';
 import request from 'service/fetch'
 import redis from 'lib/redis'
-import { getTimeYYYYMMDD } from 'utils'
+import { getWeekYYYYMMDD } from 'utils'
 
 export default withIronSessionApiRoute(getIp, ironOptions);
 
 async function getIp(req: NextApiRequest, res: NextApiResponse) {
-  const timestamp = getTimeYYYYMMDD()
-  // 获取今日新增用户
-  const dayUserNum = await redis.scard('s_user_day:id:' + timestamp)
-  const allUserNum = await redis.scard('s_user_all:id')
-  console.log(dayUserNum, allUserNum)
+  const weekTimeList = getWeekYYYYMMDD()
+  // 获取今日新增动态
+  const result = await Promise.all(
+    weekTimeList.map(day => {
+      return new Promise((rev, rej) => {
+        redis.scard('s_user_day:id:' + day).then((dayViewNum) => {
+            rev(dayViewNum)
+        })
+      })
+    })
+  )
   res?.status(200).json({
     code: 0,
-    msg: '获取用户总数量&每日新增数量成功',
-    data: {
-      dayUserNum,
-      allUserNum
-    }
+    msg: '获取七日用户增长量',
+    data: result.reverse()
   });
 }
