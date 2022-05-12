@@ -29,7 +29,6 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
     }
     console.log('addNum', addNum)
     await redis.hset('h_article_view', article_id, JSON.stringify(updateData))
-    await redis.zincrby('z_user_hot', 1, user_id)
     res?.status(200).json({
       code: 0,
       msg: '点赞成功',

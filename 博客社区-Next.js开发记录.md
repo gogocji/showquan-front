@@ -2,15 +2,513 @@
 
 ## 一、next.js使用mobx
 
+- 下载依赖（安装两个依赖）
+
+```npm
+yarn add mobx mobx-react-lite
+```
+
+- 建立store文件夹以及基本的store代码
+
+![image-20220512160744721](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512160744721.png)
+
+index.ts是把这个store暴露给外部使用store的
+
+rootStore.ts作为所有用户定义的store状态的根节点
+
+**userStore.ts:**
+
+```TS
+export type IUserInfo = {
+  userId?: number;
+  nickname?: string;
+  avatar?: string;
+  id?: number;
+  introduce?: string;
+  job?: string;
+  skill?: string;
+};
+
+export interface IUserStore {
+  userInfo: IUserInfo;
+  // eslint-disable-next-line no-unused-vars
+  setUserInfo: (value: IUserInfo) => void;
+}
+
+const userStore = (): IUserStore => {
+  return {
+    userInfo: {},
+    setUserInfo: function (value) {
+      this.userInfo = value;
+    },
+  };
+};
+
+export default userStore;
+```
+
+**rootStore.ts：**
+
+```TS
+import userStore, { IUserStore } from './userStore';
+
+export interface IStore {
+  user: IUserStore;
+}
+
+export default function createStore(initialValue: any): () => IStore {
+  return () => {
+    return {
+      user: { ...userStore(), ...initialValue?.user }, // 这里的...initialValue会对userStore的一些默认key进行覆盖更新
+    };
+  };
+}
+```
+
+**index.tsx**
+
+```tsx
+import React, { createContext, useContext, ReactElement } from 'react';
+import { useLocalObservable, enableStaticRendering } from 'mobx-react-lite';
+import createStore, { IStore } from './rootStore';
+
+interface IProps {
+  initialValue: Record<any, any>;
+  children: ReactElement
+}
+
+enableStaticRendering(!process.browser);
+
+const StoreContext = createContext({});
+
+export const StoreProvider = ({ initialValue, children }: IProps) => {
+  const store: IStore = useLocalObservable(createStore(initialValue));
+  return (
+    <StoreContext.Provider value={store}>{children}</StoreContext.Provider>
+  );
+};
+
+export const useStore = () => {
+  const store: IStore = useContext(StoreContext) as IStore;
+  if (!store) {
+    throw new Error('数据不存在');
+  }
+  return store;
+};
+```
+
+- pages/_app.tsx引入
+
+```TSX
+import 'styles/globals.css'
+import type { AppProps } from 'next/app'
+import { StoreProvider } from 'store/index'
+
+function MyApp({ Component, pageProps }: AppProps) {
+  return (
+    <StoreProvider initialValue={{ user: {} }}>
+      <Component {...pageProps} />
+    </StoreProvider>
+  )
+}
+```
+
+- 外部使用
+
+引入useStore 
+
+```ts
+import { useStore } from 'store/index'
+
+const Login = () => {
+	const store = useStore()
+	// 获取user Store里面的信息
+	console.log(store.user.userInfo)
+	// 设置user Store里面的信息
+	store.user.setUserInfo({
+		userId: '1',
+		nickname: '666'
+	})
+}
+```
 
 
-## 二、next.js使用redis实现点赞、作者排行榜等功能
 
-### 1、点赞排行榜
+ps：假如我们还要定义其他Store的话，比如定义一个common全局要用到的一些属性：
 
-### 2、用户排行榜
+- 新建一个commonStore.ts
 
-### 3、网站浏览量统计
+```ts
+export type ICommonInfo = {
+  isShowDrawer?: boolean,
+  defstyle?: boolean,
+  showDrawer?: boolean
+};
+
+export interface ICommonStore {
+  commonInfo: ICommonInfo;
+  // eslint-disable-next-line no-unused-vars
+  setCommonInfo: (value: ICommonInfo) => void;
+}
+
+const commonStore = (): ICommonStore => {
+  return {
+    commonInfo: {},
+    setCommonInfo: function (value) {
+      this.commonInfo = value;
+    },
+  };
+};
+
+export default commonStore;
+```
+
+- 在rootStore.ts引入新建的这个commonStore
+
+```TS
+import userStore, { IUserStore } from './userStore';
+import commonStore, { ICommonStore } from './commonStore';
+
+export interface IStore {
+  user: IUserStore;
+  common: ICommonStore
+}
+
+export default function createStore(initialValue: any): () => IStore {
+  return () => {
+    return {
+      user: { ...userStore(), ...initialValue?.user }, // 这里的...initialValue会对userStore的一些默认key进行覆盖更新
+      common: { ...commonStore(), ...initialValue?.common }
+    };
+  };
+}
+```
+
+
+
+
+
+## 二、next.js使用redis以及实现统计访问量，点赞、作者排行榜等功能
+
+> 前言：因为我们点赞了之后，对数据库进行操作，但是当我们要实现各个文章内容的点赞排行榜，或者是掘金这种作者排行榜，我们不可能对数据库全表进行搜索然后再进行排序，所以我们可以直接使用redis
+
+### 0、next.js使用redis
+
+之前在网上查了挺久都没有看到next.js使用redis的一些教程，然后看到了next.js源码里面有一个example示例代码，就开始对使用redis一发不可收拾了。。。
+
+https://github.com/vercel/next.js/tree/canary/examples/with-redis
+
+在文件夹的lib目录下新建一个redis.ts文件夹
+
+![image-20220512162919419](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512162919419.png)
+
+- 安装依赖
+
+```JS
+yarn add ioredis
+```
+
+- 新建redis.ts:
+
+```TS
+import Redis from 'ioredis'
+
+const redis = new Redis(process.env.REDIS_URL)
+
+export default redis
+```
+
+
+
+如何使用：以一个案例（统计本网站的总访问量和每日访问量） 在pages/api/addView.ts （作为增加网站阅览量的接口）
+
+需求：用户今日网站首页的时候就记录一次访问量，但是一个用户一天内访问了多次本网站还是算作只是访问了一次。
+
+![image-20220512181330041](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512181330041.png)
+
+上面是我用echart折线图实现的一个7天访问量的统计
+
+![image-20220512165339513](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512165339513.png)
+
+以及一个总访问量 和 今日访问量（可以看到该网站的总访问量是6，今日访问量是2）
+
+ps：样式有点丑，还没优化UI，各位好兄弟们凑合看（bushi）
+
+所以我就要记录 **用户总访问量 和 每日用户访问量**
+
+redis设计：
+
+- 通过set结构（就是不允许重复的数组）
+- 每日的用户访问量，通过一个叫做 **s_view_day:id **:20220512作为这个结构的名字，value就是user_id
+  - s_view_day:id 后面拼接的:20220512是拼接了一个来表示今天的用户量结构
+- 总用户量访问，通过一个叫做**s_view_all:id**命名结构，value是user_id:20220512
+  - 这个刚好相反，value是user_id: 再加一个时间戳，因为今天的用户，在明天访问的话，如果还要加入总用户量这个set结构的话，就必须不同，所以value就不能只是user_id
+
+
+
+20220512这样的时间戳要如何生成
+
+在utils工具类里面定义一下
+
+```TS
+export const getTimeYYYYMMDD = () => {
+  let nowDate = new Date()
+  let year = nowDate.getFullYear()
+  let month = nowDate.getMonth() + 1
+  let day = nowDate.getDate()
+  if (month >= 1 && month <= 9) {
+    month = "0" + month;
+  }
+  if (day >= 0 && day <= 9) {
+    day = "0" + day;
+  }
+  console.log(year + '' + month + '' + day)
+  return year + '' + month + '' + day
+}
+```
+
+实现源码（pages/api/addView.ts ）
+
+```TS
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { ironOptions } from 'config/index';
+import { EXCEPTION_COMMON } from 'pages/api/config/codes';
+
+import redis from 'lib/redis'
+import { getTimeYYYYMMDD } from 'utils'
+
+export default withIronSessionApiRoute(addView, ironOptions);
+
+// 用户阅览网站 增加网站阅览量
+async function addView(req: NextApiRequest, res: NextApiResponse) {
+  const { user_id } = req.body
+  const timestamp = getTimeYYYYMMDD()
+  const result1 = await redis.sadd('s_view_all:id', user_id + ':' + timestamp)
+  const result2 = await redis.sadd('s_view_day:id:' + timestamp, user_id)
+  if (result2) {
+    res.status(200).json({ code: 0, msg: '记录成功' });
+  } else {
+    res.status(200).json({ ...EXCEPTION_COMMON.ADDVIEW_FAILED });
+  }
+}
+```
+
+上面的redis.sadd这些操作最好还是看一下redis操作的一些函数：
+
+附上菜鸟教程的链接：https://www.runoob.com/redis/redis-sets.html
+
+
+
+```JS
+import { EXCEPTION_COMMON } from 'pages/api/config/codes';
+```
+
+这个是我定义的返回的异常信息
+
+```TS
+export const EXCEPTION_COMMON = {
+  ADDVIEW_FAILED: {
+    code: 6001,
+    msg: '增加访问量失败',
+  },
+};
+```
+
+就可以看到了
+
+![image-20220512183539895](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512183539895.png)
+
+![image-20220512183551623](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512183551623.png)
+
+上面这个是redis的可视化界面，redis destop manager
+
+百度网盘链接：https://pan.baidu.com/s/15xVRpCT8mkP2uT8PoBHT3g
+
+
+
+如果我们要实现获取这些 用户浏览量信息（最近七天的增长量、总用户浏览量、今日新增等）
+
+1、获取该网站总用户浏览量 & 今日新增
+
+![image-20220512165339513](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512165339513.png)
+
+```TS
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { ironOptions } from 'config/index';
+import redis from 'lib/redis'
+import { getTimeYYYYMMDD } from 'utils'
+
+export default withIronSessionApiRoute(getIp, ironOptions);
+
+async function getIp(req: NextApiRequest, res: NextApiResponse) {
+  const timestamp = getTimeYYYYMMDD()
+  // 获取今日新增用户
+  const dayViewNum = await redis.scard('s_view_day:id:' + timestamp)
+  const allViewNum = await redis.scard('s_view_all:id')
+  console.log(dayViewNum, allViewNum)
+  res?.status(200).json({
+    code: 0,
+    msg: '获取全站阅览总量&每日新增阅览量成功',
+    data: {
+      dayViewNum,
+      allViewNum
+    }
+  });
+}
+```
+
+2、获取过去一周内每一天的用户浏览量的数据变化
+
+![image-20220512181325834](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512181325834.png)
+
+首先我们得先获取一下 20220506、20220507、20220508、20220509、20220510、20220511 、20220512
+
+```TS
+export const getWeekYYYYMMDD = () => {
+  let days = [];
+  var nowDate = new Date();
+  for(let i=0; i<=24*6;i+=24){		//今天加上前6天
+    let dateItem=new Date(nowDate.getTime() - i * 60 * 60 * 1000);	//使用当天时间戳减去以前的时间毫秒（小时*分*秒*毫秒）
+    let year = dateItem.getFullYear();	//获取年份
+    let month = dateItem.getMonth() + 1;	//获取月份js月份从0开始，需要+1
+    let day= dateItem.getDate();	//获取日期
+    if (month >= 1 && month <= 9) {
+      month = "0" + month;
+    }
+    if (day >= 0 && day <= 9) {
+      day = "0" + day;
+    }
+    let valueItem= year + '' + month + '' + day;	//组合
+    days.push(valueItem);	//添加至数组
+  }
+  console.log('最近七天日期：',days);
+
+  return days;		
+}
+```
+
+因为要获取7天的，所以我们要查七张表，我太菜了，只想到了这种Promise.all的方式
+
+```TS
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { ironOptions } from 'config/index';
+import redis from 'lib/redis'
+import { getWeekYYYYMMDD } from 'utils'
+
+export default withIronSessionApiRoute(getIp, ironOptions);
+
+async function getIp(req: NextApiRequest, res: NextApiResponse) {
+  const weekTimeList = getWeekYYYYMMDD()
+  // 获取今日新增动态
+  const result = await Promise.all(
+    weekTimeList.map(day => {
+      return new Promise((rev, rej) => {
+        redis.scard('s_view_day:id:' + day).then((dayViewNum) => {
+            rev(dayViewNum)
+        })
+      })
+    })
+  )
+  res?.status(200).json({
+    code: 0,
+    msg: '获取七日全站阅览量',
+    data: {
+      result: result.reverse(),
+      weekDate: weekTimeList
+    }
+  });
+}
+```
+
+把数据和 weekDate 传递给前端，主要是为了让前端的折线图的x轴可以展示日期。就不用前端又进行操作了（前端拿到20220512这样的数据，进行一个slice(4）的操作就可以拿到后面的0512了
+
+
+
+同理，我们再来实现另外两个需求
+
+![image-20220512182241398](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512182241398.png)
+
+分别是 文章排行榜 和 作者排行榜
+
+- 文章排行榜：通过文章的点赞量和文章的阅览量来判定这个文章的排行榜，点赞和阅览的权重我用的是 3 7开，因为浏览量会比点赞数量更大一点，容易拉开差距，不然大部分的文章会同名hh（想起了LOL的五五开，狗头）
+- 作者排行榜：通过作者发布的文章数量和作者文章阅览量和点赞量来进行划分（这个比较复杂）
+
+
+
+下面实现一个简易的排行榜（通过redis自带的一个有序数组来实现）
+
+- 文章排行榜：仅通过点赞数量来进行排名
+- 作者排行榜：通过用户发布的文章数量来定
+
+
+
+首先：提前了解一下redis的有序数组[Redis 有序集合(sorted set) | 菜鸟教程 (runoob.com)](https://www.runoob.com/redis/redis-sorted-sets.html)
+
+![image-20220512183940647](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512183940647.png)
+
+![image-20220512184236125](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512184236125.png)
+
+value是这个文章的相关信息，并且还有一个score分数，这个score就是这个有序数组 **有序** 的关键。我们可以直接调用一个api来获取到这个有序数组里面每一个字段的score排名
+
+
+
+首先，实现文章排行榜。
+
+每次用户点赞文章的时候，我们就要在redis里面给这个文章article的score进行加一
+
+```ts
+await redis.zincrby('z_article_like', 1, JSON.stringify(articleData))
+```
+
+articleData就是上面图片的article_id和article_title的组合对象，这样保存文章信息是为了我们到时候直接取出来这个value就可以直接展示了
+
+
+
+获取排行榜
+
+```TS
+import { NextApiRequest, NextApiResponse } from 'next';
+import { withIronSessionApiRoute } from 'iron-session/next';
+import { ironOptions } from 'config/index';
+
+import redis from 'lib/redis'
+
+export default withIronSessionApiRoute(getRank, ironOptions);
+
+// 文章点赞排序（前k名）
+async function getRank(req: NextApiRequest, res: NextApiResponse) {
+  const { k } = req.body
+  const result = await redis.zrange('z_article_like', 0, k, 'WITHSCORES')
+  if (result) {
+    res?.status(200).json({
+      code: 0,
+      msg: `获取点赞前${k}成功`,
+      data: result
+    });
+  }
+}
+```
+
+
+
+同理，用户排行榜，实现方式：
+
+在每次用户调用的发布文章接口里面，进行如下操作：
+
+```TS
+await redis.zincrby('z_user_hot', 1, user_id)
+```
+
+获取用户排行榜数据（前五名）：
+
+```TS
+const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
+```
+
+### 
 
 
 
@@ -61,6 +559,12 @@
 ### 1、请求搜狐接口获取用户IP地址
 
 ### 2、分页实现
+
+
+
+## 十一、next.js-实现一个乞丐版的SSR框架
+
+
 
 
 

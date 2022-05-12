@@ -12,7 +12,6 @@ export default withIronSessionApiRoute(getRank, ironOptions);
 // 文章点赞排序（前k名）
 async function getRank(req: NextApiRequest, res: NextApiResponse) {
   const { k } = req.body
-  console.log('kkkkkkkkkkkkkkkk', k)
   const result = await redis.zrange('z_article_like', 0, k, 'WITHSCORES')
   console.log('result', result)
   if (result) {

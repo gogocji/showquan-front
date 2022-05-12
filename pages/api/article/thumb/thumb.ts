@@ -28,7 +28,7 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       article_title: article?.title
     }
     await redis.hset('h_article_like', article?.id, JSON.stringify(updateData))
-    await redis.zadd('z_article_like', addNum + 1, JSON.stringify(addRankData))
+    await redis.zincrby('z_article_like', 1, JSON.stringify(addRankData))
     res?.status(200).json({
       code: 0,
       msg: '点赞成功',
