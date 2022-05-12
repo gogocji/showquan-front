@@ -5,11 +5,9 @@ import MyBackTop from "components/BackTop"
 import { useEffect } from "react";
 import { observer } from "mobx-react-lite"
 const Layout = ({ children } : any) => {
-  var myDocument;
   const store = useStore()
   const { isShowDrawer } = store.common.commonInfo
   useEffect(() => {
-    myDocument = document
     document.addEventListener('visibilitychange',function(){
       var isHidden = document.hidden;
       if(isHidden){

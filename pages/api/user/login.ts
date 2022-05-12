@@ -8,6 +8,8 @@ import { Cookie } from 'next-cookie'
 import { setCookie } from "utils/index"
 import redis from 'lib/redis'
 import { getTimeYYYYMMDD } from 'utils'
+import { EXCEPTION_USER } from 'pages/api/config/codes';
+
 export default withIronSessionApiRoute(login, ironOptions)
 
 async function login(req: NextApiRequest, res: NextApiResponse) {
@@ -38,6 +40,13 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       session.skill = skill
       session.introduce = introduce
       session.job = job
+
+      // 判断用户是否在黑名单
+      if ( user.state === 1) {
+        res?.status(200)?.json({
+          ...EXCEPTION_USER.NOT_AUTHORIZE,
+        });
+      }
 
       await session.save()
 

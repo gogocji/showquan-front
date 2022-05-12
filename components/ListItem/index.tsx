@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { IArticle } from 'pages/api/index';
-import { Avatar, List, Tag, Image, Pagination } from 'antd';
-import { EyeOutlined, TagOutlined, CalendarOutlined, FireOutlined, MessageOutlined, ArrowsAltOutlined, RightOutlined } from '@ant-design/icons';
+import { Avatar, Tag, Image } from 'antd';
+import { CalendarOutlined, FireOutlined, MessageOutlined, ArrowsAltOutlined, RightOutlined } from '@ant-design/icons';
 import { markdownToTxt } from 'markdown-to-txt';
 import styles from './index.module.scss';
 import { useEffect, useState } from 'react'
@@ -30,7 +30,7 @@ const ListItem = (props: IProps) => {
 
   return (
     // eslint-disable-next-line @next/next/link-passhref
-    <LazyLoad height={200} offset={-200}>
+    !article.state && <LazyLoad height={200} offset={-200}>
       <Link href={`/article/${article.id}`} >
         <div className={styles.container}>
           <div className={(styles.article, screenWidth >=770?styles.cssnice1:styles.cssnice)}>

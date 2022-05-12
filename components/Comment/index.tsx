@@ -15,13 +15,12 @@ interface IProps {
   comment: IComment,
   article: IArticle,
   userInfo: IUserInfo,
-  handleAddComment?: (childComment: IComment) => void
+  // eslint-disable-next-line no-unused-vars
+  handleAddComment: (childComment: IComment) => void
 }
 
 const MyComment = (props: IProps) => {
   const { noPingLun, children, comment, article, userInfo, handleAddComment } = props
-  // 是否已点赞
-  const [isLike, setIsLike] = useState(false)
   // 用户操作
   const [userAction, setUserAction] = useState('')
   // 是否展示评论输入框
@@ -118,7 +117,7 @@ const MyComment = (props: IProps) => {
       .post('/api/comment/thumb/getThumb', {
         comment_id: comment.id,
         user_id: userInfo.userId
-      }).then((res) => {
+      }).then((res: any) => {
         if (res?.code === 0) {
           const { ifLike, commentLikeData } = res.data
           setUserAction( ifLike ? 'liked' : '')
@@ -142,7 +141,7 @@ const MyComment = (props: IProps) => {
   return (
     <Comment
       actions={commentActions}
-      author={ <a style={comment.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
+      author={ <a style={comment && comment?.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
       avatar={
         <Avatar
             src={comment?.user?.avatar}

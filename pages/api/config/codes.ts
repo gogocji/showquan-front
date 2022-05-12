@@ -7,6 +7,10 @@ export const EXCEPTION_USER = {
     code: 1002,
     msg: '未找到用户',
   },
+  NOT_AUTHORIZE: {
+    code: 1003,
+    msg: '黑名单用户',
+  }
 };
 
 export const EXCEPTION_ARTICLE = {

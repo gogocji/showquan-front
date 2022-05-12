@@ -162,10 +162,6 @@ const ArticleDetail = (props: IProps) => {
     setComments([...tempList]);
   }
 
-  const toMainPage = () => {
-
-  }
-
   const handleLikeArticle = () => {
     request
     .post('/api/article/thumb/thumb', {

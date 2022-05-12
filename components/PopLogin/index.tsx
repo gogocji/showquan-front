@@ -125,7 +125,7 @@ const PopLogin = (props: IProps) => {
             <div className={styles.loginPrivacy}>
               注册登录即表示同意{' '}
               <a
-                href="https://moco.imooc.com/privacy.html"
+                href=""
                 target="_blank"
                 rel="noreferrer"
               >
