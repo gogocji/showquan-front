@@ -528,9 +528,35 @@ const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
 
 
 
-## 四、next.js使用web-vital及其原理和源码分析
+## 四、next.js使用web-vital及其原理和各个方法的源码分析
 
 ### 4.1、web-vitals的介绍
+
+> web-vital是google发起的一个网站性能标准
+
+官方文档：https://github.com/GoogleChrome/web-vitals
+
+![image-20220510233901553](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220510233901553.png)
+
+
+
+**Core Web Vitals**
+
+> Core Web Vitals是Web Vitals的一个子集，适用于所有的网页
+
+主要是关注： **加载速度、可交互性、视觉稳定性**
+
+分别代表：**LCP、FID、CLS**
+
+- LCP（Largest Contentful Paint）：衡量加载性能，主要是为了更好的用户体验，一般LCP在2.5秒以内
+- FID（First Input Delay）：主要是衡量可交互性的，FID最好一般在100毫秒以内
+- CLS（Cumulative Layout Shift）：衡量视觉稳定性，CLS最好小于0.1（0表示的就是完全稳定，1表示的就是最不稳定）
+
+
+
+以上三个就构成了Core Web Vitals的核心指标
+
+
 
 
 
@@ -538,30 +564,240 @@ const userHotList = await redis.zrange('z_user_hot', 0, 5, 'WITHSCORES')
 
 #### 应用与统计
 
-调用的方式
+0、CLS用来干啥子
+
+> 下面通过一个示例来演示一下，CLS是用来干啥的
+
+<img src="C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513095912444.png" alt="image-20220513095912444" style="zoom:50%;" />
+
+上面是设计师给我们的UI设计图，作为前端工程师的我们要进行高精度的还原。
+
+搜索框、轮播图、tab切换、瀑布流的商品展示
+
+但是当我们做好的程序，给到测试同学进行测试的时候，他发现：
+
+<img src="C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513101312060.png" alt="image-20220513101312060" style="zoom:67%;" />
+
+
+
+一开始展示了这个页面，过了大概1s才慢慢的展示出了轮播图
+
+**诸位作为优秀的前端工程师**，一下子就定位到了问题，原来后台管理系统上传的图片精度太大了，整个图片的太大了，上传的时候没有在beforeUpload的时候做图片大小的判断并拦截上传。而前端展示的时候由于没有定好tabbar的高度占位置，要等我图片加载好了之后，才会显示整个tabbar轮播图的位置。这个过程中原本轮播图本来被商品列表占领的，但是图片加载好了之后，突然就弹出一个tabbar，**用户看了直摇头，什么LJ界面，吓得我狗皮膏药都掉了**
+
+
+
+所以定位到了问题，我们给tabbar轮播图一开始就定义好size用来占位，并限制后台管理系统的图片上传大小。提高整个的用户体验。
+
+
+
+在这个问题中，我们发现，如果我们没有给tabbar轮播图提前设置大小占位，而是等到图片加载好了之后才显示，给用户看到的就是一个 **页面布局变化很大，眼镜都吓掉了**，
+
+
+
+**回到我们的CLS（Cumulative Layout Shift）叫做累计布局偏移**
+
+官方说法：
+
+> 页面整个生命周期中每次元素产生的非预期布局偏移得分的总和，每次都可以把用户可视的元素在两次渲染帧中的起始地位进行比对，如果不同的话，就会产生LS（Layout Shift）
+
+用户进入小程序/网站，页面布局如果发生了改变（比如一个DOM突然从高度为0变成高度为100，一个DOM从top为0突然下移变成top为100），就叫做布局偏移
+
+- 每一次布局偏移都会根据 这个偏移的大小和情况来打一个分（偏移太多，用户体验太差，分数就搞点，说明你体验很差）
+- 这个计分是持续在整个页面的生命周期（各位优秀的前端工程师，肯定知道生命周期hh），当小程序退出、网站退出，或者小程序、网站切到后台的时候就意味着页面生命周期结束了，所以CLS统计的结果一般都是在生命周期结束的时候上报
+
+
+
+1、调用的方式
 
 - 使用web 提供的API
 - 使用web-vitals这个第三方js库
 
+**每一个Core Web Vitals都可以通过JS提供的Web API来进行测试**
+
+使用 **web-vitals** 这个第三方js库
+
+```js
+import {getCLS, getFID, getLCP} from 'web-vitals';
+
+function sendToAnalytics(metric) {
+  const body = JSON.stringify(metric);
+  // Use `navigator.sendBeacon()` if available, falling back to `fetch()`.
+  (navigator.sendBeacon && navigator.sendBeacon('/analytics', body)) ||
+      fetch('/analytics', {body, method: 'POST', keepalive: true});
+}
+
+getCLS(sendToAnalytics);
+getFID(sendToAnalytics);
+getLCP(sendToAnalytics);
+```
 
 
-返回结果&返回结果时机
+
+2、返回结果&返回结果时机
+
+今天我们讨论的只要是CLS（Cumulative Layout Shift）累计布局偏移，当getCLS（）函数执行了时候返回结果是这样的：
+
+![image-20220513091952420](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513091952420.png)
+
+后面的userInfo是我又添加的内容（因为我想查到每个用户对应的性能，后面还会添加获取用户的手机类型、型号等等）
+
+
+
+**这个结果返回的时机：**假如是一个web应用的话，是当我们把网页最小化到电脑后台、切换浏览器的tab把网页hidden、这个时候CLS就会返回结果了，如果是小程序等应用的话，就是手机锁屏或者是用户回到了桌面（小程序被切到后台）时触发
+
+
+
+**为什么结果是在应用被切到后台的时候触发？**
+
+因为CLS（累计布局偏移），是根据用户在使用该应用的时候（除掉应用被挂在后台的时候），该应用布局的偏移量
 
 
 
 #### 原理
 
-web提供的一些检测API
+**1、浏览器提供的API**
+
+> 肯定不可能从零搭，我们要检测浏览器里面的某个网页的性能，肯定是需要浏览器提供的一些API来监听网页的改变。
+
+比如我们要统计CLS的话，我们人眼可以看到页面布局的变化，但是浏览器怎么监听这个网页的布局变化呢？
+
+好问题！！
+
+浏览器提供了：Layout Instability API [Layout Instability API - Web APIs | MDN (mozilla.org)](https://developer.mozilla.org/en-US/docs/Web/API/Layout_Instability_API)
+
+<img src="C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513102735900.png" alt="image-20220513102735900" style="zoom:70%;" />
+
+翻译一下就是：
+
+**Layout Instability API**（布局 不稳定性 API）：提供了模板（interface）用来添加和报告Layout shift（布局 偏移）
+
+- 一个布局偏移的发生是在 两帧（two frames）之间在用户可以看到的地方 页面中的某个元素（element）改变了起始位置。（如图）<img src="C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513103334795.png" alt="image-20220513103334795" style="zoom:80%;" />
+- 这些改变了布局的元素就被称为是 不稳定的（unstable）元素，他们会增加CLS的得分，这些得分就表示了 **应用显示稳定性是好还是坏**
+- **Layout Instability API**（布局 不稳定性 API）提供了方法去测量和报告这些 **布局偏移**
+
+```JS
+new PerformanceObserver((list) => {
+  console.log(list.getEntries());
+}).observe({type: 'layout-shift', buffered: true});
+```
+
+这段代码可以这样理解，我们new了一个女朋友，不是不是，new了一个PerformanceObserver（行为 观察者）：这个观察者厉害了，可以观察网页、用户在浏览器里的行为，包括用户点击事件、输入事件、还有网页布局的偏移。
+
+并且我们通过这个观察者的observer方法可以告诉它，**我要观察浏览器的哪个行为**，哦好，传入了一个option对象
+
+```jsx
+{
+	type: 'layout-shift',
+	buffered: true
+}
+```
+
+然后这个观察者，每次观察到浏览器的布局偏移（layout shift）的时候就会执行 在new PerformanceObserver的时候传递回调函数了
+
+```ts
+(list) => {
+  console.log(list.getEntries());
+}
+```
+
+我们解释一下option对象中的buffered： true的含义
+
+参考：https://web.dev/debug-layout-shifts/ 这篇文章很不错
+
+文章中这样解释：
+
+![image-20220513105020790](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513105020790.png)
+
+就是初始化一个buffer缓冲区，用来保存每一次layout shift的信息（比如布局偏移的是哪个元素，偏移的情况是怎么样的，是上下移动还是左右移动，还是大小变化），其实就是用来规划一个buffer区来保存我们记录的“埋点”（entry）
+
+就是一开始就查一下有没有初始化，如果没有的话就初始化一下，避免没东西记录存储我们的埋点数据
+
+entry 其实可以被翻译为：条目、登记（**我觉得**）
 
 
 
-计分原理
+这个Layout instability api返回的信息是这样的，下面就是一些报告的内容（entry）
+
+下面对象中每一个字段的意思可以看这个教程[LayoutShift - 根据页面上元素的移动来监测网页的稳定性 - 蜜蜂教程 (mifengjc.com)](https://www.mifengjc.com/api/LayoutShift.html)
+
+```JSX
+duration: 0
+entryType: "layout-shift"
+hadRecentInput: false
+lastInputTime: 0
+name: ""
+sources: (3) [LayoutShiftAttribution, LayoutShiftAttribution, LayoutShiftAttribution]
+startTime: 11317.934999999125
+value: 0.17508567530168798
+```
+
+LayoutShiftAttribution表示的是 每一次布局偏移的更详细的信息，比如
+
+````JSON
+// ...
+  "sources": [
+    {
+      "node": "div#banner",
+      "previousRect": {
+        "x": 311,
+        "y": 76,
+        "width": 4,
+        "height": 18,
+        "top": 76,
+        "right": 315,
+        "bottom": 94,
+        "left": 311
+      },
+      "currentRect": {
+        "x": 311,
+        "y": 246,
+        "width": 4,
+        "height": 18,
+        "top": 246,
+        "right": 315,
+        "bottom": 264,
+        "left": 311
+      }
+    }
+  ]
+````
+
+表达的意思就是，一个 <div id='banner'> 一开始的大小、位置信息，可以看到previous和current变化的就是top属性的value，从76变成了246，所以就可以知道这一次的偏移是一个DOM元素从上往下偏移了
 
 
 
-一些Demo
+**有了浏览器的API支持，我们就可以监听布局偏移，并且获取布局偏移的相关信息了**
 
 
+
+**计分原理**
+
+```JSX
+duration: 0
+entryType: "layout-shift"
+hadRecentInput: false
+lastInputTime: 0
+name: ""
+sources: (3) [LayoutShiftAttribution, LayoutShiftAttribution, LayoutShiftAttribution]
+startTime: 11317.934999999125
+value: 0.17508567530168798
+```
+
+我们可以看到Layout Shift返回了一个value值，那么这个value值是怎么计算出来的呢？因为这个value值越接近1就表示布局偏移越来越大，用户体验越来越差，value=0表示没有布局偏移，也就是用户体验最好。
+
+
+
+**LS的得分算法**（计算的细节可以参考这篇大佬翻译的文章，里面有几个demo图片很好的解释了计算得分的方法：[关于前端:前端性能指标Cumulative-Layout-Shift - 乐趣区 (lequ7.com)](https://lequ7.com/guan-yu-qian-duan-qian-duan-xing-neng-zhi-biao-cumulativelayoutshift.html)）
+
+- 得分：**影响小数与 间隔小数的乘积**
+- 影响小数：不稳固元素在之前渲染帧中的可视区域 和 以后帧可视区域的并集。这个并集占整个页面的百分比，影响小数就是这个百分比变成小数的值
+- 间隔小数：不稳固元素在渲染帧中挪动的最大间隔（可能是横向可能是竖向）谁大就取谁，也是取这个挪动间隔距离占 宽/高的百分比，并转换成小数
+
+
+
+有了上面的了解之后，我们来分析一下web-vital的获取CLS性能的getCLS方法就很清晰了
+
+源码链接：https://github.com/GoogleChrome/web-vitals/blob/main/src/getCLS.ts
 
 
 
@@ -571,31 +807,259 @@ web提供的一些检测API
 
 分区原理、计分原理
 
+- 源码中，我们给observe第一个参数是'layout-shift'就是让PerformanceObserver这个行为观察者 **观察LayoutShift布局偏移**，并且传递了一个entryHandler的回调函数，也就是说，每一次监测到布局偏移了，就会把记录下来的这个布局便宜entry传递给entryHandler这个回调函数进行处理
+
+```TS
+const po = observe('layout-shift', entryHandler as PerformanceEntryHandler);
+```
+
+- 检测到布局偏移执行的回调函数entryHandler:
+
+```TS
+  let sessionValue = 0;
+
+  let sessionEntries: PerformanceEntry[] = [];
+
+  // layout shift每次变化的时候，都会把这个登记（entry）传递给这个回调函数
+  const entryHandler = (entry: LayoutShift) => {
+    // 500ms内如果用户输入的内容就不准了
+    // 通过session分区处理
+    if (!entry.hadRecentInput) {
+      const firstSessionEntry = sessionEntries[0];
+      const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
+
+      if (sessionValue &&
+          entry.startTime - lastSessionEntry.startTime < 1000 &&
+          entry.startTime - firstSessionEntry.startTime < 5000) {
+        sessionValue += entry.value;
+        sessionEntries.push(entry);
+      } else {
+        sessionValue = entry.value;
+        sessionEntries = [entry];
+      }
+        
+      // 策略:取最大值,所以每次面对一个新的session都要比对并更新metric的值
+      if (sessionValue > metric.value) {
+        metric.value = sessionValue;
+        // 这个其实就是一个attribution的感觉
+        metric.entries = sessionEntries;
+        // 
+        report();
+      }
+    }
+  };
+```
+
+看到这个代码可能会有点懵逼，先看一下下面这篇大佬的文章就很清晰了（[(34条消息) 前端监控 SDK 的一些技术要点原理分析_仙凌阁的博客-CSDN博客](https://blog.csdn.net/qq_39221436/article/details/120729116)）
+
+<img src="C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513113928494.png" alt="image-20220513113928494" style="zoom:67%;" />
+
+要看懂session分区的一个概念。也就是把多个layout shift都划为同一个session会话来进行统计（是否会被划分为同一个session会话区就是通过 这个layout shift发生的时间来进行判断的）
+
+摘录文章中大佬的话：
+
+> 一个或多个快速连续发生的单次布局偏移，每次偏移相隔的时间少于 1 秒，且整个窗口的最大持续时长为 5 秒。
+
+就是一个session窗口可以有多个layout shift发生后回调的entry信息，但是要满足当前这个layout shift发生的时机和上一个layout shift发生的时机小于一秒，并且 每个session的时间跨度只有五秒，如果当前这个layout shift发生的时机和上一个LS发生的时机小于一秒了，但是当前session已经超过5秒了，那么当前这个LS就会被划分到下一个新的session中。
 
 
-**Layout Instability API**
 
-**2、PerformanceObserver与Performance API**
+正是通过下面这段代码来进行了时间判断 分session会话区的：
 
-**3、onHidden**
+```TS
+	  const firstSessionEntry = sessionEntries[0];
+      const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
 
-监听应用关闭/切到后台 并执行回调
+      if (sessionValue &&
+          entry.startTime - lastSessionEntry.startTime < 1000 &&
+          entry.startTime - firstSessionEntry.startTime < 5000) {
+        sessionValue += entry.value;
+        sessionEntries.push(entry);
+      } else {
+        sessionValue = entry.value;
+        sessionEntries = [entry];
+      }
+```
+
+- firstSessionEntry就是用来判断当前这个session的时间跨度是否大于5s了
+
+- lastSessionEntry就是用来判断距离上一个LS的时间跨度是否小于1s
+- sessionEntries就是一个用来存储一个session会话中发生的所有Layout Shift后记录的entry
+
+那么首先第一个问题是，为什么要定义这个session，为什么会有1s和5s这个概念呢？
+
+**（这个会话窗口的特点是chrome团队经过实验和研究得到的特征结果）**
+
+
+
+那么又带来了一个问题，用户在进入应用的一个生命周期内，肯定会存在多个session会话，每个session会话会有一个评分，但是最后getCLS函数只会给我们呢返回以value，这个value又是怎么样计算出来的呢？
+
+还是这篇大佬的文章点明了原理[(34条消息) 前端监控 SDK 的一些技术要点原理分析_仙凌阁的博客-CSDN博客](https://blog.csdn.net/qq_39221436/article/details/120729116)
+
+![image-20220513114947057](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513114947057.png)
+
+目前统计所有session中最大的value是最能反应用户那边CLS性能的。因为大部分的CLS 布局偏移都是发生在了应用加载的时候，在用户后面使用的时候其实整体的布局偏移并不多。所以每次回调entryHandler的时候都把拿到的session的value值计算出来只会进行大小比较，每次都更新metric中的value
+
+
+
+**2、onHidden**
+
+```TS
+const po = observe('layout-shift', entryHandler as PerformanceEntryHandler);
+onHidden(() => {
+      // takeRecords() 方法返回当前存储在性能观察器中的 性能条目  列表
+      po.takeRecords().map(entryHandler as PerformanceEntryHandler);
+      // 如果页面hidden了,那么就没有监控的必要了,获取之前已经获取到的监控数据然后立即返回结果
+      // 不然监控可能会一直存在用页面中
+      // 经过尝试可以看到,只有页面关闭了才会上报CLS和LCP的数据,因为在用户进入应用的时候我们并不知道应该什么时候进行触发CLS的回调,
+      // 因为用户的一些操作都可能导致页面的相关DOM的重新渲染
+      report(true);
+    });
+```
+
+然后我们还可以看到这段代码。
+
+首先看看在onHidden中我们做了什么？
+
+```TS
+export const onHidden = (cb: OnHiddenCallback, once?: boolean) => {
+  const onHiddenOrPageHide = (event: Event) => {
+    if (event.type === 'pagehide' || document.visibilityState === 'hidden') {
+      cb(event);
+      // 只触发一次,所以第一次就把监听器取消掉
+      if (once) {
+        removeEventListener('visibilitychange', onHiddenOrPageHide, true);
+        removeEventListener('pagehide', onHiddenOrPageHide, true);
+      }
+    }
+  }
+  addEventListener('visibilitychange', onHiddenOrPageHide, true);
+  // Some browsers have buggy implementations of visibilitychange,
+  // so we use pagehide in addition, just to be safe.
+  addEventListener('pagehide', onHiddenOrPageHide, true);
+};
+```
+
+
+
+**visibilitychange**
+
+这个其实就是我们类似于 tab切换、应用切到手机后台、手机锁屏的时候，我们的document就会显示为一种hidden的状态。
+
+不同的浏览器又pagehide和visibilitychange两种监听方式，所以我们都做监听，这样就可以每次用户把网页/app切到后台的时候触发cb(event)
+
+可以看到这个cb就是我们给onHidden传入的回调函数
+
+```TS
+	  po.takeRecords().map(entryHandler as PerformanceEntryHandler);
+      report(true);
+```
+
+执行回调函数 通过po.takeRecord方式，就可以从：
+
+```ts
+new PerformanceObserver((list) => {
+  console.log(list.getEntries());
+}).observe({type: 'layout-shift', buffered: true});
+```
+
+我们在PerformanceObserver里面定义的buffer区，里面存储了entry记录，takeRecords就是把所有的entry记录都拿出来，然后执行entryHandler函数，只会我们report(true)的意思
+
+可以看看源码:
+
+```TS
+const bindReporter = (
+  callback: ReportHandler,
+  metric: Metric,
+  reportAllChanges?: boolean,
+) => {
+  // 相当于是一个闭包，可以一直访问这个prevValue的值（这个值初始化是undefined）
+  let prevValue: number;
+  return (forceReport?: boolean) => {
+    if (metric.value >= 0) {
+      if (forceReport || reportAllChanges) {
+        // 最后用到的时间
+        metric.delta = metric.value - (prevValue || 0);
+
+        // Report the metric if there's a non-zero delta or if no previous
+        // value exists (which can happen in the case of the document becoming
+        // hidden when the metric value is 0).
+        // See: https://github.com/GoogleChrome/web-vitals/issues/14
+        if (metric.delta || prevValue === undefined) {
+          prevValue = metric.value;
+          callback(metric);
+        }
+      }
+    }
+  }
+}
+
+report = bindReporter(onReportWrapped, metric, reportAllChanges);
+
+```
+
+这个bindReporter会返回一个函数，这个函数接收一个 **forceReport** 参数，如果我们传递forceReport = true的话，那么就立即执行函数，返回刚刚
+
+```ts
+po.takeRecords().map(entryHandler as PerformanceEntryHandler);
+```
+
+记录的metric给用户那边，也就是返回getCLS的结果了
+
+**所以这就是，用户把页面切到后台的时候，CLS返回结果的原因了**
 
 
 
 **4、onBFCacheRestore**
 
-BFC的特点
+还有一个源码比较难理解：
+
+```TS
+// 如果是BFC返回的话就要重新进行计算了
+    onBFCacheRestore(() => {
+      sessionValue = 0;
+      fcpValue = -1;
+      metric = initMetric('CLS', 0);
+      // bindReporter指的是绑定 
+      // 但是似乎没有添加bfc:true的标记,那么这个数据不会影响吗?
+      report = bindReporter(onReportWrapped, metric, reportAllChanges);
+    });
+```
+
+首先要理解一下，**什么叫做BFC**
+
+BFC（back forward cache）：浏览器往返缓存
+
+> 就是用户使用浏览器进行 前进 后退 的时候，页面的转换速度很快，因为做了页面的缓存，这个缓存不仅保存了页面数据，还保存了DOM和JS的状态，实际上是将整个页面都保存在了内存各种。通过BFC返回的页面，不会触发onload事件，但是会执行pageShow事件（onload是页面第一次加载的时候触发的，pageshow是每次加载页面都会触发）
+
+正是因为BFC不会执行onload的方法，而我们都是在页面onload的时候挂载web-vital的监听函数，但是如果页面是BFC缓存下来的，下次进入这个页面的时候就不会执行onload，那么就不会挂载web-vital监听函数，就监听不了。
 
 
 
-BFC的缺点
+**所以为此，我们要为BFC的页面做一个额外的操作**
+
+来看看onBFCacheRestore函数内部都做了什么：
+
+```TS
+export const onBFCacheRestore = (cb: onBFCacheRestoreCallback) => {
+  addEventListener('pageshow', (event) => {
+    // 这个persisted字段表示的意思是这个页面是从bfc返回的
+    if (event.persisted) {
+      cb(event);
+    }
+  }, true);
+};
+```
+
+我们监听pageshow，如果发现这个页面是bfc返回的，就执行cb回调（也就是我们的web-vital监听函数）——  初始化相关内容、开启report监听回调。
 
 
 
-#### 减低CLS得分的方法
+#### 小建议——减低CLS得分的方法
 
-
+- 给image、video提前预设好占位空间，不要等这些大文件请求加载好了再进行渲染
+- 不要随意的已有的内容上，通过document访问的方式给已有内容插入内容
+- 把触发布局变化的属性（width、height盒子大小。right left top等定位位置）改成transform或者translate的方式
 
 
 
