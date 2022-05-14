@@ -1,8 +1,7 @@
 import '@uiw/react-md-editor/markdown-editor.css';
 import '@uiw/react-markdown-preview/markdown.css';
-import dynamic from 'next/dynamic';
 import { observer } from 'mobx-react-lite';
-import { ChangeEvent, useEffect, useState, useRef } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { Input, Button, message, Select } from 'antd';
 import { useRouter } from 'next/router';
 import { useStore } from 'store/index';
@@ -11,8 +10,6 @@ import styles from './index.module.scss';
 import UpLoadImg from 'components/UpLoadImg'
 import Editor from 'md-editor-rt';
 import 'md-editor-rt/lib/style.css';
-
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 
 const NewEditor = () => {
   const store = useStore();
@@ -62,11 +59,11 @@ const NewEditor = () => {
     setContent(content);
   };
 
-  const updateMdContent = (imgContent) => {
+  const updateMdContent = (imgContent: string) => {
     const historyInnerHTMLd = document.getElementById('md-editor-rt-textarea')?.innerHTML
     let mdContent = historyInnerHTMLd
     mdContent += imgContent
-    setContent(mdContent)
+    setContent(mdContent as string)
   }
   const handleSelectTag = (value: []) => {
     setTagIds(value);
@@ -87,16 +84,16 @@ const NewEditor = () => {
           if (file) {
             reader.readAsDataURL(file);
           }
-          reader.onload = (readerEvent) => {
+          reader.onload = (readerEvent : any) => {
             form.append("image", readerEvent.target.result);
             request.post('/api/common/upload', form)
-            .then((res) => {
+            .then((res : any) => {
               if (res?.code === 0 ) {
                 const { url } = res.data
                 rev(`![](${url})`)
               }
             })
-            .catch((error) => rej(error));
+            .catch((error: any) => rej(error));
           };
         });
       })

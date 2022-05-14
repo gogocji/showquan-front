@@ -17,7 +17,7 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
   for (let item in result) {
     var re;
     try {
-      re = new RegExp(searchKey, 'i')
+      re = new RegExp(searchKey as string, 'i')
     } catch (err) {
       res.status(200).json({ ...EXCEPTION_ARTICLE.SEATCH_FAILED });
     }
@@ -25,7 +25,7 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
       regexpList.push(item)
     }
   }
-  let articleList = []
+  let articleList = [] as any
   if (regexpList.length) {
     articleList = await articleRepo.createQueryBuilder("article")
     .where(

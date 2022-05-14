@@ -1,5 +1,5 @@
 import styles from './index.module.scss';
-import { Avatar, Button, Divider, message } from 'antd'
+import { Avatar, Button, message } from 'antd'
 import { IUserInfo } from 'store/userStore';
 import { useStore } from 'store';
 import request from 'service/fetch';
@@ -22,7 +22,7 @@ const FollowItem = (props: IProps) => {
     request.post('/api/follow/del', {
       user_id,
       byUser_id
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('取消关注成功')
         setHasFollow(false)
@@ -34,7 +34,7 @@ const FollowItem = (props: IProps) => {
     request.post('/api/follow/publish', {
       user: userInfo,
       byUser_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('关注成功')
         setHasFollow(true)

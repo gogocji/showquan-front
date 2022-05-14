@@ -57,6 +57,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
 
   // 把全部需要匹配的内容全部都拼接并存在redis里面
   const itemAllInfo = title + content + description + user?.nickname + tagListString
+  await redis.hset('h_article_search', resArticle.id, JSON.stringify(itemAllInfo))
   await redis.zincrby('z_user_hot', 1, user?.id + '')
   // redis添加新用户
   const timestamp = getTimeYYYYMMDD()

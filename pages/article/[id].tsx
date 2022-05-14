@@ -11,10 +11,9 @@ import { observer } from "mobx-react-lite"
 import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
-import { useRouter } from 'next/router';
 import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
-import marked from 'marked'
+import {marked} from 'marked'
 import hljs from "highlight.js";
 import 'highlight.js/styles/monokai-sublime.css';
 import MyComment from 'components/Comment'
@@ -28,7 +27,6 @@ interface IProps {
 export async function getServerSideProps({ params }: any) {
   const articleId = params?.id
   const db = await prepareConnection()
-  const articleRepo = db.getRepository(Article);
   const article = await db.getRepository(Article).find({
     where: {
       id: articleId
@@ -71,7 +69,7 @@ const ArticleDetail = (props: IProps) => {
   console.log('commentList', commentList)
   const store = useStore();
   const loginUserInfo = store?.user?.userInfo;
-  const { user: { nickname, avatar, id} } = article
+  const { user: { nickname, avatar} } = article
   const [inputVal, setInputVal] = useState('');
   const [comments, setComments] = useState(commentList || []);
   const [ifThumb, setIfThumb] = useState(false)
@@ -80,7 +78,6 @@ const ArticleDetail = (props: IProps) => {
   const [articleLikeNum, setArticleLikeNum] = useState(0)
   // const [hasTocify, setHasTocify] = useState(false)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
-  const { pathname } = useRouter()
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
   const tocify = new Tocify()
@@ -95,7 +92,6 @@ const ArticleDetail = (props: IProps) => {
     gfm: true,
     pedantic: false,
     sanitize: false,
-    tables: true,
     breaks: false,
     smartLists: true,
     smartypants: false,
@@ -103,7 +99,7 @@ const ArticleDetail = (props: IProps) => {
       return hljs.highlightAuto(code).value;
     }
   }); 
-  const html = marked(article?.content) 
+  const html = marked(article?.content as string) 
 
   const handleComment = () => {
     if (inputVal === '') {
@@ -125,12 +121,11 @@ const ArticleDetail = (props: IProps) => {
         const newComments = [
           {
             id: res.data?.id,
-            pComment: null,
-            rComment: null,
             create_time: new Date(),
             update_time: new Date(),
+            article: article,
+            is_delete: 0,
             content: inputVal,
-            toUser: null,
             user: {
               avatar: loginUserInfo?.avatar,
               nickname: loginUserInfo?.nickname,
@@ -182,7 +177,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/follow/getById', {
       user_id: article.user?.id,
       byUser_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         res.data === 1 ? setHasFollow(true) : ''
       }
@@ -191,7 +186,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/collect/getById', {
       article_id: article?.id,
       user_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         res.data === 1 ? setHasCollect(true) : ''
       }
@@ -207,7 +202,7 @@ const ArticleDetail = (props: IProps) => {
       .post('/api/article/thumb/getThumb', {
         article_id: article.id,
         user_id: loginUserInfo.userId
-      }).then((res) => {
+      }).then((res: any) => {
         if (res?.code === 0) {
           const { ifLike, articleLikeData } = res.data
           setIfThumb(ifLike)
@@ -221,7 +216,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/follow/publish', {
       user: article.user,
       byUser_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('关注成功')
         setHasFollow(true)
@@ -236,7 +231,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/follow/del', {
       user_id,
       byUser_id
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('取消关注成功')
         setHasFollow(false)
@@ -254,7 +249,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/collect/publish', {
       article: article,
       user_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('收藏成功')
         setHasCollect(true)
@@ -267,7 +262,7 @@ const ArticleDetail = (props: IProps) => {
     request.post('/api/collect/del', {
       article_id: article?.id,
       user_id: loginUserInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         message.success('取消收藏成功')
         setHasCollect(false)
@@ -299,7 +294,7 @@ const ArticleDetail = (props: IProps) => {
                 </div>
                 <div className={styles.iconList}>
                 <span className={styles.icon}><CalendarOutlined type='calendar' style={{color:'lightseagreen', marginRight: '5px'}}/>
-                  {format(new Date(article?.update_time), 'yyyy-mm-dd hh:mm')}
+                  {format(new Date(article?.update_time as Date), 'yyyy-mm-dd hh:mm')}
                 </span>
                 <span className={styles.icon}><FireOutlined type='fire' style={{color:'red'}}/> {article?.views}</span>
                 <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> 231</span>  
@@ -399,7 +394,8 @@ const ArticleDetail = (props: IProps) => {
           </div>
         </Col>
         <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
-          <RightBar>
+          <RightBar ifCanChangeAvatar={true}>
+            <></>
           </RightBar>
           {
             hasTocify && (

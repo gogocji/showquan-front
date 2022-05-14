@@ -17,7 +17,7 @@ import { ChangeEvent } from 'react'
 import { User } from 'db/entity/index';
 import { useStore } from 'store/index';
 import { getCanExpireLocal, setCanExpireLocal, getMsToNewDay } from 'utils/localStorage'
-const DynamicComponent = dynamic(() => import('components/ListItem'));
+const DynamicComponent = dynamic(() => import('components/ListItem') as any) as any;
 const { Search } = Input
 
 interface ITag {
@@ -33,7 +33,7 @@ interface IProps {
 }
 
 // 文章根据日期排序
-const compare = function (obj1, obj2) {
+const compare = function (obj1: any, obj2: any) {
   var val1 = new Date(obj1.create_time);
   var val2 = new Date(obj2.create_time);
   if (val1 < val2) {
@@ -65,7 +65,7 @@ export async function getServerSideProps() {
   
   // 改变点赞排行榜数据结构
   let thumbTopList = [];
-  let obj = {}
+  let obj = {} as any
   console.log('后端thumbResult', thumbResult, thumbTopList.length)
   for (let i = 0; i < thumbResult.length;i++) {
     if (i === 0 || i % 2 === 0) {
@@ -80,7 +80,7 @@ export async function getServerSideProps() {
   // 改变用户排行榜数据结构
   let userTopTemplList = [];
   let userTopIdList = []
-  let userObj = {}
+  let userObj = {} as any
   console.log('userHotList', userHotList)
   for (let i = 0; i < userHotList.length;i++) {
     if (i === 0 || i % 2 === 0) {
@@ -92,7 +92,7 @@ export async function getServerSideProps() {
     }
   }
   // TODO
-  let userTopList = []
+  let userTopList = [] as any
   console.log('userTopList', userTopIdList)
   if (userTopIdList.length) {
     userTopList = await userRepo.createQueryBuilder("user")
@@ -129,7 +129,7 @@ const incrementView = (user_id: number) => {
     // 请求并重新设置本地缓存
     request.post('/api/common/user/addView', {
       user_id
-    }).then((res) => {
+    }).then(() => {
       const expireTime = getMsToNewDay()
       setCanExpireLocal('todayHasView', true, expireTime)
     })
@@ -152,7 +152,7 @@ const Home = (props: IProps) => {
   useEffect(() => {
     console.log('111')
     // 增加访问量
-    incrementView(user?.id)
+    incrementView(user?.id as number)
     setIsLoading(false)
   }, [currentList])
 
@@ -202,7 +202,7 @@ const Home = (props: IProps) => {
       let regexpList = [] as IArticle[] // 存储匹配到的数据
       blogList.map((item: IArticle) => {
         // 拼接这个博客的所有信息
-        let itemAllInfo = item.content + item.description + item.title + item.user?.nickname
+        let itemAllInfo = item.content as string + item.description + item.title + item.user?.nickname
         // 防止正则匹配失败
         var re;
         try {
@@ -245,11 +245,13 @@ const Home = (props: IProps) => {
             // drawerStyle={{backgroundColor: 'rgb(245 249 253)'}}
           >
             <RightBar ifCanChangeAvatar={false}>
-              <TagList tags={tags} setTagArticle={changeTagList} />
-              <Divider style={{margin: '10px 0'}} dashed></Divider>
-              <HotArticle thumbTopList={thumbTopList}/>
-              <Divider style={{margin: '10px 0'}} dashed></Divider>
-              <HotUser userTopList={userTopList}/>
+              <>
+                <TagList tags={tags} setTagArticle={changeTagList} />
+                <Divider style={{margin: '10px 0'}} dashed></Divider>
+                <HotArticle thumbTopList={thumbTopList}/>
+                <Divider style={{margin: '10px 0'}} dashed></Divider>
+                <HotUser userTopList={userTopList}/>
+              </>
             </RightBar>
           </Drawer>
         <Row className={styles.searchContainer}>
@@ -285,12 +287,14 @@ const Home = (props: IProps) => {
           }
       </Col>
       <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
-        <RightBar>
-          <TagList tags={tags} setTagArticle={changeTagList} />
-          <Divider style={{margin: '10px 0'}} dashed></Divider>
-          <HotArticle thumbTopList={thumbTopList}/>
-          <Divider style={{margin: '10px 0'}} dashed></Divider>
-          <HotUser userTopList={userTopList}/>
+        <RightBar ifCanChangeAvatar={true}>
+          <>
+            <TagList tags={tags} setTagArticle={changeTagList} />
+            <Divider style={{margin: '10px 0'}} dashed></Divider>
+            <HotArticle thumbTopList={thumbTopList}/>
+            <Divider style={{margin: '10px 0'}} dashed></Divider>
+            <HotUser userTopList={userTopList}/>
+          </>
         </RightBar>
       </Col>
     </Row>

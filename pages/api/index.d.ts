@@ -3,14 +3,14 @@ import { IUserInfo } from "store/userStore"
 
 export type IComment = {
   id?: number,
-  content?: string,
+  content: string,
   create_time?: Date,
   update_time?: Date,
-  user?: IUserInfo,
-  article?: IArticle,
+  user: IUserInfo,
+  article: IArticle,
   pComment?: IComment,
   rComment?: IComment,
-  is_delete?: number,
+  is_delete: number,
   like_count?: number,
   children?: IComment[],
   toUser?: IUserInfo
@@ -23,7 +23,7 @@ export type IArticle = {
   views?: number,
   create_time?: Date,
   update_time?: Date,
-  user?: IUserInfo,
+  user: IUserInfo,
   comments?: IComment[],
   description?: string,
   headImg?: string,

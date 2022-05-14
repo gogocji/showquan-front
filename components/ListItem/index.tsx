@@ -44,7 +44,7 @@ const ListItem = (props: IProps) => {
             <div className={styles.iconList}>
               <span className={styles.icon}><Tag color="red" style={{margin:0}} >置顶</Tag></span>
               <span className={styles.icon}><CalendarOutlined type='calendar' style={{color:'lightseagreen', marginRight: '5px'}}/>
-                {format(new Date(article?.update_time), 'yyyy-mm-dd hh:mm')}
+                {format(new Date(article?.update_time as Date), 'yyyy-mm-dd hh:mm')}
               </span>
               <Tag color="#f50">生活</Tag>
               <Tag color="#2db7f5">技术</Tag>

@@ -3,8 +3,13 @@ import Login from 'components/Login/index'
 import Author from 'components/Author/index'
 import UserInfo from 'components/UserInfo/index'
 import { observer } from "mobx-react-lite"
+import React, { ReactElement } from 'react';
 
-const RightBar = (props) => {
+interface IProps {
+  ifCanChangeAvatar: boolean,
+  children: ReactElement
+}
+const RightBar = (props: IProps) => {
   const { children, ifCanChangeAvatar = true } =props
   // 获取用户id
   const store = useStore()

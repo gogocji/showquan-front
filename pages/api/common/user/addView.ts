@@ -1,8 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { ironOptions } from 'config/index';
-import { prepareConnection } from 'db/index';
-import { Article } from 'db/entity/index';
 import { EXCEPTION_COMMON } from 'pages/api/config/codes';
 
 import redis from 'lib/redis'

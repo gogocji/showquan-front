@@ -22,13 +22,13 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
           id: Number(tag_id),
         });
       },
-      skip: pageSize * (page - 1),
+      skip: pageSize as number * (page as number - 1),
       take: pageSize as number
     });
   } else {
     articles = await articleRepo.find({
       relations: ['user', 'tags'],
-      skip: pageSize * (page - 1),
+      skip: pageSize as number * (page as number - 1),
       take: pageSize as number
     });
   }

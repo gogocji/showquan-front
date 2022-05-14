@@ -1,9 +1,9 @@
 import Link from 'next/link';
-import { Router, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
-import { Button, Avatar, Dropdown, Menu, message, Row, Col, Drawer } from 'antd'
+import { Button, Avatar, Dropdown, Menu, message, Row, Col } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
@@ -79,7 +79,7 @@ const Navbar: NextPage = () => {
       var scrollup = document.getElementById('scrolldisplay');
       //当滚动到距离顶部200px时，返回顶部的锚点显示
       
-      if(t>=200){
+      if(t>=200 && scrollup){
         if(t-scrollheight<0){
           scrollup.style.marginTop = '0'
           scrollheight = t

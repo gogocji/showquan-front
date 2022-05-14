@@ -32,7 +32,7 @@ async function upload(req: NextApiRequest, res: NextApiResponse) {
       if (err) return reject(err)
       resolve({ fields, files })
     })
-  })
+  }) as any
   const nowDate = new Date()
   const year = nowDate.getFullYear()
   const month = nowDate.getMonth()
@@ -49,7 +49,7 @@ async function upload(req: NextApiRequest, res: NextApiResponse) {
   });
 }
 
-async function put (fileName, filePath) {
+async function put (fileName: any, filePath: any) {
   try {
     // 填写OSS文件完整路径和本地文件的完整路径。OSS文件完整路径中不能包含Bucket名称。
     // 如果本地文件的完整路径中未指定本地路径，则默认从示例程序所属项目对应本地路径中上传文件。

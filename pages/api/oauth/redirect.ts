@@ -75,7 +75,7 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
 
     await session.save()
 
-    setCookie(cookies, { id, nickname, avatar })
+    setCookie(cookies, { id, nickname, avatar }as any)
 
     res.writeHead(302, {
       Location: '/'
@@ -105,7 +105,7 @@ async function redirect(req: NextApiRequest, res: NextApiResponse) {
 
     await session.save()
 
-    setCookie(cookies, { id, nickname, avatar })
+    setCookie(cookies, { id, nickname, avatar } as any)
 
     res.writeHead(302, {
       Location: '/'

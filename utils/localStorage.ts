@@ -1,6 +1,6 @@
 	// 存值函数
 	// 接收三个参数：键、值、有效天数
-  export const setCanExpireLocal = (key, value, expire) => {
+  export const setCanExpireLocal = (key: string, value: any, expire: number ) => {
     // 判断传入的有效期是否为数值或有效
     // isNaN是js的内置函数，用于判断一个值是否为NaN（非数值），
     // 非数值返回true，数值返回false
@@ -22,12 +22,12 @@
 
 // 取值函数
 // 接收一个参数，存值的键										
-export const getCanExpireLocal = ( key )=> {
-  let val = localStorage.getItem(key)
+export const getCanExpireLocal = ( key: string )=> {
+  let val = localStorage.getItem(key) as any
   // 如果没有值就直接返回null
   if (!val)  return val
   // 存的时候转换成了字符串，现在转回来
-  val = JSON.parse(val)
+  val = JSON.parse(val) as any
   // 存值时间戳 +  有效时间 = 过期时间戳
   // 如果当前时间戳大于过期时间戳说明过期了，删除值并返回提示
   if (Date.now() > val.time + val.expire) {

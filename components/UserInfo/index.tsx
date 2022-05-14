@@ -12,7 +12,7 @@ const UserInfo = () => {
 
   const getUserIp = () => {
     request.get('/api/common/getIp')
-    .then(res => {
+    .then((res: any) => {
       const userIp = res.data?.userIp
       const userIpAddress = res.data?.userIpAddress
       setUserIp(userIp)

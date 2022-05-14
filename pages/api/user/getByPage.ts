@@ -22,12 +22,12 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
           state: Number(user_state),
         });
       },
-      skip: pageSize * (page - 1),
+      skip: pageSize as number * (page as number - 1),
       take: pageSize as number
     });
   } else {
     users = await userRepo.find({
-      skip: pageSize * (page - 1),
+      skip: pageSize as number * (page as number - 1),
       take: pageSize as number
     });
   }

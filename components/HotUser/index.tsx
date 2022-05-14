@@ -1,5 +1,4 @@
 import styles from './index.module.scss';
-import Icon, { FireOutlined } from '@ant-design/icons'
 import Link from 'next/link'
 import { Avatar, Divider, Empty } from 'antd' 
 interface IProps {

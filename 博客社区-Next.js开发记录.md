@@ -2,6 +2,18 @@
 
 ## 一、next.js使用mobx
 
+最近在完成大三的一个课程期末设计，独立完成做了一个博客社区，主要技术栈是：
+
+前端：next.js + mobx + ts + antd;
+
+后台管理系统：vue3.0 + pinia + ts + elementUI
+
+后端：next.js + ts + 阿里云oss存储 + redis
+
+开发的时候遇到了很多坑，后面会通过文章的方式总结自己在开发过程中踩到的坑以及一些小经验。
+
+
+
 - 下载依赖（安装两个依赖）
 
 ```npm
@@ -10,7 +22,7 @@ yarn add mobx mobx-react-lite
 
 - 建立store文件夹以及基本的store代码
 
-![image-20220512160744721](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220512160744721.png)
+![image-20220513161747110](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220513161747110.png)
 
 index.ts是把这个store暴露给外部使用store的
 

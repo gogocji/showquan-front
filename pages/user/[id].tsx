@@ -18,10 +18,9 @@ import { IArticle } from 'pages/api/index'
 import LazyLoad from 'react-lazyload';
 import request from 'service/fetch';
 import FollowItem from "components/FollowItem"
-import ListItem from "components/ListItem"
 
 function useCallbackState<T>(od: T) {
-  const cbRef = useRef();
+  const cbRef = useRef() as any;
   const [data, setData] = useState(od);
 
   useEffect(() => {
@@ -30,17 +29,17 @@ function useCallbackState<T>(od: T) {
 
   return [
     data,
-    function (d, callback) {
+    function (d: any, callback: any) {
       cbRef.current = callback;
       setData(d);
     }
   ];
 }
 
-const DynamicComponent = dynamic(() => import('components/ListItem'));
+const DynamicComponent = dynamic(() => import('components/ListItem') as any) as any;
 
 // 文章根据日期排序
-const compare = function (obj1, obj2) {
+const compare = function (obj1: any, obj2: any) {
   var val1 = new Date(obj1.create_time);
   var val2 = new Date(obj2.create_time);
   if (val1 < val2) {
@@ -124,10 +123,10 @@ const UserDetail = (props: any) => {
   const { userInfo = {}, articles = [] } = props;
   const [showAricles, setShowAricles] = useState([...articles]);
   const [currentPage, setCurrentPage] = useState(1)
-  const [currentList, setCurrentList] = useCallbackState<IArticle[]>(articles.slice(1, 9))
+  const [currentList, setCurrentList] = useCallbackState<IArticle[]>(articles.slice(1, 9)) as any
   const [isLoading, setIsLoading] = useState(true)
-  const [followList, setFollowList] = useState([])
-  const [collectList, setCollectList] = useState([])
+  const [followList, setFollowList] = useState([] as any)
+  const [collectList] = useState([])
   const { TabPane } = Tabs;
 
   const viewsCount = articles?.reduce(
@@ -138,7 +137,7 @@ const UserDetail = (props: any) => {
   const getFollowList = () => {
     request.post('/api/follow/getList', {
       byUser_id: userInfo.id
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         const resultList =  res.data
         let followList = []
@@ -154,7 +153,7 @@ const UserDetail = (props: any) => {
   const getCollectList = () => {
     request.post('/api/collect/getList', {
       user_id: userInfo.id
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         const resultList =  res.data
         let collectList = []
@@ -187,7 +186,7 @@ const UserDetail = (props: any) => {
     })
   }
 
-  const handleTabChange = (key) => {
+  const handleTabChange = (key: any) => {
     setCurrentList([], () => {
       setIsLoading(true)
       if (key == 1) {
@@ -231,7 +230,7 @@ const UserDetail = (props: any) => {
               {
                 currentList.length ? (
                   <Spin tip='加载中...' spinning={isLoading}>
-                    {currentList?.map((article) => (
+                    {currentList?.map((article: any) => (
                       <>
                         <DynamicComponent article={article} />
                         {/* <ListItem article={article} /> */}
@@ -256,7 +255,7 @@ const UserDetail = (props: any) => {
             <TabPane tab="关注" key="2">
               {
                 followList.length ? (
-                  followList?.map((item) => (
+                  followList?.map((item: any) => (
                     <FollowItem key={item} userInfo={item} />
                   ))
                 )
@@ -272,7 +271,7 @@ const UserDetail = (props: any) => {
                 currentList.length ? (
                   <div>
                     {
-                      currentList?.map((article) => (
+                      currentList?.map((article: any) => (
                         <>
                          <DynamicComponent key={article} article={article} />
                         </>
@@ -299,7 +298,7 @@ const UserDetail = (props: any) => {
       </div>
       </Col>
       <Col className={styles.containerRight} xs={0} sm={0} md={5} lg={5} xl={5}>
-        <RightBar>
+        <RightBar ifCanChangeAvatar={true}>
         <div className={styles.achievement}>
           <div className={styles.header}>个人成就</div>
           <div className={styles.number}>

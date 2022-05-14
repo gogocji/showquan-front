@@ -3,7 +3,7 @@ import '@uiw/react-markdown-preview/markdown.css';
 import dynamic from 'next/dynamic';
 import { observer } from 'mobx-react-lite';
 import { ChangeEvent, useState, useEffect } from 'react';
-import { Input, Button, message, Select, Upload } from 'antd';
+import { Input, Button, message, Select } from 'antd';
 import { useRouter } from 'next/router';
 import { prepareConnection } from 'db/index';
 import { Article } from 'db/entity';

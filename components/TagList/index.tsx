@@ -2,7 +2,6 @@ import styles from './index.module.scss'
 import { AntCloudOutlined } from '@ant-design/icons'
 import { Tag } from 'antd'
 import { useState, useEffect } from 'react';
-import request from 'service/fetch';
 
 interface ITag {
   id: number;
@@ -11,6 +10,7 @@ interface ITag {
 
 interface IProps {
   tags: ITag[]
+  // eslint-disable-next-line no-unused-vars
   setTagArticle: (selectTag: number) => void
 }
 

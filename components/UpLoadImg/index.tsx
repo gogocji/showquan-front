@@ -1,9 +1,10 @@
 import styles from './index.module.scss';
 import { Upload, message } from 'antd';
 import { LoadingOutlined, PlusOutlined, CloseCircleFilled } from '@ant-design/icons';
-import { useState, ChangeEvent } from 'react'
+import { useState } from 'react'
 
 interface IProps {
+  // eslint-disable-next-line no-unused-vars
   uploadHeadImg?: (imgUrl: string) => void 
 }
 const UploadImg = (props: IProps) => {
@@ -17,17 +18,10 @@ const UploadImg = (props: IProps) => {
       return
     }
     if (info.file.status === 'done') {
-      // getBase64(info.file.originFileObj, (imageUrl : any) =>
-      //   {
-      //     console.log('imageUrl', imageUrl)
-      //     setImageUrl(imageUrl)
-      //     setLoading(false)
-      //   }
-      // );
       const ossUrl = info.file?.response?.data?.url
       setImageUrl(ossUrl)
       setLoading(false)
-      uploadHeadImg(ossUrl)
+      uploadHeadImg && uploadHeadImg(ossUrl)
     }
   }
   const uploadButton = () => {
@@ -50,9 +44,9 @@ const UploadImg = (props: IProps) => {
     return isJpgOrPng && isLt2M;
   }
 
-  const handleImgDel = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImgDel = (e: any) => {
     setImageUrl('')
-    uploadHeadImg('')
+    uploadHeadImg && uploadHeadImg('')
     e.stopPropagation()
   }
   return (
@@ -71,7 +65,9 @@ const UploadImg = (props: IProps) => {
           (
             <div className={styles.imgContainer}>
               <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
-              <CloseCircleFilled onClick={handleImgDel} className={styles.del} />
+              <div onClick={handleImgDel} className={styles.del}>
+                <CloseCircleFilled className={styles.delIcon} />
+              </div>
             </div>
           )
           

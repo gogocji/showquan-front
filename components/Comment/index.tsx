@@ -68,6 +68,8 @@ const MyComment = (props: IProps) => {
           update_time: new Date(),
           content: inputComment,
           toUser: comment?.user,
+          is_delete: 0,
+          article: article,
           user: {
             avatar: userInfo?.avatar,
             nickname: userInfo?.nickname,
@@ -141,7 +143,7 @@ const MyComment = (props: IProps) => {
   return (
     <Comment
       actions={commentActions}
-      author={ <a style={comment && comment?.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
+      author={ <a style={comment.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
       avatar={
         <Avatar
             src={comment?.user?.avatar}
@@ -170,7 +172,7 @@ const MyComment = (props: IProps) => {
       }
       datetime={
         <span>{format(
-          new Date(comment?.update_time),
+          new Date(comment?.update_time as Date),
             'yyyy-MM-dd hh:mm:ss'
           )}
         </span>
