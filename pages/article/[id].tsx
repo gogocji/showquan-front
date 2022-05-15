@@ -13,7 +13,7 @@ import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
 import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
-import {marked} from 'marked'
+import marked from 'marked'
 import hljs from "highlight.js";
 import 'highlight.js/styles/monokai-sublime.css';
 import MyComment from 'components/Comment'
@@ -80,7 +80,7 @@ const ArticleDetail = (props: IProps) => {
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
-  const tocify = new Tocify()
+  const tocify = new Tocify() 
   var hasTocify = false
   renderer.heading = function(text : any, level : any) {
       hasTocify = true

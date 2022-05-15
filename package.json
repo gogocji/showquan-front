@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "server": "node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -56,12 +57,16 @@
     "next-cookie": "^2.8.0",
     "next-remove-imports": "^1.0.6",
     "node-cron": "^3.0.0",
+    "nodejs-websocket": "^1.7.2",
     "pm-ribbon": "^3.0.0",
     "react": "18.1.0",
     "react-dom": "18.1.0",
     "react-lazyload": "^3.2.0",
+    "react-stomp": "^5.1.0",
     "react-syntax-highlighter": "^15.5.0",
+    "react-websocket": "^2.1.0",
     "reflect-metadata": "^0.1.13",
+    "socket.io-client": "^4.5.0",
     "typeorm": "0.2.44"
   },
   "devDependencies": {

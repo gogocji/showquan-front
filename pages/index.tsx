@@ -17,6 +17,7 @@ import { ChangeEvent } from 'react'
 import { User } from 'db/entity/index';
 import { useStore } from 'store/index';
 import { getCanExpireLocal, setCanExpireLocal, getMsToNewDay } from 'utils/localStorage'
+import MyWebSocket from "components/MyWebSocket";
 const DynamicComponent = dynamic(() => import('components/ListItem') as any) as any;
 const { Search } = Input
 
@@ -150,7 +151,6 @@ const Home = (props: IProps) => {
   const user = store.user.userInfo
   // 初始化currentList
   useEffect(() => {
-    console.log('111')
     // 增加访问量
     incrementView(user?.id as number)
     setIsLoading(false)
@@ -234,6 +234,7 @@ const Home = (props: IProps) => {
   return (
     // TODO 根据左上角的drawer是否存在来进行padding的样式
     <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
+      <MyWebSocket />
       <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
         <Drawer
 

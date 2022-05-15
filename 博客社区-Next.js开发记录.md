@@ -1641,6 +1641,36 @@ sql语句
 
 
 
+## 十三、next.js部署到阿里云服务器上
+
+MySQL is not running, but lock file (/var/lock/subsys/mysql[FAILED]
+
+
+
+宝塔面板如果登录只会还是跳转到登录页面的话，烤鱼尝试通过输入bt，然后输入15
+
+![image-20220514111856294](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220514111856294.png)
+
+清除一下垃圾就行
+
+
+
+mysql连接不了的话：https://blog.csdn.net/qq_40898875/article/details/113174200 进去配置一下mysql的config配置文件
+
+
+
+
+
+## 十四、后端给前端推送公告功能
+
+websocket或者用SSE
+
+但是websocket还可以统计当前的在线人数，我也想实现这个功能
+
+next.js的生态好像还不是很好，但是nest.js是由一个比较好的生态了，所以我们可以使用nest.js来接收后台管理系统的消息推送，然后再把信息推送到前端
+
+
+
 
 
 ## 其他

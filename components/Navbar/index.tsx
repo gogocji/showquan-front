@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
-import { Button, Avatar, Dropdown, Menu, message, Row, Col } from 'antd'
+import { Button, Avatar, Dropdown, Menu, message, Row, Col, notification } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
 import { useEffect, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
@@ -95,6 +95,18 @@ const Navbar: NextPage = () => {
         scrollheight = t
       }
     }
+    request.get('/api/common/notification/getSystemNotification')
+    .then((res) => {
+      if (res?.code === 0) {
+        console.log('res', res.data)
+        res.data.map((item: any) => {
+          notification['error']({
+            message: item.title,
+            description: item.content
+          });
+        })
+      }
+    })
   }, [])
   return (
     <div id='scrolldisplay' className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
