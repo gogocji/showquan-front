@@ -95,7 +95,9 @@ const Navbar: NextPage = () => {
         scrollheight = t
       }
     }
-    request.get('/api/common/notification/getSystemNotification')
+    request.post('/api/common/notification/getSystemNotification', {
+      is_delete: 0
+    })
     .then((res) => {
       if (res?.code === 0) {
         console.log('res', res.data)
