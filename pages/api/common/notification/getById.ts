@@ -7,28 +7,22 @@ import { Notification } from 'db/entity/index';
 export default withIronSessionApiRoute(get, ironOptions);
 
 async function get(req: NextApiRequest, res: NextApiResponse) {
-  const { is_start = -1 } = req.body
+  const { id } = req.body
   const db = await prepareConnection();
   const notificationRepo = db.getRepository(Notification);
   let result
-  console.log('is_start', is_start)
-  if (is_start !== -1) {
-    result = await notificationRepo.find({
-      where: (qb: any) => {
-        qb.where('is_start = :is_start', {
-          is_start
-        })
-      }
-    })
-  } else {
-    result = await notificationRepo.find({
-    })
-  }
+  result = await notificationRepo.findOne({
+    where: (qb: any) => {
+      qb.where('id = :id', {
+        id
+      })
+    }
+  })
   
   console.log('result', result)
   res?.status(200).json({
     code: 0,
-    msg: '获取系统通知成功',
+    msg: '根据id获取系统通知成功',
     data: result
   });
 }

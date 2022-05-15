@@ -1,7 +1,8 @@
 export type ICommonInfo = {
   isShowDrawer?: boolean,
   defstyle?: boolean,
-  showDrawer?: boolean
+  showDrawer?: boolean,
+  hasCloseNotification?: boolean
 };
 
 export interface ICommonStore {

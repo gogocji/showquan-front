@@ -15,5 +15,8 @@ export class Notification extends BaseEntity {
   publish_time!: Date;
 
   @Column()
-  is_delete!: number;
+  is_start!: number;
+
+  @Column()
+  type!: string;
 }

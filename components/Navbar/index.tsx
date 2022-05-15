@@ -5,7 +5,7 @@ import { navs } from './config';
 import type { NextPage } from 'next'
 import { Button, Avatar, Dropdown, Menu, message, Row, Col, notification } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
 import { useStore } from 'store/index';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons'
@@ -19,6 +19,7 @@ const Navbar: NextPage = () => {
   const { pathname, push } = useRouter();
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
+  const timer = useRef(null) as any
   const handleGotoEditorPage = () => {
     if (userId) {
       push('/editor/new')
@@ -72,6 +73,9 @@ const Navbar: NextPage = () => {
     )
   }
   var scrollheight = 0
+  const handleCloseNotification = () => {
+    store.common.setCommonInfo({hasCloseNotification: true})
+  }
   useEffect(() => {
     window.onscroll= function(){
       //变量t是滚动条滚动时，距离顶部的距离
@@ -95,20 +99,26 @@ const Navbar: NextPage = () => {
         scrollheight = t
       }
     }
-    request.post('/api/common/notification/getSystemNotification', {
-      is_delete: 0
-    })
-    .then((res) => {
-      if (res?.code === 0) {
-        console.log('res', res.data)
-        res.data.map((item: any) => {
-          notification['error']({
-            message: item.title,
-            description: item.content
-          });
+    if (!timer.value) {
+      timer.value = setInterval(() => {
+        request.post('/api/common/notification/getSystemNotification', {
+          is_start: 1
+        }).then((res) => {
+          if (res?.code === 0) {
+            console.log('res', res.data)
+            if (!store.common.commonInfo.hasCloseNotification) {
+              res.data.map((item: any) => {
+                notification['error']({
+                  message: item.title,
+                  description: item.content,
+                  onClose: handleCloseNotification
+                });
+              })
+            }
+          }
         })
-      }
-    })
+      }, 15000)
+    }
   }, [])
   return (
     <div id='scrolldisplay' className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>

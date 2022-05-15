@@ -63,3 +63,18 @@ export const EXCEPTION_COMMON = {
     msg: '增加访问量失败',
   },
 };
+
+export const EXCEPTION_NOTIFICATION = {
+  NOT_FOUND: {
+    code: 7001,
+    msg: '未找到该通知',
+  },
+  UPDATE_FAILED: {
+    code: 7002,
+    msg: '更新通知失败',
+  },
+  CREATE_FAILED: {
+    code: 7003,
+    msg: '发布通知失败',
+  }
+};
