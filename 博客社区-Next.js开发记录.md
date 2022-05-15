@@ -1669,6 +1669,10 @@ websocket或者用SSE
 
 next.js的生态好像还不是很好，但是nest.js是由一个比较好的生态了，所以我们可以使用nest.js来接收后台管理系统的消息推送，然后再把信息推送到前端
 
+## 十五、next.js使用echart展示ip地图
+
+echart要再onMounted里面注册才行，不然就是变成是一个invalid dom的
+
 
 
 

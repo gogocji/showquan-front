@@ -22,4 +22,16 @@ export class User extends BaseEntity {
 
  @Column()  
  state!: number;  
+
+ @Column()  
+ province?: string;  
+
+ @Column()  
+ city?: string;  
+
+ @Column()  
+ longitude?: string;  
+
+ @Column()  
+ latitude?: string;  
 }

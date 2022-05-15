@@ -3,12 +3,13 @@ import { withIronSessionApiRoute } from 'iron-session/next'
 import { ironOptions } from "config"
 import { ISession } from "pages/api/index"
 import { prepareConnection } from "db/index"
-import { User, UserAuth} from 'db/entity/index'
+import { User, UserAuth, Province} from 'db/entity/index'
 import { Cookie } from 'next-cookie'
 import { setCookie } from "utils/index"
 import redis from 'lib/redis'
 import { getTimeYYYYMMDD } from 'utils'
 import { EXCEPTION_USER } from 'pages/api/config/codes';
+import request from 'service/fetch'
 
 export default withIronSessionApiRoute(login, ironOptions)
 
@@ -19,6 +20,7 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
   const db = await prepareConnection();
 
   const userAuthRepo = db.getRepository(UserAuth)
+  const provinceAuthRepo = db.getRepository(Province)
 
   if (String(session.verifyCode) === String(verify)) {
     // 验证正确，在user_auths表中查找identity_type是否有记录
@@ -66,6 +68,20 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       })
     } else {
       // 新用户，自动注册
+
+      // 获取用户的属地
+      const result = await request.get('https://pv.sohu.com/cityjson?ie=utf-8') as any
+      const userIpAddress = JSON.parse(result.split('=')[1].replace(';', '')).cname
+      const province = userIpAddress.split('省')[0] + '省'
+      const city = userIpAddress.split('省')[1]
+      console.log(province, city)
+      // 调用数据库获取经纬度
+      const mapResult = await provinceAuthRepo.findOne({
+        cityName: city
+      })
+      await redis.zincrby('z_province', 1, province)
+      console.log('mapResult', mapResult)
+      const { longitude, latitude } = mapResult as any
       const user = new User()
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`
       user.skill = ''
@@ -76,6 +92,10 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       user.introduce = '博主在忙，啥也没写'
       user.job = ''
       user.state = 0
+      user.province = province
+      user.city = city
+      user.longitude = longitude
+      user.latitude = latitude
 
       const userAuth = new UserAuth()
       userAuth.identifier = phone
@@ -101,7 +121,6 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       const timestamp = getTimeYYYYMMDD()
       await redis.sadd('s_user_all:id', id + ':' + timestamp)
       await redis.sadd('s_user_day:id:' + timestamp, id)
-
 
       res?.status(200).json({
         msg: '登录成功',
