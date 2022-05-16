@@ -11,7 +11,7 @@ import { observer } from "mobx-react-lite"
 import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
-import { CalendarOutlined, FireOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
+import { CalendarOutlined, EyeOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
 import marked from 'marked'
 import hljs from "highlight.js";
@@ -66,7 +66,7 @@ export async function getServerSideProps({ params }: any) {
 
 const ArticleDetail = (props: IProps) => {
   const { article, commentList } = props
-  console.log('commentList', commentList)
+  console.log('11111commentList', commentList)
   const store = useStore();
   const loginUserInfo = store?.user?.userInfo;
   const { user: { nickname, avatar} } = article
@@ -133,9 +133,12 @@ const ArticleDetail = (props: IProps) => {
             },
           },
         ].concat([...(comments as any)]);
-        setComments([...newComments]);
         setInputVal('');
+        console.log('newComments', [...newComments])
         setArticleCommentNum(articleCommentNum + 1)
+        setComments([...newComments]);
+        if (article.comment_count || article.comment_count === 0) 
+          article.comment_count += 1
       } else {
         message.error('发表失败');
       }
@@ -155,6 +158,8 @@ const ArticleDetail = (props: IProps) => {
     })
     setArticleCommentNum(articleCommentNum + 1)
     setComments([...tempList]);
+    if (article.comment_count || article.comment_count === 0) 
+      article.comment_count += 1
   }
 
   const handleLikeArticle = () => {
@@ -168,11 +173,16 @@ const ArticleDetail = (props: IProps) => {
         message.success('点赞成功')
         setIfThumb(true)
         setArticleLikeNum(articleLikeNum + 1)
+        if (article.like_count || article.like_count === 0) 
+        article.like_count += 1
       }
     })
   }
 
   useEffect(() => {
+    if (article.views === 0) {
+      article.views += 1
+    }
     // 判断是否已关注
     request.post('/api/follow/getById', {
       user_id: article.user?.id,
@@ -296,8 +306,9 @@ const ArticleDetail = (props: IProps) => {
                 <span className={styles.icon}><CalendarOutlined type='calendar' style={{color:'lightseagreen', marginRight: '5px'}}/>
                   {format(new Date(article?.update_time as Date), 'yyyy-mm-dd hh:mm')}
                 </span>
-                <span className={styles.icon}><FireOutlined type='fire' style={{color:'red'}}/> {article?.views}</span>
-                <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> 231</span>  
+                <span className={styles.icon}><EyeOutlined type='fire' style={{color:'black'}}/> {article?.views}</span>
+              <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> {article?.comment_count}</span>
+              <span className={styles.icon}><LikeOutlined type='fire' style={{color:'black'}}/> {article?.like_count}</span>
                 </div>
                 {
                   Number(loginUserInfo?.userId) === 1 ? (

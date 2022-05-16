@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { IArticle } from 'pages/api/index';
 import { Avatar, Tag, Image } from 'antd';
-import { CalendarOutlined, FireOutlined, MessageOutlined, ArrowsAltOutlined, RightOutlined } from '@ant-design/icons';
+import { CalendarOutlined, EyeOutlined, MessageOutlined, ArrowsAltOutlined, RightOutlined, LikeOutlined } from '@ant-design/icons';
 import { markdownToTxt } from 'markdown-to-txt';
 import styles from './index.module.scss';
 import { useEffect, useState } from 'react'
@@ -48,8 +48,9 @@ const ListItem = (props: IProps) => {
               </span>
               <Tag color="#f50">生活</Tag>
               <Tag color="#2db7f5">技术</Tag>
-              <span className={styles.icon}><FireOutlined type='fire' style={{color:'red'}}/> {article?.views}</span>
-              <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> 231</span>
+              <span className={styles.icon}><EyeOutlined type='fire' style={{color:'black'}}/> {article?.views}</span>
+              <span className={styles.icon}><MessageOutlined type='fire' style={{color:'black'}}/> {article?.comment_count}</span>
+              <span className={styles.icon}><LikeOutlined type='fire' style={{color:'black'}}/> {article?.like_count}</span>
             </div>
             <div className={styles.articleImg}>
               {

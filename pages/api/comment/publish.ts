@@ -52,13 +52,16 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     comment.rComment = rComment;
   }
   if (article) {
+    console.log('article', article)
     comment.article = article;
+    article.comment_count = article.comment_count + 1
+    await db.getRepository(Article).save(article)
   }
   comment.like_count = 0
   comment.is_delete = 0
 
   const resComment = await commentRepo.save(comment);
-
+  console.log('resComment', resComment)
   if (resComment) {
     res.status(200).json({
       code: 0,
