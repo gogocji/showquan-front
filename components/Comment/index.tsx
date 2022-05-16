@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import styles from './index.module.scss';
-import { Tooltip, Comment, Avatar, Modal, Button, Input, message } from 'antd'
-import { LikeFilled, LikeOutlined } from '@ant-design/icons'
+import { Tooltip, Comment, Avatar, Modal, Button, Input, message, Image } from 'antd'
+import { LikeFilled, LikeOutlined, CloseSquareFilled } from '@ant-design/icons'
 import { IArticle, IComment } from 'pages/api';
 import { format } from 'date-fns';
 import request from 'service/fetch';
 import { IUserInfo } from 'store/userStore';
 import { observer } from "mobx-react-lite"
+import MyEmoji from 'components/MyEmoji'
+import CommentUpload from 'components/Comment/upload'
 
 interface IProps {
   // 设置是否可回复（默认一级评论可以回复，二级评论不能回复）
@@ -30,6 +32,7 @@ const MyComment = (props: IProps) => {
   // 评论内容
   const [inputComment, setInputComment] = useState('')
   const [commentLikeNum, setCommentLikeNum] = useState(0)
+  const [uploadImgUrl, setUploadImgUrl] = useState('')
 
   // 找到最终的父评论 
   const findCommentRoot = (comment : any) => {
@@ -70,6 +73,7 @@ const MyComment = (props: IProps) => {
           toUser: comment?.user,
           is_delete: 0,
           article: article,
+          img: uploadImgUrl,
           user: {
             avatar: userInfo?.avatar,
             nickname: userInfo?.nickname,
@@ -140,6 +144,21 @@ const MyComment = (props: IProps) => {
     noPingLun ? null :
         <span key="comment-basic-reply-to" onClick={() => setShowModal(true)}>回复</span>,
   ]
+
+  // emoji输入
+  const handleEmoji = (emojiItem: any) => {
+    setInputComment(inputComment.concat(emojiItem))
+  }
+
+  // 处理上传图片
+  const handleUploadUrl = (url: string) => {
+    setUploadImgUrl(url)
+  }
+
+  // 删除上传图片
+  const deleteUploadImg = () => {
+    setUploadImgUrl('')
+  }
   return (
     <Comment
       actions={commentActions}
@@ -168,6 +187,11 @@ const MyComment = (props: IProps) => {
             ) : null
           }
           <div>{comment.content }</div>
+          <div className={styles.commentImage}>
+            {
+              comment.img && <Image className={styles.img} src={comment.img}></Image>
+            }
+          </div>
         </p>
       }
       datetime={
@@ -193,7 +217,27 @@ const MyComment = (props: IProps) => {
         ]}
       >
         <Input style={{marginBottom: '10px'}} value={`回复@${comment.user.nickname}`} disabled></Input>
-        <Input.TextArea value={inputComment} rows={4} placeholder="输入您的留言" onChange={ (event: any) => handleInputComment(event?.target?.value) } />
+        <div className={styles.commentInputContainer}>
+          <Input.TextArea
+            bordered={false}
+            style={{marginBottom: '10px', minHeight: '100px', border: 'none', background: 'url("https://blog-1303885568.cos.ap-chengdu.myqcloud.com/useImg/comment.png") right bottom no-repeat'}}
+            value={inputComment} rows={4} placeholder="输入您的留言" onChange={ (event: any) => handleInputComment(event?.target?.value) } />
+          {
+            uploadImgUrl && (
+            <div className={styles.inputImageContainer}>
+              <Image className={styles.inputImage} src={uploadImgUrl}></Image>
+              <div className={styles.deleImg}>
+                <CloseSquareFilled onClick={deleteUploadImg}/>
+              </div>
+            </div>
+            )
+          }
+        </div>
+        <div style={{'display': 'flex'}}>
+          <MyEmoji handleEmoji={handleEmoji}  />
+          &nbsp;&nbsp;&nbsp;
+          <CommentUpload returnUploadUrl={handleUploadUrl}/>
+        </div>
       </Modal>
     </Comment>
   )

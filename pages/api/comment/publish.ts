@@ -10,7 +10,7 @@ export default withIronSessionApiRoute(publish, ironOptions);
 
 async function publish(req: NextApiRequest, res: NextApiResponse) {
   const session: ISession = req.session;
-  const { articleId = 0, content = '', toUser_id = 0, pid = 0, rid = 0 } = req.body;
+  const { articleId = 0, content = '', toUser_id = 0, pid = 0, rid = 0, img = '' } = req.body;
   const db = await prepareConnection();
   const commentRepo = db.getRepository(Comment);
 
@@ -59,6 +59,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   }
   comment.like_count = 0
   comment.is_delete = 0
+  comment.img = img
 
   const resComment = await commentRepo.save(comment);
   console.log('resComment', resComment)

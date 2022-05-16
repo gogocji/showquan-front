@@ -11,14 +11,15 @@ import { observer } from "mobx-react-lite"
 import request from 'service/fetch';
 import MyBackTop from "components/BackTop"
 import RightBar from "components/RightBar"
-import { CalendarOutlined, EyeOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled } from '@ant-design/icons'
+import { CalendarOutlined, EyeOutlined, MessageOutlined, LikeFilled, HeartOutlined, MessageFilled, LikeOutlined, HeartFilled, CloseSquareFilled } from '@ant-design/icons'
 import Tocify from 'components/Tocify'
 import marked from 'marked'
 import hljs from "highlight.js";
 import 'highlight.js/styles/monokai-sublime.css';
 import MyComment from 'components/Comment'
 import { IComment } from 'pages/api';
-
+import MyEmoji from 'components/MyEmoji'
+import CommentUpload from 'components/Comment/upload'
 interface IProps {
   article: IArticle,
   commentList: IComment[]
@@ -93,6 +94,7 @@ const ArticleDetail = (props: IProps) => {
   const [articleLikeNum, setArticleLikeNum] = useState(0)
   // const [hasTocify, setHasTocify] = useState(false)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
+  const [uploadImgUrl, setUploadImgUrl] = useState('')
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
   const tocify = new Tocify() 
@@ -127,7 +129,8 @@ const ArticleDetail = (props: IProps) => {
       content: inputVal,
       toUser_id: '',
       pid: '',
-      rid: ''
+      rid: '',
+      img: uploadImgUrl
     })
     .then((res: any) => {
       if (res?.code === 0) {
@@ -294,6 +297,21 @@ const ArticleDetail = (props: IProps) => {
       }
     })
   }
+
+  // emoji输入
+  const handleEmoji = (emojiItem) => {
+    setInputVal(inputVal.concat(emojiItem))
+  }
+  
+  // 处理上传图片
+  const handleUploadUrl = (url: string) => {
+    setUploadImgUrl(url)
+  }
+
+  // 删除上传图片
+  const deleteUploadImg = () => {
+    setUploadImgUrl('')
+  }
   return (
     <div>
       <MyBackTop />
@@ -391,16 +409,36 @@ const ArticleDetail = (props: IProps) => {
                 <div className={styles.enter}>
                   <Avatar src={avatar} size={40} />
                   <div className={styles.content}>
-                    <Input.TextArea
-                      style={{background: 'url("https://blog-1303885568.cos.ap-chengdu.myqcloud.com/useImg/comment.png") right bottom no-repeat'}}
-                      placeholder="请输入评论"
-                      rows={4}
-                      value={inputVal}
-                      onChange={(event) => setInputVal(event?.target?.value)}
-                    />
-                    <Button type="primary" onClick={handleComment}>
-                      发表评论
-                    </Button>
+                    <div className={styles.commentInputContainer}>
+                      <Input.TextArea
+                        bordered={false}
+                        style={{minHeight: '100px', border: 'none', background: 'url("https://blog-1303885568.cos.ap-chengdu.myqcloud.com/useImg/comment.png") right bottom no-repeat'}}
+                        placeholder="请输入评论"
+                        value={inputVal}
+                        onChange={(event) => setInputVal(event?.target?.value)}
+                      />
+                      {
+                        uploadImgUrl && (
+                        <div className={styles.inputImageContainer}>
+                          <Image className={styles.inputImage} src={uploadImgUrl}></Image>
+                          <div className={styles.deleImg}>
+                            <CloseSquareFilled onClick={deleteUploadImg}/>
+                          </div>
+                        </div>
+                        )
+                      }
+                    </div>
+                   
+                    <div className={styles.operation}>
+                      <div style={{'display': 'flex'}}>
+                        <MyEmoji handleEmoji={handleEmoji}  />
+                        &nbsp;&nbsp;&nbsp;
+                        <CommentUpload returnUploadUrl={handleUploadUrl}/>
+                      </div>
+                      <Button type="primary" onClick={handleComment}>
+                        发表评论
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )}

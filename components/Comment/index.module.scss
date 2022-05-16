@@ -11,3 +11,34 @@
     color: rgb(144, 144, 144);
   }
 }
+.commentImage {
+  margin-top: 10px;
+  .img {
+    width: 73px;
+    height: 73px;
+  }
+}
+.commentInputContainer {
+  border: 1px solid #1e80ff;
+  background: #fff;
+  min-height: 100px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  .inputImageContainer {
+    position: relative;
+    width: 80px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    .inputImage {
+      width: 64px;
+      height: 64px;
+      border-radius: 5px;
+    }
+    .deleImg {
+      position: absolute;
+      color: rgb(134, 144, 156);
+      top: -10px;
+      right: 0;
+    }
+  }
+}

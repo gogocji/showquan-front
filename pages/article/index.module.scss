@@ -113,13 +113,38 @@
   .enter {
     display: flex;
     align-items: center;
-
     .content {
       width: 100%;
       margin-left: 20px;
-
-      button {
+      .commentInputContainer {
+        border: 1px solid #1e80ff;
+        background: #fff;
+        min-height: 100px;
+        border-radius: 10px;
+        .inputImageContainer {
+          position: relative;
+          width: 80px;
+          .inputImage {
+            width: 64px;
+            height: 64px;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+          }
+          .deleImg {
+            position: absolute;
+            color: rgb(134, 144, 156);
+            top: -10px;
+            right: 0;
+          }
+        }
+      }
+      .operation {
+        display: flex;
+        justify-content: space-between;
         margin-top: 20px;
+      }
+      button {
       }
     }
   }

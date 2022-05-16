@@ -1,0 +1,19 @@
+.container {
+  position: relative;
+  .textContainer {
+    width: 55px;
+    cursor: pointer;
+    .text {
+      margin-left: 4px;
+    }
+  }
+  .emojiContainer {
+    border: 1px solid black;
+    padding: 20px;
+    border-radius: 10px;
+    position: absolute;
+    width: 400px;
+    z-index: 100;
+    background-color: wheaT;
+  }
+}

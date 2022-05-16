@@ -41,4 +41,7 @@ export class Comment extends BaseEntity {
 
   @Column()
   like_count!: number;
+
+  @Column()
+  img!: string;
 }

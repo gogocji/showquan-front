@@ -28,7 +28,7 @@ export const prepareConnection = () => {
         database,
         entities: [User, UserAuth, Article, Comment, Tag, Follow, Notification, Province],
         synchronize: false,
-        logging: true
+        logging: true,
       })
 
       return connection;
