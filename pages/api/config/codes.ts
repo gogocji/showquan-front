@@ -41,6 +41,18 @@ export const EXCEPTION_TAG = {
     code: 3001,
     msg: '关注/取关操作失败',
   },
+  UPDATE_FAILED: {
+    code: 3002,
+    msg: '更新操作失败',
+  },
+  NOT_FOUND: {
+    code: 3003,
+    msg: '未找到该标签',
+  },
+  CREATE_FAILED: {
+    code: 3004,
+    msg: '新建标签失败',
+  }
 };
 
 export const EXCEPTION_COMMENT = {

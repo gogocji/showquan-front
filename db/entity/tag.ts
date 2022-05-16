@@ -19,6 +19,9 @@ export class Tag extends BaseEntity {
   @Column()
   article_count!: number;
 
+  @Column()
+  is_delete!: number;
+
   @ManyToMany(() => User, {
     cascade: true
   })
