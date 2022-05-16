@@ -24,6 +24,20 @@ interface IProps {
   commentList: IComment[]
 }
 
+const compare = function (obj1: any, obj2: any) {
+  var val1 = new Date(obj1.create_time);
+  var val2 = new Date(obj2.create_time);
+  if (val1 < val2) {
+      return -1;
+  } 
+  else if (val1 > val2) {
+      return 1;
+  } 
+  else {
+      return 0;
+  }            
+}
+
 export async function getServerSideProps({ params }: any) {
   const articleId = params?.id
   const db = await prepareConnection()
@@ -56,6 +70,7 @@ export async function getServerSideProps({ params }: any) {
       }
     }
   })
+  newCommentList.sort(compare).reverse()
   return {
     props: {
       article: JSON.parse(JSON.stringify(article))[0],
@@ -66,7 +81,7 @@ export async function getServerSideProps({ params }: any) {
 
 const ArticleDetail = (props: IProps) => {
   const { article, commentList } = props
-  console.log('11111commentList', commentList)
+  console.log('11111commentList reverse', commentList)
   const store = useStore();
   const loginUserInfo = store?.user?.userInfo;
   const { user: { nickname, avatar} } = article
