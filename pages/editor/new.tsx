@@ -21,7 +21,7 @@ const NewEditor = () => {
   const [allTags, setAllTags] = useState([]);
   const [description, setDescription] = useState('');
   const [headImgUrl, setHeadImgUrl] = useState('');
-
+  const [contentWarningNum, setContentWarningNum] = useState(0)
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
       if (res?.code === 0) {
@@ -60,7 +60,7 @@ const NewEditor = () => {
         console.log('resresres', res)
         message.error('内容敏感！请修改');
         const failContent = res.failContent
-        console.log('failContent', failContent)
+        setContentWarningNum(failContent.length)
         failContent.map(item => keywordRed(item))
         setContent(tempContent)
       } else {
@@ -162,6 +162,13 @@ const NewEditor = () => {
       <div className={styles.upLoadImg}>
         <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
       </div>
+      {
+        contentWarningNum && (
+          <div className={styles.contentWarnings}>
+            还有 {contentWarningNum} 处敏感词待修改，方可发布文章
+          </div>
+        )
+      }
       <Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
       {/* <MDEditor value={content} height={1080} onChange={handleContentChange} /> */}
     </div>
