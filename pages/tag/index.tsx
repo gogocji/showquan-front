@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { observer } from 'mobx-react-lite';
-import { Tabs, Button, message } from 'antd';
+import { Tabs, Button, message, Empty } from 'antd';
 import * as ANTD_ICONS from '@ant-design/icons';
 import { useStore } from 'store/index';
 import request from 'service/fetch';
@@ -69,28 +69,37 @@ const Tag = () => {
   }
 
   return (
-    <div className='content-layout'>
+    <div className={styles.contentLayout}>
       <Tabs defaultActiveKey="all">
         <TabPane tab="已关注标签" key="follow" className={styles.tags}>
           {
-            followTags?.map(tag => (
-              <div key={tag?.title} className={styles.tagWrapper}>
-                <div>{(ANTD_ICONS as any)[tag?.icon]?.render()}</div>
-                <div className={styles.title}>{tag?.title}</div>
-                <div>{tag?.follow_count} 关注 {tag?.article_count} 文章</div>
-                {
-                  tag?.users?.find((user) => Number(user?.id) === Number(userId)) ? (
-                    <Button type='primary' onClick={() => handleUnFollow(tag?.id)}>已关注</Button>
-                  ) : (
-                    <Button onClick={() => handleFollow(tag?.id)}>关注</Button>
-                  )
-                }
+            followTags && followTags.length ? 
+              (
+                followTags?.map(tag => (
+                  <div key={tag?.title} className={styles.tagWrapper}>
+                    <div>{(ANTD_ICONS as any)[tag?.icon]?.render()}</div>
+                    <div className={styles.title}>{tag?.title}</div>
+                    <div>{tag?.follow_count} 关注 {tag?.article_count} 文章</div>
+                    {
+                      tag?.users?.find((user) => Number(user?.id) === Number(userId)) ? (
+                        <Button type='primary' onClick={() => handleUnFollow(tag?.id)}>已关注</Button>
+                      ) : (
+                        <Button onClick={() => handleFollow(tag?.id)}>关注</Button>
+                      )
+                    }
+                  </div>
+                ))
+              )
+               : (
+              <div className={styles.emptyContainer}>
+                <Empty />
               </div>
-            ))
+            )
           }
         </TabPane>
         <TabPane tab="全部标签" key="all" className={styles.tags}>
         {
+          allTags?.length ? (
             allTags?.map(tag => (
               <div key={tag?.title} className={styles.tagWrapper}>
                 <div>{(ANTD_ICONS as any)[tag?.icon]?.render()}</div>
@@ -105,6 +114,11 @@ const Tag = () => {
                 }
               </div>
             ))
+          ) : (
+              <div className={styles.emptyContainer}>
+                <Empty />
+              </div>
+            )
           }
         </TabPane>
       </Tabs>
