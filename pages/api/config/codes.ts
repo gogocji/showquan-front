@@ -34,6 +34,10 @@ export const EXCEPTION_ARTICLE = {
     code: 2005,
     msg: '搜索错误',
   },
+  CONTENT_FAILED: {
+    code: 2006,
+    msg: '内容敏感信息',
+  },
 };
 
 export const EXCEPTION_TAG = {

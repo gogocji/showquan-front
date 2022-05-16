@@ -11,6 +11,7 @@ import { useStore } from 'store/index';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons'
 import request from 'service/fetch'
 import { observer } from "mobx-react-lite"
+import * as ANTD_ICONS from '@ant-design/icons';
 
 const Navbar: NextPage = () => {
   const store = useStore()
@@ -147,12 +148,15 @@ const Navbar: NextPage = () => {
             <section className={styles.linkArea}>
               {navs?.map((nav) => (
                 <Menu.Item key={nav.label}>
-                  <HomeOutlined  className={pathname === nav.value ? styles.active : styles.icon}/>
-                  <Link key={nav.label} href={nav.value}>
-                    <a className={pathname === nav.value ? styles.active : ''}>
-                      {nav.label}
-                    </a>
-                  </Link>
+                  <div style={{'display': 'flex'}}>
+                    <div className={pathname === nav.value ? styles.active : styles.icon}>{(ANTD_ICONS as any)[nav?.icon]?.render()}</div>
+                    {/* <HomeOutlined  className={pathname === nav.value ? styles.active : styles.icon}/> */}
+                    <Link key={nav.label} href={nav.value}>
+                      <a className={pathname === nav.value ? styles.active : ''}>
+                        {nav.label}
+                      </a>
+                    </Link>
+                  </div>
                 </Menu.Item>
               ))}
             </section>

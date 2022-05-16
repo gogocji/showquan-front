@@ -30,6 +30,16 @@ const NewEditor = () => {
     })
   }, []);
 
+  var tempContent = ''
+  const keywordRed = (keyword) =>  {
+    if (keyword && keyword !== '') {
+      let str = tempContent ? tempContent : content
+      str = str.split(keyword).join("<span style='color:white;background-color: red;'>" + keyword + "</span>")
+      setContent(str)
+      tempContent = str
+    }
+  }
+
   const handlePublish = () => {
     if (!title) {
       message.warning('请输入文章标题');
@@ -45,6 +55,14 @@ const NewEditor = () => {
       if (res?.code === 0) {
         userId ? push(`/user/${userId}`) : push('/');
         message.success('发布成功');
+      } else if (res?.code === 2006) {
+        // 内容敏感
+        console.log('resresres', res)
+        message.error('内容敏感！请修改');
+        const failContent = res.failContent
+        console.log('failContent', failContent)
+        failContent.map(item => keywordRed(item))
+        setContent(tempContent)
       } else {
         message.error(res?.msg || '发布失败');
       }
