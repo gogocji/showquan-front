@@ -85,7 +85,11 @@ const MyComment = (props: IProps) => {
         setIsSubmitLoading(false)
         setInputComment('');
         setShowModal(false)
-      } else {
+      } else if (res?.code === 4002) {
+        message.error('内容敏感！请修改');
+        setIsSubmitLoading(false)
+      }
+       else {
         message.error('发表失败');
       }
     });

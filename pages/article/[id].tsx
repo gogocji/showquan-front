@@ -157,7 +157,10 @@ const ArticleDetail = (props: IProps) => {
         setComments([...newComments]);
         if (article.comment_count || article.comment_count === 0) 
           article.comment_count += 1
-      } else {
+      } else if (res?.code === 4002) {
+        message.error('内容敏感！请修改');
+      }
+      else {
         message.error('发表失败');
       }
     });

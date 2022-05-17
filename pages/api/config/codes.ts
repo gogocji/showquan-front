@@ -64,6 +64,10 @@ export const EXCEPTION_COMMENT = {
     code: 4001,
     msg: '发表失败',
   },
+  CONTENT_FAILED: {
+    code: 4002,
+    msg: '内容敏感信息',
+  },
 };
 
 export const EXCEPTION_FOLLOW = {
