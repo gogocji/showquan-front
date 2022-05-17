@@ -11,7 +11,6 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
   const db = await prepareConnection();
   const notificationRepo = db.getRepository(Notification);
   let result
-  console.log('is_start', is_start)
   if (is_start !== -1) {
     result = await notificationRepo.find({
       where: (qb: any) => {
@@ -25,7 +24,6 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
     })
   }
   
-  console.log('result', result)
   res?.status(200).json({
     code: 0,
     msg: '获取系统通知成功',

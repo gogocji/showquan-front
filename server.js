@@ -1,46 +1,4 @@
-// const { createServer } = require('http');
-// const next = require('next');
-// const ws = require('nodejs-websocket')
-
-// const wsPort = 3003
-// const dev = process.env.NODE_ENV !== 'production';
-// const hostname = 'localhost';
-// const port = 4000;
-
-// const app = next({ dev, hostname, port });
-// // const handle = app.getRequestHandler();
-
-// app.prepare().then(() => {
-//   createServer(async (req, res) => {
-//     try {
-//       const server = ws.createServer(connect => {
-//         console.log('进入ws server')
-//         connect.on('text', (data) => {
-//           console.log('说了啥', data)
-//         })
-//         connect.on('close', ()=>{
-//           console.log('ws 退出')
-//         })
-//         connect.on('error', ()=> {
-//           console.log('错误处理')
-//         })
-//       })
-//       server.listen(wsPort, () => {
-//         console.log('监听了'+wsPort)
-//       })
-//     console.log('server', server)
-//     } catch (err) {
-//       console.log('error', req.url, err);
-//       res.statusCode = 500;
-//       res.end('internal server error');
-//     }
-//   }).listen(port, (err) => {
-//     if (err) throw err;
-//     console.log(`Server is running at：http://${hostname}:${port}`);
-//   });
-// });
-
-// medium的代码
+// 参考medium的代码
 const app = require('express')()
 const server = require('http').Server(app)
 const io = require('socket.io')(server, {cors:true})
@@ -57,10 +15,10 @@ const nextHandler = nextApp.getRequestHandler()
 let socketPort = 3000
 
 io.on('connect', socket => {
+  console.log('socket.id', socket.id)
   socket.on('clientClose', async (userId) => {
     console.log('用户退出了')
-    const result = await redis.srem('s_online_user' , userId)
-    console.log('result', result)
+    await redis.srem('s_online_user' , userId)
   })
   socket.on('clientOnline', async (userId) => {
     console.log('用户上线了')
@@ -73,8 +31,37 @@ io.on('connect', socket => {
       message: data
     })
   })
+  socket.on('disconnect', async (data) => {
+    console.log('用户关闭了', socket.id)
+    const userId = await redis.hget('user_socketUserId', socket.id)
+    await redis.srem('s_online_user' , userId)
+  })
+  socket.on('clientConnect', async (userId) => {
+    console.log('222', userId)
+    // 存在redis的 key value数据结构中
+    await redis.hset('user_socketId', userId, socket.id)
+    await redis.hset('user_socketUserId', socket.id, userId)
+  })
+  socket.on('message', async (message) => {
+    const { userId, content, fromUserId } = message
+    console.log('message', message)
+    // 获取这个用户在redis中的socketId
+    const socketId = await redis.hget('user_socketId', userId)
+    console.log('socketId', socketId)
+    // 判断这个socketId是否正在连接
+    if (io.sockets.sockets.get(socketId) != undefined) {
+      // 正在连接，给用户发这个信息
+      console.log('该用户连接中')
+      io.sockets.connected[socketId].emit('message', content);
+    } else {
+      console.log('该用户离线中')
+      // 离线状态，把这个信息写入到redis的hashMap里面
+      // TODO 这个content后面可以放fromUser的详细信息和内容的信息信息用JSON.stringify就行
+      await redis.hset('h_user_message:' + userId, new Date().getTime() + ':' + fromUserId, content)
+    }
+  })
 })
-console.log('2322')
+
 nextApp.prepare().then(() => {
 
   app.get('*', (req, res) => {
@@ -83,47 +70,9 @@ nextApp.prepare().then(() => {
   app.post('*', (req, res) => {
     return nextHandler(req, res)
   })
-  console.log('111')
 
   server.listen(socketPort, err => {
     if (err) throw err
     console.log(`socket io ready on http://localhost:${port}`)
   })
 })
-
-// const { createServer } = require('http');
-// const { parse } = require('url');
-// const next = require('next');
-
-// const dev = process.env.NODE_ENV !== 'production';
-// const hostname = 'localhost';
-// const port = 4000;
-
-// const app = next({ dev, hostname, port });
-// const handle = app.getRequestHandler();
-
-// app.prepare().then(() => {
-//   createServer(async (req, res) => {
-//     try {
-//       const parsedUrl = parse(req.url, true);
-//       const { pathname, query } = parsedUrl;
-
-//       console.log(2222);
-//       console.log(pathname);
-//       console.log(query);
-
-//       if (pathname === '/tag') {
-//         await app.render(req, res, '/user/2', query);
-//       } else {
-//         await handle(req, res, parsedUrl);
-//       }
-//     } catch (err) {
-//       console.log('error', req.url, err);
-//       res.statusCode = 500;
-//       res.end('internal server error');
-//     }
-//   }).listen(port, (err) => {
-//     if (err) throw err;
-//     console.log(`Server is running at：http://${hostname}:${port}`);
-//   });
-// });

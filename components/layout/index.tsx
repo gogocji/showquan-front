@@ -25,7 +25,7 @@ const Layout = ({ children } : any) => {
     });
   } 
   const clineOnline = () => {
-    console.log('下线', userId)
+    console.log('上线', userId)
     if (userId) {
       socket.emit('clientOnline', userId)
     } else {
@@ -33,24 +33,27 @@ const Layout = ({ children } : any) => {
     }
   }
   const clineClose = () => {
-    console.log('上线', userId)
+    console.log('下线', userId)
     if (userId) {
-      console
       socket.emit('clientClose', userId)
     } else {
       socket.emit('clientClose', randomUserId)
     }
   }
   useEffect(() => {
+    // 获取用户是否有离线信息
+
     if (!socket) {
-      console.log('222')
       socket = io('http://localhost:3000')
     }
-    console.log('gogocj')
+    if (userId) {
+      socket.emit('clientConnect', userId)
+    } else {
+      socket.emit('clientConnect', randomUserId)
+    }
     if (canNotification) {
       canNotification = false
       socket.on('notification', data => {
-        console.log('333')
         if (data.message.title) {
           console.log('canNotification', canNotification)
           canNotification = false
@@ -61,6 +64,9 @@ const Layout = ({ children } : any) => {
           canNotification = true
         }, 10000)
       })
+      socket.on('message', message => {
+        console.log('收到独播信息', message)
+      })
     }
     
 
@@ -69,7 +75,6 @@ const Layout = ({ children } : any) => {
       if(isHidden){
         document.title = '404!!!页面丢失(￣▽￣)"';
         console.log('2112')
-        debounce(clineClose, 1000)()
       } else {
         document.title = '嘤嘤嘤，你回来了啊(ಥ _ ಥ)';
           setTimeout(()=>{
@@ -78,6 +83,11 @@ const Layout = ({ children } : any) => {
         debounce(clineOnline, 1000)()
       }
     });
+    window.addEventListener('beforeunload', () => {
+      console.log('beforeunload')
+      // debounce(clineClose, 1000)()
+      clineClose()
+    })
   }, [])
   return (
     <div>
