@@ -20,7 +20,7 @@ const Navbar: NextPage = () => {
   const { pathname, push } = useRouter();
   const [ isShowLogin, setIsShowLogin ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false)
-  const timer = useRef(null) as any
+  // const timer = useRef(null) as any
   const handleGotoEditorPage = () => {
     if (userId) {
       push('/editor/new')
@@ -100,26 +100,26 @@ const Navbar: NextPage = () => {
         scrollheight = t
       }
     }
-    if (!timer.value) {
-      timer.value = setInterval(() => {
-        request.post('/api/common/notification/getSystemNotification', {
-          is_start: 1
-        }).then((res) => {
-          if (res?.code === 0) {
-            console.log('res', res.data)
-            if (!store.common.commonInfo.hasCloseNotification) {
-              res.data.map((item: any) => {
-                notification['error']({
-                  message: item.title,
-                  description: item.content,
-                  onClose: handleCloseNotification
-                });
-              })
-            }
-          }
-        })
-      }, 15000)
-    }
+    // if (!timer.value) {
+    //   timer.value = setInterval(() => {
+    //     request.get('/api/common/notification/getSystemNotification', {
+    //       is_start: 1
+    //     }).then((res) => {
+    //       if (res?.code === 0) {
+    //         console.log('res', res.data)
+    //         if (!store.common.commonInfo.hasCloseNotification) {
+    //           res.data.map((item: any) => {
+    //             notification['error']({
+    //               message: item.title,
+    //               description: item.content,
+    //               onClose: handleCloseNotification
+    //             });
+    //           })
+    //         }
+    //       }
+    //     })
+    //   }, 15000)
+    // }
   }, [])
   return (
     <div id='scrolldisplay' className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
