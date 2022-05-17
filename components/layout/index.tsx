@@ -8,11 +8,11 @@ import io from 'socket.io-client'
 import { notification } from 'antd';
 import debounce from 'lodash/debounce';
 var socket : any
+var canNotification = true
 const Layout = ({ children } : any) => {
   const store = useStore()
   const { isShowDrawer } = store.common.commonInfo
   const { userId } = store.user.userInfo
-  const [canNotification, setCanNotification] = useState(true)
   const randomUserId = new Date().getTime() + Math.floor(Math.random()*Math.floor(6))
   const sendNotification = (title, content) => {
     notification.open({
@@ -47,18 +47,22 @@ const Layout = ({ children } : any) => {
       socket = io('http://localhost:3000')
     }
     console.log('gogocj')
-    socket.on('notification', data => {
-      console.log('333')
-      if (data.message.title && canNotification) {
-        console.log('canNotification', canNotification)
-        setCanNotification(false)
-        const { title, content }  = data.message
-        sendNotification(title, content)
-      }
-      setTimeout(() => {
-        setCanNotification(true)
-      }, 10000)
-    })
+    if (canNotification) {
+      canNotification = false
+      socket.on('notification', data => {
+        console.log('333')
+        if (data.message.title) {
+          console.log('canNotification', canNotification)
+          canNotification = false
+          const { title, content }  = data.message
+          debounce(() => sendNotification(title, content), 1000)()
+        }
+        setTimeout(() => {
+          canNotification = true
+        }, 10000)
+      })
+    }
+    
 
     document.addEventListener('visibilitychange',function(){
       var isHidden = document.hidden;
