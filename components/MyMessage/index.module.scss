@@ -3,6 +3,8 @@
   width: 100%;
   background-color: white;
   padding: 20px;
+  animation: cssnice1 1s both;
+  margin-bottom: 10px;
   .left {
     .img {
       width: 45px;
@@ -47,5 +49,31 @@
         }
       }
     }
+  }
+}
+@keyframes cssnice1{
+  0%{
+    opacity: 0;
+    transform: translate3d(-100%,0,0);
+  }
+  50%{
+    opacity: 1;
+    transform: translate3d(3%,0,0);
+  }
+  65%{
+    opacity: 1;
+    transform: translate3d(-2.5%,0,0);
+  }
+  80%{
+    opacity: 1;
+    transform: translate3d(0,0,0);
+  }
+  90%{
+    opacity: 1;
+    transform: translate3d(-1%,0,0);
+  }
+  100%{
+    opacity: 1;
+    transform: translate3d(0,0,0);
   }
 }

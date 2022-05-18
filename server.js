@@ -52,7 +52,7 @@ io.on('connect', socket => {
     if (io.sockets.sockets.get(socketId) != undefined) {
       // 正在连接，给用户发这个信息
       console.log('该用户连接中')
-      io.sockets.connected[socketId].emit('message', content);
+      io.sockets.sockets.get(socketId).emit('message', content);
     } else {
       console.log('该用户离线中')
       // 离线状态，把这个信息写入到redis的hashMap里面

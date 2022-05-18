@@ -38,7 +38,7 @@ export class Article extends BaseEntity {
   @Column()
   state!: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, user => user.articles)
   @JoinColumn({name: 'user_id'})
   user!: User;
 

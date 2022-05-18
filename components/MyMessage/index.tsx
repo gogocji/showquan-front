@@ -2,6 +2,8 @@ import styles from './index.module.scss';
 import { Image, Button } from 'antd'
 import { LikeOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/router'
+import { formatDistanceToNow } from 'date-fns';
+
 interface IProps {
   type: string,
   contentItem: any
@@ -14,25 +16,33 @@ const MyMessage = (props: IProps) => {
   }
   const title = () => {
     if (type === 'comment') {
-      return (
-        <span>
-          {contentItem.user.nickname}评论了你的文章<span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
-        </span>
-      )
+      if (contentItem.rComment) {
+        return (
+          <span>
+            {contentItem.user.nickname} 回复了你在文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span> 下的评论
+          </span>
+        )
+      } else {
+        return (
+          <span>
+            {contentItem.user.nickname} 评论了你的文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
+          </span>
+        )
+      }
     } else if (type === 'thumb') {
       return (
         <span>
-          {contentItem.user.nickname}赞了你的文章<span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
+          {contentItem.user.nickname} 赞了你的文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
         </span>
       )
     } else if (type === 'follow') {
-        return (<span> {contentItem.user.nickname}关注了你 </span>)
+        return (<span> {contentItem.user.nickname} 关注了你 </span>)
     } else {
       return (<span>{contentItem.content}</span>)
     }
   }
   return (
-    <div className={styles.container}>
+    <div className={styles.container} >
       <div className={styles.left}>
         <Image className={styles.img} src={contentItem.user.avatar}></Image>
       </div>
@@ -43,7 +53,7 @@ const MyMessage = (props: IProps) => {
               { title() }
             </div>
             {
-              type === 'comment' && <div className={styles.comment}>这是一个评论</div>
+              type === 'comment' && <div className={styles.comment}>{contentItem.content}</div>
             }
           </div>
           {
@@ -55,12 +65,14 @@ const MyMessage = (props: IProps) => {
           }
         </div>
         <div className={styles.rightFooter}>
-          <div className={styles.time}>七小时前</div>
+          <div className={styles.time}>
+          {formatDistanceToNow(new Date(contentItem?.create_time as Date))}
+          </div>
           {
             type === 'comment' && (
               <div className={styles.operation}>
                 <div className={styles.like}>
-                  <LikeOutlined></LikeOutlined>&nbsp;2</div>
+                  <LikeOutlined></LikeOutlined>&nbsp;{contentItem.like_count}</div>
                 <div className={styles.reply}>回复</div>
               </div>
             )

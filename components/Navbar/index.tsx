@@ -123,6 +123,7 @@ const Navbar: NextPage = () => {
   }, [])
 
   const handleToMessage = () => {
+    store.common.setCommonInfo({hasMessage: false})
     push('/message')
   }
 
@@ -171,7 +172,9 @@ const Navbar: NextPage = () => {
           <section className={styles.operationArea}>
             <div className={styles.notification} onClick={handleToMessage}>
               <NotificationFilled style={{color: 'white'}} />
-              <div className={styles.tips}></div>
+              {
+                store.common.commonInfo.hasMessage && <div className={styles.tips}></div>
+              }
             </div>
               {
                 userId ? (

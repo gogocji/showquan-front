@@ -13,12 +13,13 @@ const CountDown = (props: IProps) => {
   const { userInfo, ifCanChangeAvatar } = props;
   const store = useStore()
   const defstyle = store.common.commonInfo?.defstyle
+  const hasMessage = store.common.commonInfo?.hasMessage
 
   const changeAvatar = () => {
     if (!ifCanChangeAvatar) {
       return
     }
-    store.common.setCommonInfo({ defstyle: !defstyle })
+    store.common.setCommonInfo({ defstyle: !defstyle, hasMessage: hasMessage })
     let img =document.getElementById('userImg')?.getElementsByClassName('ant-avatar')[0] as any
     if (defstyle) {
       imgDeg -= 360

@@ -9,6 +9,7 @@ import { notification } from 'antd';
 import debounce from 'lodash/debounce';
 var socket : any
 var canNotification = true
+var hasComment = true
 const Layout = ({ children } : any) => {
   const store = useStore()
   const { isShowDrawer } = store.common.commonInfo
@@ -66,6 +67,10 @@ const Layout = ({ children } : any) => {
       })
       socket.on('message', message => {
         console.log('收到独播信息', message)
+        store.common.setCommonInfo({hasMessage: true})
+        console.log('store.common.commonInfo.hasComment', store.common.commonInfo.hasComment)
+        store.common.setCommonInfo({hasComment: hasComment})
+        hasComment = !hasComment
       })
     }
     

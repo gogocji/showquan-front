@@ -2,7 +2,9 @@ export type ICommonInfo = {
   isShowDrawer?: boolean,
   defstyle?: boolean,
   showDrawer?: boolean,
-  hasCloseNotification?: boolean
+  hasCloseNotification?: boolean,
+  hasMessage?: boolean,
+  hasComment?: boolean
 };
 
 export interface ICommonStore {
@@ -13,7 +15,9 @@ export interface ICommonStore {
 
 const commonStore = (): ICommonStore => {
   return {
-    commonInfo: {},
+    commonInfo: {
+      hasComment: false
+    },
     setCommonInfo: function (value) {
       this.commonInfo = value;
     },

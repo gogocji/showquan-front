@@ -9,6 +9,8 @@ import { IUserInfo } from 'store/userStore';
 import { observer } from "mobx-react-lite"
 import MyEmoji from 'components/MyEmoji'
 import CommentUpload from 'components/Comment/upload'
+import io from 'socket.io-client'
+var socket : any
 
 interface IProps {
   // 设置是否可回复（默认一级评论可以回复，二级评论不能回复）
@@ -85,6 +87,13 @@ const MyComment = (props: IProps) => {
         setIsSubmitLoading(false)
         setInputComment('');
         setShowModal(false)
+
+        // socket通知用户
+        socket.emit('message', {
+          userId: comment?.user.id,
+          fromUserId: userInfo?.userId,
+          content: '评论信息'
+        })
       } else if (res?.code === 4002) {
         message.error('内容敏感！请修改');
         setIsSubmitLoading(false)
@@ -122,6 +131,9 @@ const MyComment = (props: IProps) => {
     message.error('无法重复点赞')
   }
   useEffect(() => {
+    if (!socket) {
+      socket = io('http://localhost:3000')
+    }
     // 获取文章点赞情况
     request
       .post('/api/comment/thumb/getThumb', {

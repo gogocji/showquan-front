@@ -6,6 +6,7 @@ import { prepareConnection } from 'db/index';
 import { User, Article, Comment } from 'db/entity/index';
 import { EXCEPTION_COMMENT } from 'pages/api/config/codes';
 import request from 'service/fetch';
+import redis from 'lib/redis';
 
 export default withIronSessionApiRoute(publish, ironOptions);
 
@@ -44,7 +45,10 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     });
   
     const article = await db.getRepository(Article).findOne({
-      id: articleId,
+      where: {
+        id: articleId,
+      },
+      relations: ['user']
     });
   
     if (user) {
@@ -70,7 +74,21 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     comment.img = img
   
     const resComment = await commentRepo.save(comment);
-    console.log('resComment', resComment)
+
+    // 给子评论就是评论
+    if (toUser_id) {
+      // 给set结构添加comment这个type
+      await redis.sadd('s_user_messageType:' + toUser_id, 'comment')
+      // 给list结构添加comment.id
+      await redis.lpush('l_user_commentMessage:' + toUser_id, resComment.id)
+    } else if (article) {
+      console.log('article', article)
+      // 给set结构添加comment这个type
+      await redis.sadd('s_user_messageType:' + article.user?.id, 'comment')
+      // 给list结构添加comment.id
+      await redis.lpush('l_user_commentMessage:' + article.user?.id, resComment.id)
+    }
+    
     if (resComment) {
       res.status(200).json({
         code: 0,

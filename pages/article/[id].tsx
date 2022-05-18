@@ -20,6 +20,9 @@ import MyComment from 'components/Comment'
 import { IComment } from 'pages/api';
 import MyEmoji from 'components/MyEmoji'
 import CommentUpload from 'components/Comment/upload'
+import io from 'socket.io-client'
+var socket : any
+
 interface IProps {
   article: IArticle,
   commentList: IComment[]
@@ -155,8 +158,15 @@ const ArticleDetail = (props: IProps) => {
         console.log('newComments', [...newComments])
         setArticleCommentNum(articleCommentNum + 1)
         setComments([...newComments]);
-        if (article.comment_count || article.comment_count === 0) 
+        if (article.comment_count || article.comment_count === 0)  {
           article.comment_count += 1
+        }
+        // socket通知用户
+        socket.emit('message', {
+          userId: article.user.id,
+          fromUserId: loginUserInfo?.userId,
+          content: '评论信息'
+        })
       } else if (res?.code === 4002) {
         message.error('内容敏感！请修改');
       }
@@ -201,6 +211,9 @@ const ArticleDetail = (props: IProps) => {
   }
 
   useEffect(() => {
+    if (!socket) {
+      socket = io('http://localhost:3000')
+    }
     if (article.views === 0) {
       article.views += 1
     }
