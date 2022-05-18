@@ -1,0 +1,51 @@
+.container {
+  display: flex;
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+  .left {
+    .img {
+      width: 45px;
+      height: 45px;
+      border-radius: 100%;
+    }
+  }
+  .right {
+    width: 100%;
+    margin-left: 20px;
+    .rightHeader {
+      display: flex;
+      justify-content: space-between;
+      .rightContent {
+        .title {
+          color: #2e3135;
+          font-size: 15px;
+          font-weight: 500;
+          margin-bottom: 10px;
+        }
+        .comment {
+          font-size: 14px;
+          margin-bottom: 10px;
+          padding: 10px;
+          background: #fafbfc;
+          border-radius: 3px;
+          border: 1px solid #f1f1f2;
+        }
+      }
+    }
+    .rightFooter {
+      display: flex;
+      justify-content: space-between;
+      .time {
+        display: flex;
+        color: #8a9aa9;
+      }
+      .operation {
+        display: flex;
+        .reply {
+          margin-left: 20px;
+        }
+      }
+    }
+  }
+}

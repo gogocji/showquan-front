@@ -4,7 +4,7 @@ import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
 import { Button, Avatar, Dropdown, Menu, message, Row, Col, notification } from 'antd'
-import { MenuUnfoldOutlined, DownOutlined, UpOutlined } from '@ant-design/icons'
+import { MenuUnfoldOutlined, DownOutlined, UpOutlined, NotificationFilled } from '@ant-design/icons'
 import { useEffect, useRef, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
 import { useStore } from 'store/index';
@@ -121,6 +121,11 @@ const Navbar: NextPage = () => {
     //   }, 15000)
     // }
   }, [])
+
+  const handleToMessage = () => {
+    push('/message')
+  }
+
   return (
     <div id='scrolldisplay' className={styles.header} style={defstyle ? {backgroundColor: 'rgb(40, 54, 70)'} : {}}>
       <Row align='middle' justify="space-between" typeof='flex'>
@@ -164,6 +169,10 @@ const Navbar: NextPage = () => {
         </Col>
         <Col xs={0} sm={0} md={10} lg={8} xl={7}>
           <section className={styles.operationArea}>
+            <div className={styles.notification} onClick={handleToMessage}>
+              <NotificationFilled style={{color: 'white'}} />
+              <div className={styles.tips}></div>
+            </div>
               {
                 userId ? (
                   <>

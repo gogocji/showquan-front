@@ -52,6 +52,21 @@
       color: white;
       font-weight: bold;
     }
+    .notification {
+      position: relative;
+      margin-right: 20px;
+      cursor: pointer;
+      .tips {
+        background-color: red;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 2px solid white;
+        position: absolute;
+        top: 0;
+        right: -4px;
+      }
+    }
   }
   .loginBtn {
     background-color: white;
