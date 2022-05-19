@@ -1,6 +1,7 @@
 import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Article } from './article'
 import { User } from './user'
+import { Comment } from './comment'
 
 @Entity({name: 'thumbs'})
 export class Thumb extends BaseEntity {
@@ -20,4 +21,8 @@ export class Thumb extends BaseEntity {
   @ManyToOne(() => Article)
   @JoinColumn({name: 'article_id'})
   article!: Article;
+
+  @ManyToOne(() => Comment)
+  @JoinColumn({name: 'comment_id'})
+  comment!: Article;
 }

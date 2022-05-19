@@ -107,6 +107,7 @@ const MyComment = (props: IProps) => {
   const handleCancelComment = () => {
     setShowModal(false)
   }
+  // 点赞评论
   const handleLike = () => {
     console.log('222')
     request
@@ -119,6 +120,12 @@ const MyComment = (props: IProps) => {
         message.success('点赞成功')
         setUserAction('liked')
         setCommentLikeNum(commentLikeNum ? commentLikeNum : 0 + 1)
+        // socket通知用户
+        socket.emit('message', {
+          userId: comment?.user.id,
+          fromUserId: userInfo?.userId,
+          content: '点赞信息'
+        })
       }
     })
   }

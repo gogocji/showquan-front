@@ -205,7 +205,14 @@ const ArticleDetail = (props: IProps) => {
         setIfThumb(true)
         setArticleLikeNum(articleLikeNum + 1)
         if (article.like_count || article.like_count === 0) 
-        article.like_count += 1
+        {article.like_count += 1}
+        // socket通知用户
+        console.log('article.user.id', article.user.id)
+        socket.emit('message', {
+          userId: article.user.id,
+          fromUserId: loginUserInfo?.userId,
+          content: '点赞信息'
+        })
       }
     })
   }

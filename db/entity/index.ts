@@ -6,3 +6,4 @@ export { Tag } from './tag';
 export { Follow } from './follow';
 export { Notification } from './notification'
 export { Province } from './province'
+export { Thumb } from './thumbs'

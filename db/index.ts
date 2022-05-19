@@ -1,6 +1,6 @@
 import "reflect-metadata"
 import { Connection, getConnection, createConnection} from 'typeorm'
-import { User, UserAuth, Article, Comment, Tag, Follow, Notification, Province } from "./entity/index";
+import { User, UserAuth, Article, Comment, Tag, Follow, Notification, Province, Thumb } from "./entity/index";
 
 const host = process.env.DATABASE_HOST;
 const port = Number(process.env.DATABASE_PORT);
@@ -26,7 +26,7 @@ export const prepareConnection = () => {
         username,
         password,
         database,
-        entities: [User, UserAuth, Article, Comment, Tag, Follow, Notification, Province],
+        entities: [User, UserAuth, Article, Comment, Tag, Follow, Notification, Province, Thumb],
         synchronize: false,
         logging: true,
       })

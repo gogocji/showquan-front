@@ -30,11 +30,19 @@ const MyMessage = (props: IProps) => {
         )
       }
     } else if (type === 'thumb') {
-      return (
-        <span>
-          {contentItem.user.nickname} 赞了你的文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
-        </span>
-      )
+      if (contentItem.comment) {
+        return (
+          <span>
+            {contentItem.user.nickname} 赞了你在文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}下的评论</span>
+          </span>
+        )
+      } else {
+        return (
+          <span>
+            {contentItem.user.nickname} 赞了你的文章 <span onClick={handleToArticle} style={{color: '#007fff', cursor: 'pointer'}}>{contentItem.article.title}</span>
+          </span>
+        )
+      }
     } else if (type === 'follow') {
         return (<span> {contentItem.user.nickname} 关注了你 </span>)
     } else {
@@ -54,6 +62,9 @@ const MyMessage = (props: IProps) => {
             </div>
             {
               type === 'comment' && <div className={styles.comment}>{contentItem.content}</div>
+            }
+            {
+              type === 'thumb' && contentItem.comment && <div className={styles.comment}>{contentItem.comment.content}</div>
             }
           </div>
           {
@@ -76,6 +87,14 @@ const MyMessage = (props: IProps) => {
                 <div className={styles.like}>
                   <LikeOutlined></LikeOutlined>&nbsp;{contentItem.like_count}</div>
                 <div className={styles.reply}>回复</div>
+              </div>
+            )
+          }
+          {
+            type === 'thumb' && contentItem.comment && (
+              <div className={styles.operation}>
+                <div className={styles.like}>
+                  <LikeOutlined></LikeOutlined>&nbsp;{contentItem.comment.like_count}</div>
               </div>
             )
           }

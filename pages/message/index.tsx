@@ -12,7 +12,7 @@ var socket : any
 const Message = () => {
   const { TabPane } = Tabs;
   const [commentMessages, setCommentMessages] = useState([])
-  const [thumbtMessages, setThumbMessages] = useState([])
+  const [thumbMessages, setThumbMessages] = useState([])
   const [followMessages, setFollowMessages] = useState([])
   const [systemMessages, setSystemMessages] = useState([])
   const [hasComment, setHasComment] = useState(false)
@@ -21,38 +21,6 @@ const Message = () => {
   const [hasSystem, setHasSystem] = useState(false)
 	const store = useStore()
 
-  const commentTest = {
-    user: {
-      nickname: '啊狗',
-      userid: 28,
-      avatar: '/images/avatar.jpg'
-    },
-    create_time: '2022-05-12 20:40:44',
-    article: {
-      title: '主题',
-      article_id: 9
-    },
-    content: '评论内容'
-  }
-  const followTest = {
-    user: {
-      nickname: '啊狗',
-      userid: 28,
-      avatar: '/images/avatar.jpg'
-    }
-  }
-  const thumbTest = {
-    user: {
-      nickname: '啊狗',
-      userid: 28,
-      avatar: '/images/avatar.jpg'
-    },
-    article: {
-      title: '主题',
-      article_id: 9
-    },
-    create_time: '2022-05-12 20:40:44',
-  }
   const systemTest = {
     user: {
       nickname: '啊狗',
@@ -69,6 +37,7 @@ const Message = () => {
       getCommentMessage()
     } else if (key == 2) {
       setHasThumb(false)
+      getThumbMessage()
     } else if (key == 3) {
       setHasFollow(false)
       getFollowMessage()
@@ -113,6 +82,16 @@ const Message = () => {
       }
     })
   }
+  const getThumbMessage = () => {
+    request.post('/api/user/message/getThumbMessage', {
+      user_id: store.user.userInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        console.log('res', res)
+        setThumbMessages(res.data)
+      }
+    })
+  }
   useEffect(() => {
     getNewMessage()
     getCommentMessage()
@@ -150,7 +129,17 @@ const Message = () => {
                 { hasThumb && <div className={styles.hasTips}></div>} 
               </span>
             } key="2">
-              <MyMessage type='thumb' contentItem={thumbTest} />
+              {
+                thumbMessages.length ? (
+                  thumbMessages.map(item => (
+                    <MyMessage key={item} type='thumb' contentItem={item} />
+                  ))
+                ) : (
+                  <div className={styles.emptyContainer}>
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                  </div>
+                )
+              }
             </TabPane>
             <TabPane className={styles.tabItem} tab={
               <span>
