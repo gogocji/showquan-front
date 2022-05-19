@@ -12,6 +12,14 @@
       width: 100%;
       .tabItem {
         position: relative;
+        .skeleton {
+          .skeletonItem{
+            padding: 20px;
+            background-color: white;
+            margin-bottom: 10px;
+            border-radius: 10px;
+          }
+        }
       }
       .hasTips {
         position: absolute;

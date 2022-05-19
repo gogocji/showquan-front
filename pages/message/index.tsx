@@ -6,7 +6,7 @@ import MyMessage from 'components/MyMessage'
 import request from 'service/fetch';
 import { useStore } from 'store/index'
 import { observer } from "mobx-react-lite"
-import { Divider, Empty } from 'antd'
+import { Skeleton, Empty } from 'antd'
 import io from 'socket.io-client'
 var socket : any
 const Message = () => {
@@ -19,6 +19,7 @@ const Message = () => {
   const [hasThumb, setHasThumb] = useState(false)
   const [hasFollow, setHasFollow] = useState(false)
   const [hasSystem, setHasSystem] = useState(false)
+  const [showSkeleton, setShowSkeleton] = useState(true)
 	const store = useStore()
 
   const systemTest = {
@@ -32,6 +33,7 @@ const Message = () => {
   }
   const handleTabChange = (key: any) => {
     console.log('111', key)
+    setShowSkeleton(true)
     if (key == 1) {
       setHasComment(false)
       getCommentMessage()
@@ -68,6 +70,7 @@ const Message = () => {
     }).then((res) => {
       if (res?.code === 0) {
         console.log('res', res)
+        setShowSkeleton(false)
         setCommentMessages(res.data)
       }
     })
@@ -78,6 +81,7 @@ const Message = () => {
     }).then((res) => {
       if (res?.code === 0) {
         console.log('res', res)
+        setShowSkeleton(false)
         setFollowMessages(res.data)
       }
     })
@@ -88,6 +92,7 @@ const Message = () => {
     }).then((res) => {
       if (res?.code === 0) {
         console.log('res', res)
+        setShowSkeleton(false)
         setThumbMessages(res.data)
       }
     })
@@ -117,9 +122,19 @@ const Message = () => {
                     <MyMessage key={item} type='comment' contentItem={item} />
                   ))
                 ) : (
-                  <div className={styles.emptyContainer}>
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                  </div>
+                  showSkeleton 
+                  ? (
+                      <div className={styles.skeleton}>
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 1 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 1 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 1 }} />
+                      </div>
+                    )
+                  : (
+                    <div className={styles.emptyContainer}>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                    </div>
+                  )
                 )
               }
             </TabPane>
@@ -135,9 +150,19 @@ const Message = () => {
                     <MyMessage key={item} type='thumb' contentItem={item} />
                   ))
                 ) : (
-                  <div className={styles.emptyContainer}>
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                  </div>
+                  showSkeleton 
+                  ? (
+                      <div className={styles.skeleton}>
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                      </div>
+                    )
+                  : (
+                    <div className={styles.emptyContainer}>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                    </div>
+                  )
                 )
               }
             </TabPane>
@@ -153,9 +178,19 @@ const Message = () => {
                     <MyMessage key={item} type='follow' contentItem={item} />
                   ))
                 ) : (
-                  <div className={styles.emptyContainer}>
-                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
-                  </div>
+                  showSkeleton 
+                  ? (
+                      <div className={styles.skeleton}>
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                      </div>
+                    )
+                  : (
+                    <div className={styles.emptyContainer}>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                    </div>
+                  )
                 )
               }
             </TabPane>
