@@ -12,7 +12,7 @@ export class Notification extends BaseEntity {
   title!: string;
 
   @Column()
-  publish_time!: Date;
+  create_time!: Date;
 
   @Column()
   is_start!: number;

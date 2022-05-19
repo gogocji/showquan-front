@@ -27,7 +27,7 @@ async function getCommentMessage(req: NextApiRequest, res: NextApiResponse) {
     res?.status(200).json({
       code: 0,
       msg: `获取用户点赞消息`,
-      data: thumbList
+      data: thumbList.reverse()
     });
   }
 }

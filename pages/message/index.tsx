@@ -45,6 +45,8 @@ const Message = () => {
       getFollowMessage()
     } else if (key == 4) {
       setHasSystem(false)
+      console.log('44444')
+      getNotificationMessage()
     }
   }
   const changeTabStatus = (type) => {
@@ -94,6 +96,17 @@ const Message = () => {
         console.log('res', res)
         setShowSkeleton(false)
         setThumbMessages(res.data)
+      }
+    })
+  }
+  const getNotificationMessage = () => {
+    request.post('/api/common/notification/getSystemNotification', {
+      is_start: 1
+    }).then((res) => {
+      if (res?.code === 0) {
+        console.log('res', res)
+        setShowSkeleton(false)
+        setSystemMessages(res.data)
       }
     })
   }
@@ -200,7 +213,27 @@ const Message = () => {
                 { hasSystem && <div className={styles.hasTips}></div>} 
               </span>
             } key="4">
-              <MyMessage type='system' contentItem={systemTest} />
+              {
+                systemMessages.length ? (
+                  systemMessages.map(item => (
+                    <MyMessage key={item} type='system' contentItem={item} />
+                  ))
+                ) : (
+                  showSkeleton 
+                  ? (
+                      <div className={styles.skeleton}>
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                        <Skeleton className={styles.skeletonItem} avatar paragraph={{ rows: 2 }} />
+                      </div>
+                    )
+                  : (
+                    <div className={styles.emptyContainer}>
+                      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                    </div>
+                  )
+                )
+              }
             </TabPane>
           </Tabs>
         </div>

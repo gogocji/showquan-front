@@ -16,7 +16,7 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
   notification.content = content
   notification.title = title
   notification.type = type
-  notification.publish_time = new Date()
+  notification.create_time = new Date()
 
   const nowNotification = await notificationRepo.save(notification)
   if (nowNotification) {

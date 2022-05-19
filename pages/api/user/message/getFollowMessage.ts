@@ -30,7 +30,7 @@ async function getCommentMessage(req: NextApiRequest, res: NextApiResponse) {
     res?.status(200).json({
       code: 0,
       msg: `获取用户关注消息`,
-      data: followList
+      data: followList.reverse()
     });
   }
 }

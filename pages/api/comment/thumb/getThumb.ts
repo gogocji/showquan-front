@@ -13,7 +13,6 @@ async function getThumb(req: NextApiRequest, res: NextApiResponse) {
   const ifLike = await redis.sismember('s_comment_like:' + comment_id, user_id)
   // 获取该文章的点赞信息
   const commentLikeData = JSON.parse((await redis.hget('s_comment_like', comment_id)) || 'null')
-  console.log('commentLikeData', commentLikeData)
   // 如果result为0说明redis里面的set存在了，说明用户已经点赞过了
   res?.status(200).json({
     code: 0,

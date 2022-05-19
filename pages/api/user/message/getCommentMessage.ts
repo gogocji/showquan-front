@@ -52,7 +52,7 @@ async function getCommentMessage(req: NextApiRequest, res: NextApiResponse) {
     res?.status(200).json({
       code: 0,
       msg: `获取用户评论消息`,
-      data: commentList
+      data: commentList.reverse()
     });
   }
 }

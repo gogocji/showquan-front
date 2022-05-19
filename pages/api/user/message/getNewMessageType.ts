@@ -10,6 +10,8 @@ export default withIronSessionApiRoute(getNewMessageType, ironOptions);
 async function getNewMessageType(req: NextApiRequest, res: NextApiResponse) {
   const { user_id } = req.body
   const result = await redis.smembers('s_user_messageType:' + user_id)
+  // 获取之后就清空
+  await redis.del('s_user_messageType:' + user_id)
   console.log('result', result)
   if (result) {
     res?.status(200).json({

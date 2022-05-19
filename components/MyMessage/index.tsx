@@ -1,9 +1,13 @@
 import styles from './index.module.scss';
-import { Image, Button } from 'antd'
-import { LikeOutlined } from '@ant-design/icons'
+import { Image, Button, message } from 'antd'
+import { LikeOutlined, LikeFilled } from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { formatDistanceToNow } from 'date-fns';
-
+import { useEffect, useState } from 'react'
+import request from 'service/fetch';
+import { useStore } from 'store/index';
+import io from 'socket.io-client'
+var socket : any
 interface IProps {
   type: string,
   contentItem: any
@@ -11,6 +15,9 @@ interface IProps {
 const MyMessage = (props: IProps) => {
   const { type, contentItem} = props
   const { push } = useRouter()
+  const [hasLike, setHasLike] = useState(false)
+  const [ commentLikeNum, setCommentLikeNum] = useState(contentItem?.comment?.like_count || 0)
+  const store = useStore()
   const handleToArticle = () => {
     push(`/article/${contentItem.article.article_id}`)
   }
@@ -46,13 +53,62 @@ const MyMessage = (props: IProps) => {
     } else if (type === 'follow') {
         return (<span> {contentItem.user.nickname} 关注了你 </span>)
     } else {
-      return (<span>{contentItem.content}</span>)
+      return (<span>{contentItem.title}</span>)
     }
   }
+  // 点击【已点赞按钮】
+  const handleHasLikeArticle = () => {
+    message.error('无法重复点赞')
+  }
+
+  // 点赞评论
+  const handleLike = () => {
+    console.log('222')
+    request
+    .post('/api/comment/thumb/thumb', {
+      comment_id: type === 'comment' ? contentItem.id : contentItem.comment.id,
+      user_id: store.user.userInfo.userId
+    })
+    .then((res: any) => {
+      if (res?.code === 0) {
+        setHasLike(true)
+        message.success('点赞成功')
+        setCommentLikeNum(commentLikeNum ? commentLikeNum + 1 : 1)
+        // socket通知用户
+        socket.emit('message', {
+          userId: contentItem.user.id,
+          fromUserId: store.user.userInfo.userId,
+          content: '点赞信息'
+        })
+      }
+    })
+  }
+  useEffect(() => {
+    if (!socket) {
+      socket = io('http://localhost:3000')
+    }
+    // 获取文章点赞情况
+    if (type === 'comment' || (type === 'thumb' && contentItem.comment)) {
+      request
+      .post('/api/comment/thumb/getThumb', {
+        comment_id: type === 'comment' ? contentItem.id : contentItem.comment.id,
+        user_id: store.user.userInfo.userId
+      }).then((res: any) => {
+        if (res?.code === 0) {
+          const { ifLike, commentLikeData } = res.data
+          setHasLike( ifLike ? true : false)
+          setCommentLikeNum(commentLikeData?.like_count)
+        }
+      })
+    }
+  })
   return (
     <div className={styles.container} >
       <div className={styles.left}>
-        <Image className={styles.img} src={contentItem.user.avatar}></Image>
+        {
+          type !== 'system' ? <Image className={styles.img} src={contentItem.user.avatar}></Image>
+          : <Image className={styles.img} src='/images/masterLogo.jpg'></Image>
+        }
       </div>
       <div className={styles.right}>
         <div className={styles.rightHeader}>
@@ -65,6 +121,9 @@ const MyMessage = (props: IProps) => {
             }
             {
               type === 'thumb' && contentItem.comment && <div className={styles.comment}>{contentItem.comment.content}</div>
+            }
+            {
+              type === 'system' && contentItem.content && <div className={styles.sysmtemContent}>{contentItem.content}</div>
             }
           </div>
           {
@@ -85,8 +144,10 @@ const MyMessage = (props: IProps) => {
             type === 'comment' && (
               <div className={styles.operation}>
                 <div className={styles.like}>
-                  <LikeOutlined></LikeOutlined>&nbsp;{contentItem.like_count}</div>
-                <div className={styles.reply}>回复</div>
+                {
+                  hasLike ? <LikeFilled onClick={handleHasLikeArticle} /> : <LikeOutlined onClick={handleLike} />
+                }
+                  &nbsp;{commentLikeNum}</div>
               </div>
             )
           }
@@ -94,7 +155,10 @@ const MyMessage = (props: IProps) => {
             type === 'thumb' && contentItem.comment && (
               <div className={styles.operation}>
                 <div className={styles.like}>
-                  <LikeOutlined></LikeOutlined>&nbsp;{contentItem.comment.like_count}</div>
+                {
+                  hasLike ? <LikeFilled onClick={handleHasLikeArticle} /> : <LikeOutlined onClick={handleLike} />
+                }
+                  &nbsp;{commentLikeNum}</div>
               </div>
             )
           }

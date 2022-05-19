@@ -27,6 +27,6 @@ async function get(req: NextApiRequest, res: NextApiResponse) {
   res?.status(200).json({
     code: 0,
     msg: '获取系统通知成功',
-    data: result
+    data: result.reverse()
   });
 }
