@@ -3,9 +3,10 @@ import { Avatar, Button, message } from 'antd'
 import { IUserInfo } from 'store/userStore';
 import { useStore } from 'store';
 import request from 'service/fetch';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-
+import io from 'socket.io-client'
+var socket : any
 interface IProps {
   userInfo: IUserInfo
 }
@@ -38,10 +39,20 @@ const FollowItem = (props: IProps) => {
       if (res?.code === 0) {
         message.success('关注成功')
         setHasFollow(true)
+        // socket通知用户
+        socket.emit('message', {
+          userId: userInfo.id,
+          fromUserId: loginUserInfo.userId,
+          content: '关注信息'
+        })
       }
     })
   }
- 
+  useEffect(() => {
+    if (!socket) {
+      socket = io('http://localhost:3000')
+    }
+  }, [])
   return (
     <Link key={userInfo.id} href={`/user/${userInfo.id}`}>
       <div className={styles.item}>

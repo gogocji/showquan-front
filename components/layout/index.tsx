@@ -67,9 +67,7 @@ const Layout = ({ children } : any) => {
       })
       socket.on('message', message => {
         console.log('收到独播信息', message)
-        store.common.setCommonInfo({hasMessage: true})
-        console.log('store.common.commonInfo.hasComment', store.common.commonInfo.hasComment)
-        store.common.setCommonInfo({hasComment: hasComment})
+        store.common.setCommonInfo({hasMessage: true, hasComment: hasComment})
         hasComment = !hasComment
       })
     }

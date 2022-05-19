@@ -71,6 +71,7 @@ const Message = () => {
       setHasThumb(false)
     } else if (key == 3) {
       setHasFollow(false)
+      getFollowMessage()
     } else if (key == 4) {
       setHasSystem(false)
     }
@@ -99,6 +100,16 @@ const Message = () => {
       if (res?.code === 0) {
         console.log('res', res)
         setCommentMessages(res.data)
+      }
+    })
+  }
+  const getFollowMessage = () => {
+    request.post('/api/user/message/getFollowMessage', {
+      user_id: store.user.userInfo.userId
+    }).then((res) => {
+      if (res?.code === 0) {
+        console.log('res', res)
+        setFollowMessages(res.data)
       }
     })
   }
@@ -147,7 +158,17 @@ const Message = () => {
                 { hasFollow && <div className={styles.hasTips}></div>} 
               </span>
             } key="3">
-              <MyMessage type='follow' contentItem={followTest} />
+              {
+                followMessages.length ? (
+                  followMessages.map(item => (
+                    <MyMessage key={item} type='follow' contentItem={item} />
+                  ))
+                ) : (
+                  <div className={styles.emptyContainer}>
+                    <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                  </div>
+                )
+              }
             </TabPane>
             <TabPane className={styles.tabItem} tab={
               <span>

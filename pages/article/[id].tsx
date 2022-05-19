@@ -264,6 +264,12 @@ const ArticleDetail = (props: IProps) => {
       if (res?.code === 0) {
         message.success('关注成功')
         setHasFollow(true)
+        // socket通知用户
+        socket.emit('message', {
+          userId: article.user.id,
+          fromUserId: loginUserInfo.userId,
+          content: '关注信息'
+        })
       }
     })
   }

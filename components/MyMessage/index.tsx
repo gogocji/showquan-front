@@ -59,7 +59,9 @@ const MyMessage = (props: IProps) => {
           {
             type === 'follow' && (
               <div className={styles.followButton}>
-                <Button>关注</Button>
+                {
+                  contentItem.hasLike ? <Button>已关注</Button> : <Button>关注</Button>
+                }
               </div>
             )
           }

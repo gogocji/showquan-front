@@ -140,12 +140,12 @@ const UserDetail = (props: any) => {
     }).then((res: any) => {
       if (res?.code === 0) {
         const resultList =  res.data
-        let followList = []
-        for (let i = 0; i < resultList.length; i++) {
-          let userItem = JSON.parse(resultList[i])
-          followList.push(userItem)
-        }
-        setFollowList(followList)
+        // let followList = []
+        // for (let i = 0; i < resultList.length; i++) {
+        //   let userItem = JSON.parse(resultList[i])
+        //   followList.push(userItem)
+        // }
+        setFollowList(resultList)
       }
     })
   }
@@ -256,7 +256,7 @@ const UserDetail = (props: any) => {
               {
                 followList.length ? (
                   followList?.map((item: any) => (
-                    <FollowItem key={item} userInfo={item} />
+                    <FollowItem key={item} userInfo={item.user} />
                   ))
                 )
                 : (

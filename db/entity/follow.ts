@@ -1,4 +1,4 @@
-import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from './user'
 // TODO: 待完善
 @Entity({name: 'follows'})
@@ -7,33 +7,15 @@ export class Follow extends BaseEntity {
   readonly id!: number;
 
   @Column()
-  is_del!: number;
+  hasLike!: number;
 
-  @ManyToMany(() => User)
-  // 这里是建立了一个关联表，因为是多对多的关系
-  @JoinTable({
-    name: 'follows_users_rel',
-    joinColumn: {
-      name: 'follow_id'
-    },
-    inverseJoinColumn: {
-      name: 'user_id'
-    }
-  })
-  user!: User
+  @ManyToOne(() => User)
+  @JoinColumn({name: 'user_id'})
+  user!: User;
 
-  @ManyToMany(() => User)
-  // 这里是建立了一个关联表，因为是多对多的关系
-  @JoinTable({
-    name: 'follows_users_rel',
-    joinColumn: {
-      name: 'follow_id'
-    },
-    inverseJoinColumn: {
-      name: 'byUser_id'
-    }
-  })
-  byUsers!: User[]
+  @ManyToOne(() => User)
+  @JoinColumn({name: 'byUser_id'})
+  byUser!: User;
 
   @Column()
   create_time!: Date;
