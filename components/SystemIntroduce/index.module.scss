@@ -1,0 +1,26 @@
+.container {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 20px;
+  background-color: rgba(255,255,255, .6);
+  border-radius: 5px;
+  padding-left: 5px;
+  .title {
+    color: rgb(32, 157, 123);
+    font-size: 18px;
+  }
+  .content {
+    padding-left: 10px;
+    .contentItem {
+      margin-bottom: 1px;
+      .contentItemTitle {
+        color: rgb(32, 157, 123);
+      }
+    }
+    .contentItemBottom {
+      margin-top: 10px;
+    }
+  }
+}
