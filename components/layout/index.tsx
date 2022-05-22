@@ -33,14 +33,14 @@ const Layout = ({ children } : any) => {
       socket.emit('clientOnline', randomUserId)
     }
   }
-  const clineClose = () => {
-    console.log('下线', userId)
-    if (userId) {
-      socket.emit('clientClose', userId)
-    } else {
-      socket.emit('clientClose', randomUserId)
-    }
-  }
+  // const clineClose = () => {
+  //   console.log('下线', userId)
+  //   if (userId) {
+  //     socket.emit('clientClose', userId)
+  //   } else {
+  //     socket.emit('clientClose', randomUserId)
+  //   }
+  // }
   useEffect(() => {
     // 获取用户是否有离线信息
 
@@ -89,7 +89,7 @@ const Layout = ({ children } : any) => {
     window.addEventListener('beforeunload', () => {
       console.log('beforeunload')
       // debounce(clineClose, 1000)()
-      clineClose()
+      // clineClose()
     })
   }, [])
   return (

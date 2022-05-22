@@ -3,9 +3,9 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { ironOptions } from 'config/index';
 import redis from 'lib/redis'
 
-export default withIronSessionApiRoute(getIp, ironOptions);
+export default withIronSessionApiRoute(getIpList, ironOptions);
 
-async function getIp(req: NextApiRequest, res: NextApiResponse) {
+async function getIpList(req: NextApiRequest, res: NextApiResponse) {
   const result = await redis.zrange('z_province', 0, 25, 'WITHSCORES')
   let tempList = [];
   let Obj = {} as any

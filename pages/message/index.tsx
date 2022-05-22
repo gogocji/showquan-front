@@ -11,10 +11,13 @@ import io from 'socket.io-client'
 var socket : any
 const Message = () => {
   const { TabPane } = Tabs;
+  // 设置每一个tab的消息列表
   const [commentMessages, setCommentMessages] = useState([])
   const [thumbMessages, setThumbMessages] = useState([])
   const [followMessages, setFollowMessages] = useState([])
   const [systemMessages, setSystemMessages] = useState([])
+  
+  // 设置是否有对应的消息并对小红点进行展示
   const [hasComment, setHasComment] = useState(false)
   const [hasThumb, setHasThumb] = useState(false)
   const [hasFollow, setHasFollow] = useState(false)
@@ -22,17 +25,8 @@ const Message = () => {
   const [showSkeleton, setShowSkeleton] = useState(true)
 	const store = useStore()
 
-  const systemTest = {
-    user: {
-      nickname: '啊狗',
-      userid: 28,
-      avatar: '/images/avatar.jpg'
-    },
-    content: '系统消息',
-    create_time: '2022-05-12 20:40:44',
-  }
+  // tab切换的时候触发
   const handleTabChange = (key: any) => {
-    console.log('111', key)
     setShowSkeleton(true)
     if (key == 1) {
       setHasComment(false)
@@ -45,15 +39,17 @@ const Message = () => {
       getFollowMessage()
     } else if (key == 4) {
       setHasSystem(false)
-      console.log('44444')
       getNotificationMessage()
     }
   }
+
+  // 根据不同的消息类型，给不同的tab设置小红点
   const changeTabStatus = (type) => {
     if (type === 'thumb') setHasThumb(true)
     else if (type === 'follow') setHasFollow(true)
     else if (type === 'system') setHasSystem(true)
   }
+  // 获取最新的消息类型，用于设置小红点
   const getNewMessage = () => {
     request.post('/api/user/message/getNewMessageType', {
       user_id: store.user.userInfo.userId
@@ -66,23 +62,23 @@ const Message = () => {
         }
       })
   }
+  // 获取当前评论消息列表
   const getCommentMessage = () => {
     request.post('/api/user/message/getCommentMessage', {
       user_id: store.user.userInfo.userId
     }).then((res) => {
       if (res?.code === 0) {
-        console.log('res', res)
         setShowSkeleton(false)
         setCommentMessages(res.data)
       }
     })
   }
+  // 获取当前关注消息列表
   const getFollowMessage = () => {
     request.post('/api/user/message/getFollowMessage', {
       user_id: store.user.userInfo.userId
     }).then((res) => {
       if (res?.code === 0) {
-        console.log('res', res)
         setShowSkeleton(false)
         setFollowMessages(res.data)
       }
@@ -93,31 +89,31 @@ const Message = () => {
       user_id: store.user.userInfo.userId
     }).then((res) => {
       if (res?.code === 0) {
-        console.log('res', res)
         setShowSkeleton(false)
         setThumbMessages(res.data)
       }
     })
   }
+  // 获取当前系统消息列表
   const getNotificationMessage = () => {
     request.post('/api/common/notification/getSystemNotification', {
       is_start: 1
     }).then((res) => {
       if (res?.code === 0) {
-        console.log('res', res)
         setShowSkeleton(false)
         setSystemMessages(res.data)
       }
     })
   }
+
   useEffect(() => {
     getNewMessage()
     getCommentMessage()
     if (!socket) {
       socket = io('http://localhost:3000')
     }
-    // store.common.setCommonInfo({hasMessage: !store.common.commonInfo.hasMessage})
   }, [store.common.commonInfo.hasComment])
+
   return (
     <Row className={styles.container} typeof='flex' justify='center' style={{paddingTop:'3.2rem'}}>
       <Col className={styles.containerLeft} xs={24} sm={24} md={14} lg={14} xl={14} style={{backgroundColor:'rgba(255,255,255,.4)'}}>
