@@ -42,7 +42,6 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       },
       relations: ['user']
     })
-    console.log('newArticle', newArticle)
     if (newArticle && userResult) {
       newArticle.like_count = addNum + 1
       await articleRepo?.save(newArticle);
@@ -51,7 +50,6 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       thumb.user = userResult
       thumb.article = newArticle
       const resThumb = await thumbRepo.save(thumb)
-      console.log('resThumb', resThumb)
       // 给set结构添加comment这个type
       await redis.sadd('s_user_messageType:' + newArticle.user.id, 'thumb')
       // 给list结构添加comment.id
