@@ -50,10 +50,12 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       thumb.user = userResult
       thumb.article = newArticle
       const resThumb = await thumbRepo.save(thumb)
-      // 给set结构添加comment这个type
-      await redis.sadd('s_user_messageType:' + newArticle.user.id, 'thumb')
-      // 给list结构添加comment.id
-      await redis.lpush('l_user_thumbMessage:' + newArticle.user.id, resThumb.id)
+      if (newArticle.user.id != user_id) {
+        // 给set结构添加comment这个type
+        await redis.sadd('s_user_messageType:' + newArticle.user.id, 'thumb')
+        // 给list结构添加comment.id
+        await redis.lpush('l_user_thumbMessage:' + newArticle.user.id, resThumb.id)
+      }
     }
     res?.status(200).json({
       code: 0,

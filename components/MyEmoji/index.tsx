@@ -2,6 +2,7 @@ import styles from './index.module.scss';
 import { emojiList } from 'config/emoji';
 import { useState } from 'react'
 import { SmileOutlined } from '@ant-design/icons'
+import { Button } from 'antd'
 
 interface IProps {
   // eslint-disable-next-line no-unused-vars
@@ -20,10 +21,13 @@ const MyEmoji = (props : IProps) => {
   }
   return (
     <div className={styles.container}>
-      <div className={styles.textContainer} onClick={changeLayer}>
-        <SmileOutlined twoToneColor="#eb2f96"/>
-        <span className={styles.text}>表情</span>
-      </div>
+      <Button style={{border: 'none'}}>
+        <div className={styles.textContainer} onClick={changeLayer}>
+          <SmileOutlined twoToneColor="#eb2f96"/>
+          <span className={styles.text}>表情</span>
+        </div>
+      </Button>
+      
         {
           isShow && <div className={styles.emojiContainer}>
             {

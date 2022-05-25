@@ -168,11 +168,15 @@ const ArticleDetail = (props: IProps) => {
           article.comment_count += 1
         }
         // socket通知用户
-        socket.emit('message', {
-          userId: article.user.id,
-          fromUserId: loginUserInfo?.userId,
-          content: '评论信息'
-        })
+        const userId = article.user.id
+        const fromUserId = loginUserInfo?.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '评论信息'
+          })
+        }
         setRefreshList(!refreshList)
       } else if (res?.code === 4002) {
         message.error('内容敏感！请修改');
@@ -215,12 +219,16 @@ const ArticleDetail = (props: IProps) => {
         if (article.like_count || article.like_count === 0) 
         {article.like_count += 1}
         // socket通知用户
+        const userId = article.user.id
+        const fromUserId = loginUserInfo.userId
         console.log('article.user.id', article.user.id)
-        socket.emit('message', {
-          userId: article.user.id,
-          fromUserId: loginUserInfo?.userId,
-          content: '点赞信息'
-        })
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '点赞信息'
+          })
+        }
       }
     })
   }
@@ -292,11 +300,15 @@ const ArticleDetail = (props: IProps) => {
         message.success('关注成功')
         setHasFollow(true)
         // socket通知用户
-        socket.emit('message', {
-          userId: article.user.id,
-          fromUserId: loginUserInfo.userId,
-          content: '关注信息'
-        })
+        const userId = article.user.id
+        const fromUserId = loginUserInfo.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '关注信息'
+          })
+        }
       }
       setIsFollowLoading(false)
     })
@@ -432,8 +444,10 @@ const ArticleDetail = (props: IProps) => {
                     <div className={styles.name}>{nickname}</div>
                   </div>
                   {
-                    hasFollow ? <Button loading={isFollowLoading} onClick={handleDelFollow}>已关注</Button>
-                    : <Button loading={isFollowLoading} onClick={handleFollow}>关注</Button>
+                    article.user.id != loginUserInfo.userId && (
+                      hasFollow ? <Button loading={isFollowLoading} onClick={handleDelFollow}>已关注</Button>
+                      : <Button loading={isFollowLoading} onClick={handleFollow}>关注</Button>
+                    )
                   }
                 </div>
                 <div className={styles.operation}>

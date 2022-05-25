@@ -44,11 +44,15 @@ const FollowItem = (props: IProps) => {
         message.success('关注成功')
         setHasFollow(true)
         // socket通知用户
-        socket.emit('message', {
-          userId: userInfo.id,
-          fromUserId: loginUserInfo.userId,
-          content: '关注信息'
-        })
+        const userId = userInfo.id
+        const fromUserId = loginUserInfo.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId: userInfo.id,
+            fromUserId: loginUserInfo.userId,
+            content: '关注信息'
+          })
+        }
       }
       setIsSubmitLoading(false)
     })

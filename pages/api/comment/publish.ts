@@ -76,12 +76,12 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     const resComment = await commentRepo.save(comment);
 
     // 给子评论就是评论
-    if (toUser_id) {
+    if (toUser_id && toUser_id != session?.userId) {
       // 给set结构添加comment这个type
       await redis.sadd('s_user_messageType:' + toUser_id, 'comment')
       // 给list结构添加comment.id
       await redis.lpush('l_user_commentMessage:' + toUser_id, resComment.id)
-    } else if (article) {
+    } else if (article && toUser_id != session?.userId) {
       console.log('article', article)
       // 给set结构添加comment这个type
       await redis.sadd('s_user_messageType:' + article.user?.id, 'comment')

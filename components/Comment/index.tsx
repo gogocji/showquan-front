@@ -89,11 +89,16 @@ const MyComment = (props: IProps) => {
         setShowModal(false)
 
         // socket通知用户
-        socket.emit('message', {
-          userId: comment?.user.id,
-          fromUserId: userInfo?.userId,
-          content: '评论信息'
-        })
+        const userId = comment?.user.id
+        const fromUserId = userInfo?.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '评论信息'
+          })
+        }
+        
       } else if (res?.code === 4002) {
         message.error('内容敏感！请修改');
         setIsSubmitLoading(false)
@@ -121,11 +126,15 @@ const MyComment = (props: IProps) => {
         setUserAction('liked')
         setCommentLikeNum(commentLikeNum ? commentLikeNum : 0 + 1)
         // socket通知用户
-        socket.emit('message', {
-          userId: comment?.user.id,
-          fromUserId: userInfo?.userId,
-          content: '点赞信息'
-        })
+        const userId = comment?.user.id
+        const fromUserId = userInfo?.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '点赞信息'
+          })
+        }
       }
     })
   }

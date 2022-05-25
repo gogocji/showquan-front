@@ -40,10 +40,12 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     const resFollow = await db.getRepository(Follow).save(follow);
     console.log('resFollow', resFollow)
 
-    // 给set结构添加follow这个type
-    await redis.sadd('s_user_messageType:' + user?.id, 'follow')
-    // 给list结构添加comment.id
-    await redis.lpush('l_user_followMessage:' + user?.id, resFollow.id)
+    if (user?.id != byUser_id) {
+      // 给set结构添加follow这个type
+      await redis.sadd('s_user_messageType:' + user?.id, 'follow')
+      // 给list结构添加comment.id
+      await redis.lpush('l_user_followMessage:' + user?.id, resFollow.id)
+    }
     
     res?.status(200).json({
       code: 0,

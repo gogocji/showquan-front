@@ -70,6 +70,7 @@ const Message = () => {
       if (res?.code === 0) {
         setShowSkeleton(false)
         setCommentMessages(res.data)
+        console.log('res.data', res.data)
       }
     })
   }
