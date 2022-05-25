@@ -18,6 +18,9 @@
   }
   .articleContent {
     padding: 20px;
+    img {
+      max-width: 100%;
+    }
   }
   .articleInfo {
     .userInfo {

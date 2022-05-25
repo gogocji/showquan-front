@@ -75,6 +75,7 @@ export async function getServerSideProps({ params }: any) {
     }
   })
   newCommentList.sort(compare).reverse()
+  console.log('from server', newCommentList)
   return {
     props: {
       article: JSON.parse(JSON.stringify(article))[0],
@@ -100,6 +101,7 @@ const ArticleDetail = (props: IProps) => {
   const [uploadImgUrl, setUploadImgUrl] = useState('')
   const [isCommentLoading, setIsCommentLoading] = useState(false)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
+  const [ refreshList, setRefreshList ] = useState(false)
 
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
@@ -171,6 +173,7 @@ const ArticleDetail = (props: IProps) => {
           fromUserId: loginUserInfo?.userId,
           content: '评论信息'
         })
+        setRefreshList(!refreshList)
       } else if (res?.code === 4002) {
         message.error('内容敏感！请修改');
       }
@@ -266,6 +269,17 @@ const ArticleDetail = (props: IProps) => {
         }
       })
   }, [])
+
+  useEffect(() => {
+    request.post('/api/comment/getListByArticle', {
+      articleId: article?.id
+    }).then((res: any) => {
+      if (res?.code === 0) {
+        const { commentList } = res.data
+        setComments([...commentList])
+      }
+    })
+  }, [refreshList])
 
   // 关注用户
   const handleFollow = () => {
