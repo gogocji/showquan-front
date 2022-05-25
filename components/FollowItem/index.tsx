@@ -63,7 +63,7 @@ const FollowItem = (props: IProps) => {
 
   const handleGotoPersonalPage = () => {
     push(`/user/${userInfo.id}`);
-    handleToPersonal()
+    handleToPersonal && handleToPersonal()
   }
 
   useEffect(() => {

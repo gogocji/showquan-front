@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import request from 'service/fetch';
 import { useStore } from 'store/index';
 import io from 'socket.io-client'
-import Link from 'next/link';
 
 var socket : any
 interface IProps {
