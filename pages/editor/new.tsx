@@ -168,13 +168,15 @@ const NewEditor = () => {
         <UpLoadImg uploadHeadImg={handleUploadHeadImg} />
       </div>
       {
-        contentWarningNum && (
+        contentWarningNum ? (
           <div className={styles.contentWarnings}>
             还有 {contentWarningNum} 处敏感词待修改，方可发布文章
           </div>
-        )
+        ) : null
       }
-      <Editor onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+      <div className={styles.editContainer}>
+        <Editor style={{height: 700}} onUploadImg={handleUploadImg} modelValue={content} onChange={handleContentChange} />
+      </div>
       {/* <MDEditor value={content} height={1080} onChange={handleContentChange} /> */}
     </div>
   );

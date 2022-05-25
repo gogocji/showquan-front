@@ -1,11 +1,13 @@
 .container {
   margin: 0 auto;
-
+  padding: 20px;
+  background-color: white;
   .operation {
     display: flex;
-
+    margin-bottom: 10px;
     .title {
       width: 80%;
+      margin-right: 20px;
     }
 
     .tag {
@@ -13,11 +15,14 @@
     }
 
     .button {
+      margin-left: 10px;
       width: 5%;
     }
   }
 
-  .desc {}
+  .desc {
+    margin-bottom: 10px;
+  }
 
   .upLoadImg {
     
@@ -26,6 +31,9 @@
     background-color: red;
     color: white;
     text-align: center;
+  }
+  .editContainer {
+    margin-bottom: 50px;
   }
 }
 
