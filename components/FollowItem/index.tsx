@@ -4,18 +4,21 @@ import { IUserInfo } from 'store/userStore';
 import { useStore } from 'store';
 import request from 'service/fetch';
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import io from 'socket.io-client'
+import { useRouter } from 'next/router'
+
 var socket : any
 interface IProps {
-  userInfo: IUserInfo
+  userInfo: IUserInfo,
+  handleToPersonal?: () => void
 }
 const FollowItem = (props: IProps) => {
-  const { userInfo } = props
+  const { userInfo, handleToPersonal } = props
   const store = useStore()
   const [hasFollow, setHasFollow] = useState(true)
   const loginUserInfo = store.user.userInfo
   const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  const { push } = useRouter()
 
   const handleDelFollow = () => {
     const byUser_id = loginUserInfo.userId
@@ -48,8 +51,8 @@ const FollowItem = (props: IProps) => {
         const fromUserId = loginUserInfo.userId
         if (userId != fromUserId) {
           socket.emit('message', {
-            userId: userInfo.id,
-            fromUserId: loginUserInfo.userId,
+            userId,
+            fromUserId,
             content: '关注信息'
           })
         }
@@ -57,29 +60,36 @@ const FollowItem = (props: IProps) => {
       setIsSubmitLoading(false)
     })
   }
+
+  const handleGotoPersonalPage = () => {
+    push(`/user/${userInfo.id}`);
+    handleToPersonal()
+  }
+
   useEffect(() => {
     if (!socket) {
       socket = io('http://localhost:3000')
     }
   }, [])
+
   return (
-    <Link key={userInfo.id} href={`/user/${userInfo.id}`}>
-      <div className={styles.item}>
-        <div className={styles.itemLeft}>
+    <div className={styles.item}>
+      <div className={styles.itemLeft}>
+        <div onClick={handleGotoPersonalPage} style={{cursor: 'pointer'}}>
           <Avatar className={styles.avatar} src={userInfo?.avatar} size={48} />
-          <div className={styles.userInfo}>
-            <div className={styles.nickname}>{userInfo.nickname}</div>
-            <div className={styles.introduce}>{userInfo.introduce}</div>
-          </div>
         </div>
-        <div className={styles.itemRight}>
-          {
-            hasFollow ? <Button loading={isSubmitLoading} onClick={handleDelFollow} className={styles.button}>已关注</Button>
-            : <Button loading={isSubmitLoading} onClick={handleFollow} className={styles.button}>关注</Button>
-          }
+        <div className={styles.userInfo}>
+          <div className={styles.nickname}>{userInfo.nickname}</div>
+          <div className={styles.introduce}>{userInfo.introduce}</div>
         </div>
       </div>
-    </Link>
+      <div className={styles.itemRight}>
+        {
+          hasFollow ? <Button loading={isSubmitLoading} onClick={handleDelFollow} className={styles.button}>已关注</Button>
+          : <Button loading={isSubmitLoading} onClick={handleFollow} className={styles.button}>关注</Button>
+        }
+      </div>
+    </div>
   );
 };
 

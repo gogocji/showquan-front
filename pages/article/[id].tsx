@@ -21,6 +21,8 @@ import { IComment } from 'pages/api';
 import MyEmoji from 'components/MyEmoji'
 import CommentUpload from 'components/Comment/upload'
 import io from 'socket.io-client'
+import { useRouter } from 'next/router'
+
 var socket : any
 
 interface IProps {
@@ -102,6 +104,7 @@ const ArticleDetail = (props: IProps) => {
   const [isCommentLoading, setIsCommentLoading] = useState(false)
   const [isFollowLoading, setIsFollowLoading] = useState(false)
   const [ refreshList, setRefreshList ] = useState(false)
+  const { push } = useRouter()
 
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
@@ -376,6 +379,11 @@ const ArticleDetail = (props: IProps) => {
   const deleteUploadImg = () => {
     setUploadImgUrl('')
   }
+
+  const handleGotoPersonalPage = () => {
+    push(`/user/${article.user.id}`);
+  }
+
   return (
     <div>
       <MyBackTop />
@@ -394,7 +402,9 @@ const ArticleDetail = (props: IProps) => {
               </div>
               <div className={styles.articleInfo}>
                 <div className={styles.userInfo}>
-                  <Avatar src={avatar} size={50} />
+                  <div style={{cursor: 'pointer'}} onClick={handleGotoPersonalPage}>
+                    <Avatar src={avatar} size={50} />
+                  </div>
                   <div className={styles.info}>
                     <div className={styles.name}>{nickname}</div>
                   </div>
@@ -408,7 +418,7 @@ const ArticleDetail = (props: IProps) => {
               <span className={styles.icon}><LikeOutlined type='fire' style={{color:'black'}}/> {article?.like_count}</span>
                 </div>
                 {
-                  Number(loginUserInfo?.userId) === 1 ? (
+                  Number(loginUserInfo?.userId) === article.user.id ? (
                     <Link href={`/editor/${article?.id}`}>编辑</Link>
                   ) : (
                     hasCollect
@@ -439,7 +449,9 @@ const ArticleDetail = (props: IProps) => {
             <Divider />
               <div className={styles.operationArea}>
                 <div className={styles.userInfo}>
-                  <Avatar src={avatar} size={50} />
+                  <div style={{cursor: 'pointer'}} onClick={handleGotoPersonalPage}>
+                    <Avatar src={avatar} size={50} />
+                  </div>
                   <div className={styles.info}>
                     <div className={styles.name}>{nickname}</div>
                   </div>
@@ -473,7 +485,9 @@ const ArticleDetail = (props: IProps) => {
               <h3>评论</h3>
               {loginUserInfo?.userId && (
                 <div className={styles.enter}>
-                  <Avatar src={avatar} size={40} />
+                  <div style={{cursor: 'pointer'}} onClick={handleGotoPersonalPage}>
+                    <Avatar src={avatar} size={40} />
+                  </div>
                   <div className={styles.content}>
                     <div className={styles.commentInputContainer}>
                       <Input.TextArea

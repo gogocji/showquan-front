@@ -10,6 +10,8 @@ import { observer } from "mobx-react-lite"
 import MyEmoji from 'components/MyEmoji'
 import CommentUpload from 'components/Comment/upload'
 import io from 'socket.io-client'
+import { useRouter } from 'next/router'
+
 var socket : any
 
 interface IProps {
@@ -35,6 +37,7 @@ const MyComment = (props: IProps) => {
   const [inputComment, setInputComment] = useState('')
   const [commentLikeNum, setCommentLikeNum] = useState(0)
   const [uploadImgUrl, setUploadImgUrl] = useState('')
+  const { push } = useRouter()
 
   // 找到最终的父评论 
   const findCommentRoot = (comment : any) => {
@@ -191,16 +194,23 @@ const MyComment = (props: IProps) => {
   const deleteUploadImg = () => {
     setUploadImgUrl('')
   }
+
+  const handleGotoPersonalPage = () => {
+    push(`/user/${article.user.id}`);
+  }
+
   return (
     <Comment
       actions={commentActions}
       author={ <a style={comment.user.id == 2 ? { color:'red',fontWeight:'700'}:{} }>{ comment.user.id == 2 ?'博主' : comment.user.nickname }</a>}
       avatar={
-        <Avatar
+        <div style={{cursor: 'pointer'}} onClick={handleGotoPersonalPage}>
+          <Avatar
             src={comment?.user?.avatar}
             alt="你真好看~"
             size={40} 
-        />
+          />
+        </div>
       }
       content={
         <p>

@@ -1,5 +1,5 @@
 import styles from './index.module.scss';
-import { Image, Button, message } from 'antd'
+import { Button, message } from 'antd'
 import { LikeOutlined, LikeFilled } from '@ant-design/icons'
 import { useRouter } from 'next/router'
 import { formatDistanceToNow } from 'date-fns';
@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react'
 import request from 'service/fetch';
 import { useStore } from 'store/index';
 import io from 'socket.io-client'
+import Link from 'next/link';
+
 var socket : any
 interface IProps {
   type: string,
@@ -17,6 +19,8 @@ const MyMessage = (props: IProps) => {
   const { push } = useRouter()
   const [hasLike, setHasLike] = useState(false)
   const [ commentLikeNum, setCommentLikeNum] = useState(contentItem?.comment?.like_count || 0)
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+  
   const store = useStore()
   const handleToArticle = () => {
     push(`/article/${contentItem.article.article_id}`)
@@ -83,6 +87,53 @@ const MyMessage = (props: IProps) => {
       }
     })
   }
+
+  const handleDelFollow = () => {
+    const byUser_id = store.user.userInfo.userId
+    const user_id = contentItem.user.id
+    setIsSubmitLoading(true)
+    request.post('/api/follow/del', {
+      user_id,
+      byUser_id
+    }).then((res: any) => {
+      if (res?.code === 0) {
+        message.success('取消关注成功')
+        contentItem.hasLike = false
+      }
+      setIsSubmitLoading(false)
+    })
+  }
+
+  const handleFollow = () => {
+    const byUser_id = store.user.userInfo.userId
+    const user = contentItem.user
+    setIsSubmitLoading(true)
+    request.post('/api/follow/publish', {
+      user,
+      byUser_id
+    }).then((res: any) => {
+      if (res?.code === 0) {
+        message.success('关注成功')
+        contentItem.hasLike = true
+        // socket通知用户
+        const userId = contentItem.user.id
+        const fromUserId = store.user.userInfo.userId
+        if (userId != fromUserId) {
+          socket.emit('message', {
+            userId,
+            fromUserId,
+            content: '关注信息'
+          })
+        }
+      }
+      setIsSubmitLoading(false)
+    })
+  }
+
+  const handleGotoPersonalPage = () => {
+    push(`/user/${contentItem.user.id}`);
+  }
+
   useEffect(() => {
     if (!socket) {
       socket = io('http://localhost:3000')
@@ -106,8 +157,8 @@ const MyMessage = (props: IProps) => {
     <div className={styles.container} >
       <div className={styles.left}>
         {
-          type !== 'system' ? <Image className={styles.img} src={contentItem.user.avatar}></Image>
-          : <Image className={styles.img} src='/images/masterLogo.jpg'></Image>
+          type !== 'system' ? <img style={{cursor: 'pointer'}} onClick={handleGotoPersonalPage} className={styles.img} src={contentItem.user.avatar}></img>
+          : <img className={styles.img} src='/images/masterLogo.jpg'/>
         }
       </div>
       <div className={styles.right}>
@@ -130,7 +181,9 @@ const MyMessage = (props: IProps) => {
             type === 'follow' && (
               <div className={styles.followButton}>
                 {
-                  contentItem.hasLike ? <Button>已关注</Button> : <Button>关注</Button>
+                  contentItem.hasLike
+                   ? <Button loading={isSubmitLoading} onClick={handleDelFollow}>已关注</Button>
+                   : <Button loading={isSubmitLoading} onClick={handleFollow}>关注</Button>
                 }
               </div>
             )

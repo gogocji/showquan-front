@@ -111,6 +111,7 @@ const UserDetail = (props: any) => {
   const [isLoading, setIsLoading] = useState(true)
   const [followList, setFollowList] = useState([] as any)
   const [collectList] = useState([])
+  const [tabKey, setTabKey ] = useState(1)
   const { TabPane } = Tabs;
 
   const viewsCount = articles?.reduce(
@@ -153,7 +154,13 @@ const UserDetail = (props: any) => {
 
   useEffect(() => {
     setIsLoading(true)
-    handlePagination(1, articles)
+    if (tabKey == 1) {
+      handlePagination(1, articles)
+    } else if (tabKey == 2) {
+      getFollowList()
+    } else if (tabKey == 3) {
+      getCollectList()
+    }
   }, [])
 
   const handlePagination = (e: any, itemList: any) => {
@@ -171,6 +178,7 @@ const UserDetail = (props: any) => {
   }
 
   const handleTabChange = (key: any) => {
+    setTabKey(key)
     setCurrentList([], () => {
       setIsLoading(true)
       if (key == 1) {
@@ -181,6 +189,10 @@ const UserDetail = (props: any) => {
         getCollectList()
       }
     })
+  }
+
+  const handleToPersonal = () => {
+    // setFollowList([])
   }
 
   return (
@@ -240,7 +252,7 @@ const UserDetail = (props: any) => {
               {
                 followList.length ? (
                   followList?.map((item: any) => (
-                    <FollowItem key={item} userInfo={item.user} />
+                    <FollowItem handleToPersonal={handleToPersonal} key={item.id} userInfo={item.user} />
                   ))
                 )
                 : (
