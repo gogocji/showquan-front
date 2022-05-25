@@ -30,7 +30,7 @@ const ListItem = (props: IProps) => {
 
   return (
     // eslint-disable-next-line @next/next/link-passhref
-    !article.state && <LazyLoad height={200} offset={-200}>
+    !article.state && <LazyLoad height={200} offset={-10}>
       <Link href={`/article/${article.id}`} >
         <div className={styles.container}>
           <div className={(styles.article, screenWidth >=770?styles.cssnice1:styles.cssnice)}>

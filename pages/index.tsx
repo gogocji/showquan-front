@@ -267,7 +267,7 @@ const Home = (props: IProps) => {
                 {
                   currentList?.map((article) => (
                     <>
-                      <DynamicComponent article={article} />
+                      <DynamicComponent key={article.id} article={article} />
                     </>
                   ))
                 }

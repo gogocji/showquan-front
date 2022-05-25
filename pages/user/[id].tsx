@@ -12,29 +12,13 @@ import { prepareConnection } from 'db/index';
 import { User, Article } from 'db/entity';
 import styles from './index.module.scss';
 import RightBar from "components/RightBar"
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic';
 import { IArticle } from 'pages/api/index'
 import LazyLoad from 'react-lazyload';
 import request from 'service/fetch';
 import FollowItem from "components/FollowItem"
-
-function useCallbackState<T>(od: T) {
-  const cbRef = useRef() as any;
-  const [data, setData] = useState(od);
-
-  useEffect(() => {
-    cbRef.current && cbRef.current(data);
-  }, [data]);
-
-  return [
-    data,
-    function (d: any, callback: any) {
-      cbRef.current = callback;
-      setData(d);
-    }
-  ];
-}
+import { useCallbackState } from 'utils/index'
 
 const DynamicComponent = dynamic(() => import('components/ListItem') as any) as any;
 
@@ -232,7 +216,7 @@ const UserDetail = (props: any) => {
                   <Spin tip='加载中...' spinning={isLoading}>
                     {currentList?.map((article: any) => (
                       <>
-                        <DynamicComponent article={article} />
+                        <DynamicComponent key={article.id} article={article} />
                         {/* <ListItem article={article} /> */}
                       </>
                     ))}
@@ -273,7 +257,7 @@ const UserDetail = (props: any) => {
                     {
                       currentList?.map((article: any) => (
                         <>
-                         <DynamicComponent key={article} article={article} />
+                         <DynamicComponent key={article.id} article={article} />
                         </>
                       ))
                     }

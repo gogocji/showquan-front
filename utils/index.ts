@@ -1,3 +1,5 @@
+import { useState, useEffect, useRef } from 'react'
+
 interface ICookieInfo {
   id: number
   nickname: string
@@ -110,4 +112,21 @@ export const getWeekYYYYMMDD = () => {
   console.log('最近七天日期：',days);
 
   return days;		
+}
+
+export const useCallbackState = <T>(od: T) => {
+  const cbRef = useRef() as any;
+  const [data, setData] = useState(od);
+
+  useEffect(() => {
+    cbRef.current && cbRef.current(data);
+  }, [data]);
+
+  return [
+    data,
+    function (d: any, callback: any) {
+      cbRef.current = callback;
+      setData(d);
+    }
+  ];
 }
