@@ -44,6 +44,7 @@ const ModifyEditor = ({ article }: IProps) => {
   const [description, setDescription] = useState(article?.description || '');
   const [tagIds, setTagIds] = useState([]);
   const [allTags, setAllTags] = useState([]);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
@@ -58,6 +59,7 @@ const ModifyEditor = ({ article }: IProps) => {
       message.warning('请输入文章标题');
       return ;
     }
+    setIsSubmitLoading(true)
     request.post('/api/article/update', {
       id: articleId,
       title,
@@ -71,6 +73,7 @@ const ModifyEditor = ({ article }: IProps) => {
       } else {
         message.error(res?.msg || '发布失败');
       }
+      setIsSubmitLoading(false)
     })
   };
 
@@ -112,6 +115,7 @@ const ModifyEditor = ({ article }: IProps) => {
           className={styles.button}
           type="primary"
           onClick={handlePublish}
+          loading={isSubmitLoading}
         >
           发布
         </Button>

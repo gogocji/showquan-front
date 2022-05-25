@@ -16,6 +16,7 @@ async function follow(req: NextApiRequest, res: NextApiResponse) {
   const tagRepo = db.getRepository(Tag);
   const userRepo = db.getRepository(User);
 
+  console.log('userId', userId)
   const user = await userRepo.findOne({
     where: {
       id: userId,

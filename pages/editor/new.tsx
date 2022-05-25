@@ -22,6 +22,8 @@ const NewEditor = () => {
   const [description, setDescription] = useState('');
   const [headImgUrl, setHeadImgUrl] = useState('');
   const [contentWarningNum, setContentWarningNum] = useState(0)
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+
   useEffect(() => {
     request.get('/api/tag/get').then((res: any) => {
       if (res?.code === 0) {
@@ -45,6 +47,7 @@ const NewEditor = () => {
       message.warning('请输入文章标题');
       return ;
     }
+    setIsSubmitLoading(true)
     request.post('/api/article/publish', {
       title,
       content,
@@ -66,6 +69,7 @@ const NewEditor = () => {
       } else {
         message.error(res?.msg || '发布失败');
       }
+      setIsSubmitLoading(false)
     })
   };
 
@@ -145,6 +149,7 @@ const NewEditor = () => {
           <Select.Option key={tag?.id} value={tag?.id}>{tag?.title}</Select.Option>
         ))}</Select>
         <Button
+          loading={isSubmitLoading}
           className={styles.button}
           type="primary"
           onClick={handlePublish}

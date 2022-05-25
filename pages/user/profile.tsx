@@ -21,6 +21,8 @@ const UserProfile = () => {
   const [userImgUrl, setUserImgUrl] = useState('');
   const store = useStore()
   const { push } = useRouter()
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
+
   useEffect(() => {
     request.get('/api/user/detail').then((res: any) => {
       if (res?.code === 0) {
@@ -31,6 +33,7 @@ const UserProfile = () => {
   }, [form]);
 
   const handleSubmit = (values: any) => {
+    setIsSubmitLoading(true)
     request.post('/api/user/update', { ...values, userImgUrl }).then((res: any) => {
       if (res?.code === 0) {
         message.success('修改成功');
@@ -41,6 +44,7 @@ const UserProfile = () => {
       } else {
         message.error(res?.msg || '修改失败');
       }
+      setIsSubmitLoading(false)
     });
   };
 
@@ -77,7 +81,7 @@ const UserProfile = () => {
               <Input.TextArea placeholder="请输入个人技术栈" />
             </Form.Item>
             <Form.Item {...tailLayout}>
-              <Button type="primary" htmlType="submit">
+              <Button loading={isSubmitLoading} type="primary" htmlType="submit">
                 保存修改
               </Button>
             </Form.Item>

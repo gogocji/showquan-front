@@ -15,11 +15,13 @@ const FollowItem = (props: IProps) => {
   const store = useStore()
   const [hasFollow, setHasFollow] = useState(true)
   const loginUserInfo = store.user.userInfo
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false)
 
   const handleDelFollow = () => {
     const byUser_id = loginUserInfo.userId
     const user_id = userInfo.id
     console.log(byUser_id, user_id)
+    setIsSubmitLoading(true)
     request.post('/api/follow/del', {
       user_id,
       byUser_id
@@ -28,10 +30,12 @@ const FollowItem = (props: IProps) => {
         message.success('取消关注成功')
         setHasFollow(false)
       }
+      setIsSubmitLoading(false)
     })
   }
 
   const handleFollow = () => {
+    setIsSubmitLoading(true)
     request.post('/api/follow/publish', {
       user: userInfo,
       byUser_id: loginUserInfo.userId
@@ -46,6 +50,7 @@ const FollowItem = (props: IProps) => {
           content: '关注信息'
         })
       }
+      setIsSubmitLoading(false)
     })
   }
   useEffect(() => {
@@ -65,8 +70,8 @@ const FollowItem = (props: IProps) => {
         </div>
         <div className={styles.itemRight}>
           {
-            hasFollow ? <Button onClick={handleDelFollow} className={styles.button}>已关注</Button>
-            : <Button onClick={handleFollow} className={styles.button}>关注</Button>
+            hasFollow ? <Button loading={isSubmitLoading} onClick={handleDelFollow} className={styles.button}>已关注</Button>
+            : <Button loading={isSubmitLoading} onClick={handleFollow} className={styles.button}>关注</Button>
           }
         </div>
       </div>

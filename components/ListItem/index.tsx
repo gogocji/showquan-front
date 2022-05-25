@@ -55,7 +55,7 @@ const ListItem = (props: IProps) => {
             <div className={styles.articleImg}>
               {
                 article.headImg ? (
-                  <Image preview={false} src={article.headImg} alt="" />
+                  <Image width={'100%'} preview={false} src={article.headImg} alt="" />
                 ) : <div></div>
               }
             </div>

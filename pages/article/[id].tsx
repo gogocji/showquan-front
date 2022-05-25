@@ -98,6 +98,9 @@ const ArticleDetail = (props: IProps) => {
   // const [hasTocify, setHasTocify] = useState(false)
   const [articleCommentNum, setArticleCommentNum] = useState(commentList.length || 0)
   const [uploadImgUrl, setUploadImgUrl] = useState('')
+  const [isCommentLoading, setIsCommentLoading] = useState(false)
+  const [isFollowLoading, setIsFollowLoading] = useState(false)
+
   // 文章内容md格式转化和文章导航相关
   const renderer = new marked.Renderer();
   const tocify = new Tocify() 
@@ -126,6 +129,7 @@ const ArticleDetail = (props: IProps) => {
       message.error('评论不能为空')
       return
     }
+    setIsCommentLoading(true)
     request
     .post('/api/comment/publish', {
       articleId: article?.id,
@@ -173,6 +177,7 @@ const ArticleDetail = (props: IProps) => {
       else {
         message.error('发表失败');
       }
+      setIsCommentLoading(false)
     });
   }
 
@@ -264,6 +269,7 @@ const ArticleDetail = (props: IProps) => {
 
   // 关注用户
   const handleFollow = () => {
+    setIsFollowLoading(true)
     request.post('/api/follow/publish', {
       user: article.user,
       byUser_id: loginUserInfo.userId
@@ -278,6 +284,7 @@ const ArticleDetail = (props: IProps) => {
           content: '关注信息'
         })
       }
+      setIsFollowLoading(false)
     })
   }
   // 取消关注用户
@@ -285,6 +292,7 @@ const ArticleDetail = (props: IProps) => {
     const byUser_id = loginUserInfo.userId
     const user_id = article.user?.id
     console.log(byUser_id, user_id)
+    setIsFollowLoading(true)
     request.post('/api/follow/del', {
       user_id,
       byUser_id
@@ -293,6 +301,7 @@ const ArticleDetail = (props: IProps) => {
         message.success('取消关注成功')
         setHasFollow(false)
       }
+      setIsFollowLoading(false)
     })
   }
 
@@ -409,8 +418,8 @@ const ArticleDetail = (props: IProps) => {
                     <div className={styles.name}>{nickname}</div>
                   </div>
                   {
-                    hasFollow ? <Button onClick={handleDelFollow}>已关注</Button>
-                    : <Button onClick={handleFollow}>关注</Button>
+                    hasFollow ? <Button loading={isFollowLoading} onClick={handleDelFollow}>已关注</Button>
+                    : <Button loading={isFollowLoading} onClick={handleFollow}>关注</Button>
                   }
                 </div>
                 <div className={styles.operation}>
@@ -464,7 +473,7 @@ const ArticleDetail = (props: IProps) => {
                         &nbsp;&nbsp;&nbsp;
                         <CommentUpload returnUploadUrl={handleUploadUrl}/>
                       </div>
-                      <Button type="primary" onClick={handleComment}>
+                      <Button loading={isCommentLoading} type="primary" onClick={handleComment}>
                         发表评论
                       </Button>
                     </div>
