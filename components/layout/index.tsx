@@ -2,7 +2,7 @@ import Navbar from "components/Navbar"
 import Footer from "components/Footer"
 import { useStore } from 'store/index';
 import MyBackTop from "components/BackTop"
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { observer } from "mobx-react-lite"
 import io from 'socket.io-client'
 import { notification } from 'antd';
@@ -15,7 +15,7 @@ const Layout = ({ children } : any) => {
   const { isShowDrawer } = store.common.commonInfo
   const { userId } = store.user.userInfo
   const randomUserId = new Date().getTime() + Math.floor(Math.random()*Math.floor(6))
-  const sendNotification = (title, content) => {
+  const sendNotification = (title: any, content: any) => {
     notification.open({
       message: title,
       description:
@@ -54,7 +54,7 @@ const Layout = ({ children } : any) => {
     }
     if (canNotification) {
       canNotification = false
-      socket.on('notification', data => {
+      socket.on('notification', (data: any) => {
         if (data.message.title) {
           console.log('canNotification', canNotification)
           canNotification = false
@@ -65,7 +65,7 @@ const Layout = ({ children } : any) => {
           canNotification = true
         }, 10000)
       })
-      socket.on('message', message => {
+      socket.on('message', (message: any )=> {
         console.log('收到独播信息', message)
         store.common.setCommonInfo({hasMessage: true, hasComment: hasComment})
         hasComment = !hasComment

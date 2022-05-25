@@ -66,7 +66,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
     if (article) {
       console.log('article', article)
       comment.article = article;
-      article.comment_count = article.comment_count + 1
+      article.comment_count = article.comment_count && article.comment_count + 1
       await db.getRepository(Article).save(article)
     }
     comment.like_count = 0

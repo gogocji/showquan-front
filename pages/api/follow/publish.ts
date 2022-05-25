@@ -11,7 +11,7 @@ async function publish(req: NextApiRequest, res: NextApiResponse) {
   const db = await prepareConnection();
   const followRepo = db.getRepository(Follow);
   const { user, byUser_id } = req.body
-  const result = await redis.hset(`h_user_follow:${byUser_id}`, user?.id, JSON.stringify(user))
+  await redis.hset(`h_user_follow:${byUser_id}`, user?.id, JSON.stringify(user))
   const userResult = await db.getRepository(User).findOne({
     id: user.id,
   });

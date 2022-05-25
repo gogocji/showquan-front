@@ -4,8 +4,6 @@ import { ironOptions } from 'config/index';
 import { Follow } from 'db/entity/index';
 import { prepareConnection } from 'db/index';
 
-import redis from 'lib/redis'
-
 export default withIronSessionApiRoute(getList, ironOptions);
 
 async function getList(req: NextApiRequest, res: NextApiResponse) {

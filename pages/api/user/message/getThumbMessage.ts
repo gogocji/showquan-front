@@ -15,7 +15,7 @@ async function getCommentMessage(req: NextApiRequest, res: NextApiResponse) {
   // 转成int类型，不然下面查询不了，以为id是number类型的
   thumbIdList = thumbIdList.map((item : string) => {
     return parseInt(item)
-  })
+  }) as any
 
   const thumbList = await thumbRepo.find({
     where: {

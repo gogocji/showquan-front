@@ -8,13 +8,13 @@ export class Comment extends BaseEntity {
   readonly id!: number;
 
   @Column()
-  content!: string;
+  content?: string;
 
   @Column()
-  create_time!: Date;
+  create_time?: Date;
 
   @Column()
-  update_time!: Date;
+  update_time?: Date;
 
   @ManyToOne(() => User)
   @JoinColumn({name: 'user_id'})

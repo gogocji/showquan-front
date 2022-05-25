@@ -81,7 +81,12 @@ async function login(req: NextApiRequest, res: NextApiResponse) {
       })
       await redis.zincrby('z_province', 1, province)
       console.log('mapResult', mapResult)
-      const { longitude, latitude } = mapResult as any
+      let longitude = ''
+      let latitude = ''
+      if (mapResult) {
+        longitude = mapResult.longitude
+        latitude  = mapResult.latitude
+      }
       const user = new User()
       user.nickname = `用户_${Math.floor(Math.random() * 10000)}`
       user.skill = ''

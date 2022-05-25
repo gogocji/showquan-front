@@ -59,7 +59,7 @@ export async function getServerSideProps({ params }: any) {
     relations: ['user', 'toUser', 'pComment', 'rComment']
   })
   // 改变评论数据结构
-  const newCommentList = comment.map((item : IComment) => {
+  const newCommentList = comment.map((item : any) => {
     return {
       ...item,
       children : [] as IComment[]
@@ -328,7 +328,7 @@ const ArticleDetail = (props: IProps) => {
   }
 
   // emoji输入
-  const handleEmoji = (emojiItem) => {
+  const handleEmoji = (emojiItem: any) => {
     setInputVal(inputVal.concat(emojiItem))
   }
   

@@ -6,7 +6,6 @@ import { observer } from "mobx-react-lite"
 import React, { ReactElement } from 'react';
 import SystemIntroduce from 'components/SystemIntroduce/index'
 import { Divider } from 'antd'
-import styles from './index.module.scss'
 interface IProps {
   ifCanChangeAvatar: boolean,
   children: ReactElement

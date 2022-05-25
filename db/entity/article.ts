@@ -9,44 +9,44 @@ export class Article extends BaseEntity {
   readonly id!: number;
 
   @Column()
-  title!: string;
+  title?: string;
 
   @Column()
-  description!: string;
+  description?: string;
 
   @Column()
-  content!: string;
+  content?: string;
 
   @Column()
-  headImg!: string;
+  headImg?: string;
 
   @Column()
-  views!: number;
+  views?: number;
 
   @Column()
-  like_count!: number;
+  like_count?: number;
 
   @Column()
-  comment_count!: number;
+  comment_count?: number;
 
   @Column()
-  create_time!: Date;
+  create_time?: Date;
 
   @Column()
-  update_time!: Date;
+  update_time?: Date;
 
   @Column()
-  state!: number;
+  state?: number;
 
-  @ManyToOne(() => User, user => user.articles)
+  @ManyToOne(() => User)
   @JoinColumn({name: 'user_id'})
   user!: User;
 
   @OneToMany(() => Comment, (comment) => comment.article)
-  comments!: Comment[]
+  comments?:Comment[]
 
   @ManyToMany(() => Tag, (tag) => tag.articles, {
     cascade: true
   })
-  tags!: Tag[]
+  tags?: Tag[]
 }

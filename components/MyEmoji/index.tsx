@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { SmileOutlined } from '@ant-design/icons'
 
 interface IProps {
-  handleEmoji: (item) => void
+  // eslint-disable-next-line no-unused-vars
+  handleEmoji: (item: any) => void
 }
 const MyEmoji = (props : IProps) => {
   const { handleEmoji } = props

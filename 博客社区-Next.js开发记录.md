@@ -1661,6 +1661,52 @@ mysql连接不了的话：https://blog.csdn.net/qq_40898875/article/details/1131
 
 
 
+发现mysql连接不了，所以就直接初始化云盘了
+
+阿里云cenos
+
+安装npm node
+
+> sudo yum install npm 
+>
+> sudo yum install nodejs
+
+安装pm2
+
+```TS
+npm install pm2 -g
+```
+
+安装宝塔面板
+
+```
+yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && sh install.sh ed8484bec
+```
+
+安装redis
+
+https://blog.csdn.net/qq_42700766/article/details/118081581
+
+![image-20220525090922307](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220525090922307.png)
+
+
+
+数据库报错了
+
+\#1215 - Cannot add foreign key constraint
+
+
+
+打包的时候一直报错
+
+![image-20220525112316313](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220525112316313.png)
+
+![image-20220525114835289](C:\Users\gogocj\AppData\Roaming\Typora\typora-user-images\image-20220525114835289.png)
+
+添加一个这个就行
+
+
+
 ## 十四、后端给前端推送公告功能
 
 websocket或者用SSE

@@ -3,7 +3,8 @@ import { FileImageOutlined } from '@ant-design/icons'
 import { Upload } from 'antd'
   
 interface IProps {
-  returnUploadUrl: (url) => void
+  // eslint-disable-next-line no-unused-vars
+  returnUploadUrl: (url: any) => void
 }
 const CommentUpload = (props: IProps) => {
   const { returnUploadUrl } = props

@@ -13,7 +13,8 @@ export type IComment = {
   is_delete: number,
   like_count?: number,
   children?: IComment[],
-  toUser?: IUserInfo
+  toUser?: IUserInfo,
+  img?: string
 };
 
 export type IArticle = {

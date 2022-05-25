@@ -31,7 +31,7 @@ const NewEditor = () => {
   }, []);
 
   var tempContent = ''
-  const keywordRed = (keyword) =>  {
+  const keywordRed = (keyword: any) =>  {
     if (keyword && keyword !== '') {
       let str = tempContent ? tempContent : content
       str = str.split(keyword).join("<span style='color:white;background-color: red;'>" + keyword + "</span>")
@@ -61,7 +61,7 @@ const NewEditor = () => {
         message.error('内容敏感！请修改');
         const failContent = res.failContent
         setContentWarningNum(failContent.length)
-        failContent.map(item => keywordRed(item))
+        failContent.map((item : any) => keywordRed(item))
         setContent(tempContent)
       } else {
         message.error(res?.msg || '发布失败');

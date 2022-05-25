@@ -44,7 +44,7 @@ const Message = () => {
   }
 
   // 根据不同的消息类型，给不同的tab设置小红点
-  const changeTabStatus = (type) => {
+  const changeTabStatus = (type: any) => {
     if (type === 'thumb') setHasThumb(true)
     else if (type === 'follow') setHasFollow(true)
     else if (type === 'system') setHasSystem(true)
@@ -54,9 +54,9 @@ const Message = () => {
     request.post('/api/user/message/getNewMessageType', {
       user_id: store.user.userInfo.userId
     })
-      .then((res) => {
+      .then((res: any) => {
         if (res?.code === 0) {
-          res.data.map(item => {
+          res.data.map((item: any) => {
             changeTabStatus(item)
           })
         }
@@ -66,7 +66,7 @@ const Message = () => {
   const getCommentMessage = () => {
     request.post('/api/user/message/getCommentMessage', {
       user_id: store.user.userInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         setShowSkeleton(false)
         setCommentMessages(res.data)
@@ -77,7 +77,7 @@ const Message = () => {
   const getFollowMessage = () => {
     request.post('/api/user/message/getFollowMessage', {
       user_id: store.user.userInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         setShowSkeleton(false)
         setFollowMessages(res.data)
@@ -87,7 +87,7 @@ const Message = () => {
   const getThumbMessage = () => {
     request.post('/api/user/message/getThumbMessage', {
       user_id: store.user.userInfo.userId
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         setShowSkeleton(false)
         setThumbMessages(res.data)
@@ -98,7 +98,7 @@ const Message = () => {
   const getNotificationMessage = () => {
     request.post('/api/common/notification/getSystemNotification', {
       is_start: 1
-    }).then((res) => {
+    }).then((res: any) => {
       if (res?.code === 0) {
         setShowSkeleton(false)
         setSystemMessages(res.data)

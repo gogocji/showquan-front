@@ -3,9 +3,9 @@ import { useRouter } from 'next/router';
 import styles from './index.module.scss';
 import { navs } from './config';
 import type { NextPage } from 'next'
-import { Button, Avatar, Dropdown, Menu, message, Row, Col, notification } from 'antd'
+import { Button, Avatar, Dropdown, Menu, message, Row, Col } from 'antd'
 import { MenuUnfoldOutlined, DownOutlined, UpOutlined, NotificationFilled } from '@ant-design/icons'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import PopLogin from 'components/PopLogin/index'
 import { useStore } from 'store/index';
 import { LoginOutlined, HomeOutlined } from '@ant-design/icons'
@@ -74,9 +74,9 @@ const Navbar: NextPage = () => {
     )
   }
   var scrollheight = 0
-  const handleCloseNotification = () => {
-    store.common.setCommonInfo({hasCloseNotification: true})
-  }
+  // const handleCloseNotification = () => {
+  //   store.common.setCommonInfo({hasCloseNotification: true})
+  // }
   useEffect(() => {
     window.onscroll= function(){
       //变量t是滚动条滚动时，距离顶部的距离

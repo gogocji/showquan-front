@@ -39,8 +39,6 @@ async function thumb(req: NextApiRequest, res: NextApiResponse) {
       },
       relations: ['user', 'article']
     });
-    console.log('22222222222222222222')
-    console.log('commentResult', commentResult)
     if (userResult && commentResult) {
       const thumb = new Thumb()
       thumb.create_time = new Date()
